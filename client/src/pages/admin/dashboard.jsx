@@ -193,7 +193,7 @@ const AssetManagementDashboard = () => {
       {/* Sidebar Navigation */}
       <aside className="sidebar">
         <div className="logo">
-          <h2>🏢 Super System</h2>
+          <h2>🏢 Quản Lý Tài Sản</h2>
         </div>
 
         <nav className="nav-menu">

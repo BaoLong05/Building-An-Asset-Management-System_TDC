@@ -6,7 +6,7 @@ import Footer from "./components/Footer/footer";
 function App() {
   return (
     <BrowserRouter basename="/admin">
-      <Header/>
+      {/* <Header/> */}
       <Routes>
         <Route path="/*" element={<AdminRoutes />} />
       </Routes>
