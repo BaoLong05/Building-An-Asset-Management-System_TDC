@@ -1,0 +1,590 @@
+/* AssetManagement.css - Modern White Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.asset-management {
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #ffffff;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* ==================== HEADER SECTION ==================== */
+.asset-management .header-section {
+  background: white;
+  padding: 20px 30px;
+  border-bottom: 1px solid #eef2f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.asset-management h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a2639;
+  margin: 0;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.asset-management h1::before {
+  content: "📋";
+  font-size: 32px;
+}
+
+/* ==================== BUTTON ADD ==================== */
+.asset-management .btn-add {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+.asset-management .btn-add:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+}
+
+/* ==================== SEARCH SECTION ==================== */
+.asset-management .search-section {
+  padding: 20px 30px;
+  background: white;
+  border-bottom: 1px solid #eef2f6;
+  width: 100%;
+}
+
+.asset-management .search-box {
+  position: relative;
+  max-width: 450px;
+}
+
+.asset-management .search-box input {
+  width: 100%;
+  padding: 14px 20px 14px 50px;
+  border: 2px solid #e2e8f0;
+  border-radius: 50px;
+  font-size: 14px;
+  transition: all 0.3s;
+  background: white;
+  color: #000000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.asset-management .search-box input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.asset-management .search-box input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.asset-management .search-box .search-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 16px;
+  z-index: 1;
+}
+
+/* ==================== TABLE CONTAINER ==================== */
+.asset-management .table-container {
+  padding: 20px 30px;
+  width: 100%;
+  overflow-x: auto;
+  background: white;
+}
+
+/* ==================== TABLE ==================== */
+.asset-management .asset-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1200px;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.asset-management .asset-table thead {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.asset-management .asset-table th {
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.asset-management .asset-table tbody tr {
+  border-bottom: 1px solid #eef2f6;
+  transition: background 0.2s;
+}
+
+.asset-management .asset-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.asset-management .asset-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.asset-management .asset-table td {
+  padding: 16px 20px;
+  font-size: 14px;
+  color: #334155;
+  white-space: nowrap;
+}
+
+/* ==================== CELL STYLES ==================== */
+.asset-management .asset-table td:first-child {
+  font-weight: 600;
+  color: #2563eb;
+  font-family: monospace;
+}
+
+.asset-management .asset-table td:nth-child(2) {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.asset-management .asset-table td:nth-child(5) {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.asset-management .asset-table td:nth-child(6) {
+  font-weight: 600;
+  color: #059669;
+}
+
+/* ==================== STATUS BADGE ==================== */
+.asset-management .status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 100px;
+}
+
+.asset-management .status-badge.good {
+  background: #e6f7e6;
+  color: #0b7e3b;
+}
+
+.asset-management .status-badge.maintenance {
+  background: #fff4e5;
+  color: #b45b0b;
+}
+
+.asset-management .status-badge.broken {
+  background: #ffe5e5;
+  color: #c72a2a;
+}
+
+/* ==================== ACTION BUTTONS ==================== */
+.asset-management .action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.asset-management .action-buttons button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.asset-management .action-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.asset-management .action-buttons button:nth-child(1):hover {
+  background: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
+}
+
+.asset-management .action-buttons button:nth-child(2):hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.asset-management .action-buttons button:nth-child(3):hover {
+  background: #8b5cf6;
+  color: white;
+  border-color: #8b5cf6;
+}
+
+/* ==================== LOADING STATE ==================== */
+.asset-management .loading-state {
+  text-align: center;
+  padding: 60px;
+  color: #64748b;
+  font-size: 15px;
+  background: white;
+  border-radius: 16px;
+}
+
+.asset-management .loading-state::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin: 20px auto 0;
+  border: 3px solid #e2e8f0;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==================== EMPTY STATE ==================== */
+.asset-management .empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+}
+
+.asset-management .empty-state .empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.asset-management .empty-state h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.asset-management .empty-state p {
+  color: #64748b;
+  margin-bottom: 25px;
+}
+
+.asset-management .empty-state .btn-add {
+  display: inline-flex;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+.asset-management .empty-state .btn-add:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+}
+
+/* ==================== MODAL ==================== */
+.asset-management .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+.asset-management .modal-content {
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  width: 90%;
+  max-width: 550px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.asset-management .modal-content h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a2639;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #eef2f6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.asset-management .modal-content input,
+.asset-management .modal-content select,
+.asset-management .modal-content textarea {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.2s;
+  font-family: inherit;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.asset-management .modal-content input:focus,
+.asset-management .modal-content select:focus,
+.asset-management .modal-content textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.asset-management .modal-content input[disabled] {
+  background: #f1f5f9;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+
+.asset-management .modal-content textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.asset-management .modal-content p {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a2639;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border-left: 4px solid #2563eb;
+}
+
+/* Modal buttons */
+.asset-management .modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.asset-management .modal-actions button {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.asset-management .modal-actions button:first-child {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+.asset-management .modal-actions button:first-child:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+}
+
+.asset-management .modal-actions button:last-child {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.asset-management .modal-actions button:last-child:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+  .asset-management .header-section,
+  .asset-management .search-section,
+  .asset-management .table-container {
+    padding: 15px 20px;
+  }
+  
+  .asset-management h1 {
+    font-size: 24px;
+  }
+  
+  .asset-management .btn-add {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .asset-management .header-section {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .asset-management .search-box {
+    max-width: 100%;
+  }
+  
+  .asset-management .asset-table {
+    min-width: 100%;
+  }
+  
+  .asset-management .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+  
+  .asset-management .modal-actions {
+    flex-direction: column;
+  }
+  
+  /* Mobile table view */
+  .asset-management .asset-table,
+  .asset-management .asset-table thead,
+  .asset-management .asset-table tbody,
+  .asset-management .asset-table tr,
+  .asset-management .asset-table td {
+    display: block;
+  }
+  
+  .asset-management .asset-table thead {
+    display: none;
+  }
+  
+  .asset-management .asset-table tbody tr {
+    margin-bottom: 15px;
+    border: 1px solid #eef2f6;
+    border-radius: 12px;
+    padding: 15px;
+  }
+  
+  .asset-management .asset-table td {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eef2f6;
+    white-space: normal;
+  }
+  
+  .asset-management .asset-table td:last-child {
+    border-bottom: none;
+  }
+  
+  .asset-management .asset-table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    width: 100px;
+    min-width: 100px;
+    color: #64748b;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+  
+  .asset-management .action-buttons {
+    justify-content: flex-start;
+  }
+}
+
+/* ==================== PRINT ==================== */
+@media print {
+  .asset-management .btn-add,
+  .asset-management .search-section,
+  .asset-management .action-buttons,
+  .asset-management .modal {
+    display: none;
+  }
+  
+  .asset-management .asset-table {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .asset-management .asset-table th,
+  .asset-management .asset-table td {
+    border: 1px solid #000;
+  }
+}
