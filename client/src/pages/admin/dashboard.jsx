@@ -190,32 +190,7 @@ const AssetManagementDashboard = () => {
 
   return (
     <div className={`dashboard ${darkMode ? 'dark' : ''}`}>
-      {/* Sidebar Navigation */}
-      <aside className="sidebar">
-        <div className="logo">
-          <h2>🏢 Quản Lý Tài Sản</h2>
-        </div>
-
-        <nav className="nav-menu">
-          {menuItems.map(item => (
-            <button
-              key={item.id}
-              className={`nav-item ${activePage === item.id ? 'active' : ''}`}
-              onClick={() => setActivePage(item.id)}
-            >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-text">{item.name}</span>
-            </button>
-          ))}
-        </nav>
-
-        <div className="sidebar-footer">
-          <button className="logout-btn">
-            <span className="nav-icon">🚪</span>
-            <span>Đăng xuất</span>
-          </button>
-        </div>
-      </aside>
+    
 
       {/* Main Content */}
       <main className="main-content">
