@@ -2,6 +2,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TaiSanController;
+use App\Http\Controllers\Api\DanhMucController;
 
 
 //quan ly tai san
@@ -15,3 +16,7 @@ Route::put('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Update']);
 Route::delete('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Delete']);
 //5. bao tri tai san
 Route::put('/taisan/{id}/maintenance', [TaiSanController::class, 'AssetManagement_Maintenance']);
+
+//quan ly danh muc
+//1. lay danh sach danh muc
+Route::get('/danhmuc', [DanhMucController::class, 'danhmuc_index']);

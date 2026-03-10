@@ -11,38 +11,47 @@ return new class extends Migration
      */
     public function up(): void
     {
-         Schema::create('taisan', function (Blueprint $table) {
+        Schema::create('taisan', function (Blueprint $table) {
 
-        $table->engine = 'InnoDB';
+            $table->engine = 'InnoDB';
 
-        $table->bigIncrements('MaTaiSan');
-        $table->string('TenTaiSan');
+            $table->bigIncrements('MaTaiSan');
+            $table->string('TenTaiSan');
 
-        $table->unsignedBigInteger('MaDanhMuc')->nullable();
-        $table->unsignedBigInteger('MaPhong')->nullable();
+            $table->unsignedBigInteger('MaDanhMuc')->nullable();
+            $table->unsignedBigInteger('MaPhong')->nullable();
 
-        $table->integer('SoLuong')->default(1);
-        $table->decimal('DonGia', 18, 2)->nullable();
-        $table->date('NgayNhap')->nullable();
-        $table->string('TinhTrang')->default('Tot');
-        $table->string('GhiChu')->nullable();
+            $table->integer('SoLuong')->default(1);
+            $table->decimal('DonGia', 18, 2)->nullable();
+            $table->date('NgayNhap')->nullable();
+            $table->string('TinhTrang')->default('Tot');
+            $table->string('GhiChu')->nullable();
 
-        $table->timestamps();
+            // Ai tạo / cập nhật / xóa
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
 
-        // FK DanhMuc
-        $table->foreign('MaDanhMuc')
-            ->references('MaDanhMuc')
-            ->on('danhmuc')
-            ->onDelete('set null')
-            ->onUpdate('cascade');
+            // Ngày tạo / cập nhật
+            $table->timestamps();
 
-        // FK Phong
-        $table->foreign('MaPhong')
-            ->references('MaPhong')
-            ->on('phong')
-            ->onDelete('set null')
-            ->onUpdate('cascade');
-    });
+            // Ngày xóa (soft delete)
+            $table->softDeletes();
+
+            // FK DanhMuc
+            $table->foreign('MaDanhMuc')
+                ->references('MaDanhMuc')
+                ->on('danhmuc')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
+
+            // FK Phong
+            $table->foreign('MaPhong')
+                ->references('MaPhong')
+                ->on('phong')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
+        });
     }
 
     /**

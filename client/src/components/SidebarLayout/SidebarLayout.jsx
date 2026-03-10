@@ -16,9 +16,9 @@ const menuItems = [
   },
   {
     id: "categories",
-    name: "Danh mục",
+    name: "Quản Lý Danh Mục",
     icon: "📁",
-    path: "/admin/categories",
+    path: "/admin/category-management",
   },
   {
     id: "maintenance",

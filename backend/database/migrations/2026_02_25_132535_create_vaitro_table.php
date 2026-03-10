@@ -12,13 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vaitro', function (Blueprint $table) {
-    $table->engine = 'InnoDB';
+            $table->engine = 'InnoDB';
 
-    $table->bigIncrements('MaVaiTro');
-    $table->string('TenVaiTro');
+            $table->bigIncrements('MaVaiTro');
+            $table->string('TenVaiTro');
 
-    $table->timestamps();
-});
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     /**
