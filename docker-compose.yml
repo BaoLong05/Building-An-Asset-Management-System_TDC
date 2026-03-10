@@ -4,6 +4,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: project-mysql
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: building_a_material_management_system_tdc
@@ -15,6 +16,7 @@ services:
   backend:
     build: ./backend
     container_name: project-backend
+    restart: unless-stopped
     ports:
       - "8000:80"
     volumes:
@@ -25,13 +27,13 @@ services:
   frontend:
     build: ./client
     container_name: project-client
+    restart: unless-stopped
     ports:
       - "5173:5173"
     volumes:
       - ./client:/app
-      - /app/node_modules
     working_dir: /app
-    command: ["npm", "run", "dev", "--", "--host"]
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     environment:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
@@ -40,7 +42,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: project-phpmyadmin
-    restart: always
+    restart: unless-stopped
     ports:
       - "8080:80"
     environment:
@@ -54,11 +56,11 @@ services:
   meilisearch:
     image: getmeili/meilisearch:latest
     container_name: project-meilisearch
+    restart: unless-stopped
     environment:
       - MEILI_MASTER_KEY=mysecret
     ports:
       - "7700:7700"
-    restart: always
 
 volumes:
   mysql_data:

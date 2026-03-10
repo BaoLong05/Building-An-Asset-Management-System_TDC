@@ -1,7 +1,7 @@
 import React from "react";
 import AdminDashboard from "../pages/admin/dashboard";
 import AssetManagement from "../pages/AssetManagement/AssetManagement";
-import AdminLayout from "./AdminLayout";
+import AdminLayout from "./AdminLayout/AdminLayout";
 
 const AdminRoutes = {
   path: "/admin",
