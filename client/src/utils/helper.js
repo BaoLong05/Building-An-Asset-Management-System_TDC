@@ -1,9 +1,8 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const API_BASE_URL = 'http://192.168.33.14:8000/api';
+export const API_BASE_URL = "http://192.168.33.14:8000/api";
 
 export const apiUrl = (endpoint) => `${API_BASE_URL}/${endpoint}`;
-
 
 // =============================
 // LẤY DANH SÁCH TÀI SẢN
@@ -18,7 +17,6 @@ export const getAssets = async () => {
   }
 };
 
-
 // =============================
 // THÊM TÀI SẢN
 // =============================
@@ -30,7 +28,6 @@ export const addAsset = async (data) => {
     console.error("Lỗi khi thêm tài sản:", error);
   }
 };
-
 
 // =============================
 // SỬA TÀI SẢN
@@ -44,7 +41,6 @@ export const updateAsset = async (id, data) => {
   }
 };
 
-
 // =============================
 // XÓA TÀI SẢN
 // =============================
@@ -57,25 +53,29 @@ export const deleteAsset = async (id) => {
   }
 };
 
-
 // =============================
 // TOGGLE BẢO TRÌ
 // =============================
 export const toggleMaintenance = async (id, status) => {
   try {
-
-    const res = await axios.put(
-      apiUrl(`taisan/${id}/maintenance`),
-      {
-        TinhTrang: status
-      }
-    );
+    const res = await axios.put(apiUrl(`taisan/${id}/maintenance`), {
+      TinhTrang: status,
+    });
 
     return res.data;
-
   } catch (error) {
-
     console.error("Lỗi cập nhật bảo trì:", error);
+  }
+};
 
+//====================DANH MUC====================
+//1. lay danh sach danh muc
+export const getCategories = async () => {
+  try {
+    const res = await axios.get(apiUrl("danhmuc"));
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi khi gọi API danh mục", error);
+    return [];
   }
 };
