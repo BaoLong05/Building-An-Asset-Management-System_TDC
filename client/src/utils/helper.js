@@ -64,7 +64,13 @@ export const toggleMaintenance = async (id, status) => {
 
     return res.data;
   } catch (error) {
-    console.error("Lỗi cập nhật bảo trì:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
   }
 };
 
@@ -75,8 +81,13 @@ export const getCategories = async () => {
     const res = await axios.get(apiUrl("danhmuc"));
     return res.data;
   } catch (error) {
-    console.error("Lỗi khi gọi API danh mục", error);
-    return [];
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
   }
 };
 
@@ -86,28 +97,42 @@ export const addCategories = async (data) => {
     const res = await axios.post(apiUrl("danhmuc"), data);
     return res.data;
   } catch (error) {
-    console.error("Lỗi khi thêm danh mục", error);
-    return [];
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
   }
 };
 //3. sua danh muc
 export const updateCategories = async (id, data) => {
-  try{
-    const res = await axios.put(apiUrl(`danhmuc/${id}`), data)
+  try {
+    const res = await axios.put(apiUrl(`danhmuc/${id}`), data);
     return res.data;
-  }catch(error){
-    console.error("Lỗi khi cập nhật danh mục!");
-    return [];
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
   }
-}
+};
 //4. xoa danh muc
-export const deleteCategories = async (id) =>{
-  try{
+export const deleteCategories = async (id) => {
+  try {
     const res = await axios.delete(apiUrl(`danhmuc/${id}`));
     return res.data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
   }
-  catch(error){
-    console.error("Lỗi khi xóa danh mục!");
-    return [];
-  }
-}
+};

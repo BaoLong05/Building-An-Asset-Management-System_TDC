@@ -26,7 +26,7 @@ class DanhMucController extends Controller
         $danhmuc = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json([
-            'seccess' => true,
+            'success' => true,
             'data' => $danhmuc
         ]);
     }
@@ -46,7 +46,7 @@ class DanhMucController extends Controller
 
         return response()->json([
             "success" => true,
-            "massage" => "Thêm Danh Mục Thành Công",
+            "message" => "Thêm Danh Mục Thành Công",
             "data" => $danhmuc
         ]);
     }
@@ -61,23 +61,26 @@ class DanhMucController extends Controller
         ]);
 
         $danhmuc = DanhMuc::find($id);
+
         if (!$danhmuc) {
             return response()->json([
                 'success' => false,
                 'message' => 'Danh mục không tồn tại.'
             ], 404);
         }
-        //kiem tra chinh sua
-        if ($request->updated_at != $danhmuc->update_at) {
+
+        // kiểm tra optimistic locking
+        if ($request->updated_at != $danhmuc->updated_at->toISOString()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Danh mục đã bị chính sửa trước đó, vui lòng reload lại trang hiện tại!'
+                'message' => 'Danh mục đã bị chỉnh sửa trước đó. Vui lòng reload lại trang.'
             ], 409);
         }
+
         $danhmuc->update([
             'TenDanhMuc' => $request->TenDanhMuc,
             'MoTa' => $request->MoTa,
-            'updated_by' => 1 // auth()->id(); 
+            'updated_by' => 1
         ]);
 
         return response()->json([

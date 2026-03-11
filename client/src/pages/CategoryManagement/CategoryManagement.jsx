@@ -1,97 +1,142 @@
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./CategoryManagement.css";
-import { getCategories } from "../../utils/helper";
+import {
+  getCategories,
+  addCategories,
+  updateCategories,
+  deleteCategories,
+} from "../../utils/helper";
 
 const CategoryManagement = () => {
-  // State quản lý danh sách danh mục
   const [categories, setCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+
   const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState("add");
+
   const [currentCategory, setCurrentCategory] = useState({
     TenDanhMuc: "",
     MoTa: "",
   });
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
-  const [modalType, setModalType] = useState("add");
-
-  // Mock data
-  const fetchCategories = async () => {
-    const data = await getCategories();
-    setCategories(data);
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.body.classList.toggle('dark-mode-category');
   };
+
+  // =========================
+  // FETCH API
+  // =========================
+  const fetchCategories = async () => {
+    const res = await getCategories();
+
+    if (res && res.success) {
+      setCategories(res.data);
+      toast.success(res.message);
+    } else {
+      toast.error(res.message);
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  // Thống kê
-  const stats = {
-    total: categories.length,
-    active: categories.length - 2, // Giả lập
-    maintenance: 2, // Giả lập
-    broken: 0, // Giả lập
+  // =========================
+  // EXPORT (placeholder)
+  // =========================
+  const handleExportExcel = () => {
+    toast.info("Tính năng xuất Excel sẽ được phát triển sau 📊");
   };
 
-  // Lọc danh mục
-  const filteredCategories = categories.filter(
-    (category) =>
-      category.TenDanhMuc.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      category.MaDanhMuc.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      category.MoTa.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const handleExportPDF = () => {
+    toast.info("Tính năng xuất PDF sẽ được phát triển sau 📄");
+  };
 
+  // =========================
+  // SUBMIT FORM
+  // =========================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    if (modalType === "add") {
+      const res = await addCategories(currentCategory);
+
+      if (res.success) {
+        fetchCategories();
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
+    } else {
+      const res = await updateCategories(
+        currentCategory.MaDanhMuc,
+        currentCategory
+      );
+
+      if (res.success) {
+        fetchCategories();
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
+    }
+
+    setShowModal(false);
+  };
+
+  // =========================
+  // ADD
+  // =========================
   const handleAdd = () => {
     setModalType("add");
     setCurrentCategory({
-      MaDanhMuc: "",
       TenDanhMuc: "",
       MoTa: "",
     });
     setShowModal(true);
   };
 
+  // =========================
+  // EDIT
+  // =========================
   const handleEdit = (category) => {
     setModalType("edit");
     setCurrentCategory(category);
     setShowModal(true);
   };
 
+  // =========================
+  // DELETE
+  // =========================
   const handleDelete = (category) => {
     setCategoryToDelete(category);
     setShowDeleteConfirm(true);
   };
 
-  const confirmDelete = () => {
-    setCategories(
-      categories.filter((c) => c.MaDanhMuc !== categoryToDelete.MaDanhMuc),
-    );
+  const confirmDelete = async () => {
+    const res = await deleteCategories(categoryToDelete.MaDanhMuc);
+
+    if (res.success) {
+      fetchCategories();
+      toast.success(res.message);
+    } else {
+      toast.error(res.message);
+    }
+
     setShowDeleteConfirm(false);
     setCategoryToDelete(null);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (modalType === "add") {
-      const newCategory = {
-        ...currentCategory,
-        MaDanhMuc: `DM${String(categories.length + 1).padStart(3, "0")}`,
-      };
-      setCategories([...categories, newCategory]);
-    } else {
-      setCategories(
-        categories.map((c) =>
-          c.MaDanhMuc === currentCategory.MaDanhMuc ? currentCategory : c,
-        ),
-      );
-    }
-
-    setShowModal(false);
-  };
-
+  // =========================
+  // INPUT
+  // =========================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCurrentCategory({
@@ -100,75 +145,119 @@ const CategoryManagement = () => {
     });
   };
 
+  // =========================
+  // SEARCH
+  // =========================
+  const filteredCategories = categories.filter((category) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      category.TenDanhMuc?.toLowerCase().includes(search) ||
+      String(category.MaDanhMuc).includes(search) ||
+      (category.MoTa || "").toLowerCase().includes(search)
+    );
+  });
+
+  // =========================
+  // STATS
+  // =========================
+  const stats = {
+    total: categories.length,
+    active: categories.length,
+    maintenance: 0,
+    broken: 0,
+  };
+
   return (
-    <div className="category-management-white">
-      {/* Header với title */}
-      <div className="header-title">
-        <h1>Quản Lý Danh Mục</h1>
+    <div className={`category-management-white ${darkMode ? 'dark' : ''}`}>
+      {/* Top Bar với Theme Toggle */}
+      <div className="top-bar-category">
+        <div className="header-title">
+          <h1>Quản Lý Danh Mục</h1>
+        </div>
+        
+        <div className="top-bar-actions">
+          <button className="theme-toggle" onClick={toggleDarkMode}>
+            {darkMode ? '☀️' : '🌙'}
+          </button>
+          <div className="language-select">
+            <select>
+              <option value="vn">🇻🇳 Tiếng Việt</option>
+              <option value="us">🇺🇸 English</option>
+            </select>
+          </div>
+          <div className="user-profile">
+            <span className="avatar">👤</span>
+            <span className="user-name">Admin</span>
+          </div>
+        </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* STATS */}
       <div className="stats-container">
         <div className="stat-card">
-          <div className="stat-info">
-            <span className="stat-label">Tổng danh mục</span>
-            <span className="stat-value">{stats.total}</span>
-          </div>
-          <div className="stat-icon blue">
-            <i className="fas fa-folder"></i>
-          </div>
+          <span className="stat-label">Tổng danh mục</span>
+          <span className="stat-value">{stats.total}</span>
+          <span className="stat-trend">+2.5% ↑</span>
         </div>
 
         <div className="stat-card">
-          <div className="stat-info">
-            <span className="stat-label">Đang hoạt động</span>
-            <span className="stat-value">{stats.active}</span>
-          </div>
-          <div className="stat-icon green">
-            <i className="fas fa-check-circle"></i>
-          </div>
+          <span className="stat-label">Đang hoạt động</span>
+          <span className="stat-value">{stats.active}</span>
+          <span className="stat-trend">+1.2% ↑</span>
         </div>
 
         <div className="stat-card">
-          <div className="stat-info">
-            <span className="stat-label">Có tài sản</span>
-            <span className="stat-value">{stats.maintenance}</span>
-          </div>
-          <div className="stat-icon orange">
-            <i className="fas fa-box"></i>
-          </div>
+          <span className="stat-label">Có tài sản</span>
+          <span className="stat-value">{stats.maintenance}</span>
+          <span className="stat-trend negative">0%</span>
         </div>
 
         <div className="stat-card">
-          <div className="stat-info">
-            <span className="stat-label">Trống</span>
-            <span className="stat-value">{stats.broken}</span>
-          </div>
-          <div className="stat-icon red">
-            <i className="fas fa-empty-set"></i>
-          </div>
+          <span className="stat-label">Trống</span>
+          <span className="stat-value">{stats.broken}</span>
+          <span className="stat-trend negative">0%</span>
         </div>
       </div>
 
-      {/* Search và Add Button */}
+      {/* ACTION BAR */}
       <div className="action-bar">
         <div className="search-wrapper">
-          <i className="fas fa-search search-icon"></i>
           <input
             type="text"
             className="search-input"
-            placeholder="Tìm kiếm theo mã, tên danh mục, mô tả..."
+            placeholder="🔍 Tìm kiếm danh mục..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <button className="btn-add-white" onClick={handleAdd}>
-          <i className="fas fa-plus"></i>
-          Thêm danh mục
-        </button>
+
+        <div className="right-actions">
+          <div className="export-group">
+            <button
+              className="btn-export excel"
+              onClick={handleExportExcel}
+            >
+              📊 Excel
+            </button>
+
+            <button
+              className="btn-export pdf"
+              onClick={handleExportPDF}
+            >
+              📄 PDF
+            </button>
+          </div>
+
+          <button
+            className="btn-add-white"
+            onClick={handleAdd}
+          >
+            ➕ Thêm danh mục
+          </button>
+        </div>
       </div>
 
-      {/* Bảng danh sách */}
+      {/* TABLE */}
       <div className="table-wrapper">
         <table className="category-table-white">
           <thead>
@@ -176,8 +265,10 @@ const CategoryManagement = () => {
               <th>MÃ DANH MỤC</th>
               <th>TÊN DANH MỤC</th>
               <th>MÔ TẢ</th>
+              <th>HÀNH ĐỘNG</th>
             </tr>
           </thead>
+
           <tbody>
             {filteredCategories.length > 0 ? (
               filteredCategories.map((category) => (
@@ -186,6 +277,13 @@ const CategoryManagement = () => {
                   <td>{category.TenDanhMuc}</td>
                   <td>{category.MoTa}</td>
                   <td>
+                    <button
+                      className="btn-icon edit"
+                      onClick={() => handleEdit(category)}
+                    >
+                      Sửa
+                    </button>
+
                     <button
                       className="btn-icon delete"
                       onClick={() => handleDelete(category)}
@@ -204,117 +302,72 @@ const CategoryManagement = () => {
         </table>
       </div>
 
-      {/* Footer với tổng giá trị */}
       <div className="table-footer">
-        <div className="total-assets">
-          <i className="fas fa-cubes"></i>
-          <span>
-            Tổng số danh mục: <strong>{filteredCategories.length}</strong>
-          </span>
-        </div>
-        <div className="total-value">
-          <i className="fas fa-chart-line"></i>
-          <span>
-            Tổng tài sản: <strong>1.247</strong>
-          </span>
-        </div>
+        Tổng số danh mục: <strong>{filteredCategories.length}</strong>
       </div>
 
-      {/* Modal thêm/sửa */}
+      {/* MODAL ADD EDIT */}
       {showModal && (
         <div className="modal-overlay-white">
           <div className="modal-white">
-            <div className="modal-header-white">
-              <h2>
-                {modalType === "add" ? "Thêm danh mục mới" : "Sửa danh mục"}
-              </h2>
+            <h2>
+              {modalType === "add" ? "Thêm danh mục" : "Sửa danh mục"}
+            </h2>
+
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                name="TenDanhMuc"
+                value={currentCategory.TenDanhMuc}
+                onChange={handleInputChange}
+                placeholder="Tên danh mục"
+                required
+              />
+
+              <textarea
+                name="MoTa"
+                value={currentCategory.MoTa}
+                onChange={handleInputChange}
+                placeholder="Mô tả"
+              />
+
+              <button type="submit">
+                {modalType === "add" ? "Thêm" : "Cập nhật"}
+              </button>
+
               <button
-                className="close-btn-white"
+                type="button"
                 onClick={() => setShowModal(false)}
               >
-                <i className="fas fa-times"></i>
+                Hủy
               </button>
-            </div>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group-white">
-                <label htmlFor="TenDanhMuc">
-                  Tên danh mục <span className="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="TenDanhMuc"
-                  name="TenDanhMuc"
-                  value={currentCategory.TenDanhMuc}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Nhập tên danh mục"
-                />
-              </div>
-              <div className="form-group-white">
-                <label htmlFor="MoTa">Mô tả</label>
-                <textarea
-                  id="MoTa"
-                  name="MoTa"
-                  value={currentCategory.MoTa}
-                  onChange={handleInputChange}
-                  rows="4"
-                  placeholder="Nhập mô tả chi tiết về danh mục"
-                />
-              </div>
-              <div className="modal-footer-white">
-                <button
-                  type="button"
-                  className="btn-cancel-white"
-                  onClick={() => setShowModal(false)}
-                >
-                  Hủy bỏ
-                </button>
-                <button type="submit" className="btn-save-white">
-                  {modalType === "add" ? "Thêm mới" : "Cập nhật"}
-                </button>
-              </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* Modal xác nhận xóa */}
+      {/* DELETE MODAL */}
       {showDeleteConfirm && (
         <div className="modal-overlay-white">
-          <div className="modal-white confirm-modal-white">
-            <div className="modal-header-white">
-              <h2>Xác nhận xóa</h2>
-              <button
-                className="close-btn-white"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                <i className="fas fa-times"></i>
+          <div className="modal-white">
+            <h2>Xác nhận xóa</h2>
+            <p>Bạn có chắc muốn xóa danh mục</p>
+            <strong>{categoryToDelete?.TenDanhMuc}</strong>
+
+            <div>
+              <button onClick={() => setShowDeleteConfirm(false)}>
+                Hủy
               </button>
-            </div>
-            <div className="confirm-content-white">
-              <i className="fas fa-exclamation-triangle warning-icon-white"></i>
-              <p>Bạn có chắc chắn muốn xóa danh mục</p>
-              <p className="category-name-white">
-                "{categoryToDelete?.TenDanhMuc}"?
-              </p>
-              <p className="warning-text-white">
-                Hành động này không thể hoàn tác!
-              </p>
-            </div>
-            <div className="modal-footer-white">
-              <button
-                className="btn-cancel-white"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Hủy bỏ
-              </button>
-              <button className="btn-delete-white" onClick={confirmDelete}>
-                Xóa danh mục
+
+              <button onClick={confirmDelete}>
+                Xóa
               </button>
             </div>
           </div>
         </div>
       )}
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

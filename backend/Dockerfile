@@ -2,29 +2,22 @@ FROM php:8.2-apache
 
 WORKDIR /var/www/html
 
-# Cài extension cần cho Laravel
-RUN docker-php-ext-install pdo pdo_mysql
+# Cài extension cần thiết cho Laravel
+RUN docker-php-ext-install pdo_mysql
 
-# Bật mod rewrite
+# Bật mod_rewrite cho Laravel route
 RUN a2enmod rewrite
 
-# Đổi document root sang public
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+# Đổi DocumentRoot sang thư mục public
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-# Update Apache config
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/000-default.conf
+# Copy code Laravel vào container
+COPY . /var/www/html
 
-# Cho phép .htaccess hoạt động
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/apache2.conf && \
-    echo "<Directory /var/www/html/public>\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>" >> /etc/apache2/apache2.conf
-
-# Phân quyền cho Laravel
-RUN chown -R www-data:www-data /var/www/html
+# Phân quyền thư mục cần ghi
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
 
 EXPOSE 80
 
