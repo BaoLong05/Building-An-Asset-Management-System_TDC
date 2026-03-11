@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const API_BASE_URL = "http://192.168.33.14:8000/api";
+export const API_BASE_URL = "http://192.168.33.10:8000/api";
 
 export const apiUrl = (endpoint) => `${API_BASE_URL}/${endpoint}`;
 
@@ -79,3 +79,35 @@ export const getCategories = async () => {
     return [];
   }
 };
+
+//2. them danh muc
+export const addCategories = async (data) => {
+  try {
+    const res = await axios.post(apiUrl("danhmuc"), data);
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi khi thêm danh mục", error);
+    return [];
+  }
+};
+//3. sua danh muc
+export const updateCategories = async (id, data) => {
+  try{
+    const res = await axios.put(apiUrl(`danhmuc/${id}`), data)
+    return res.data;
+  }catch(error){
+    console.error("Lỗi khi cập nhật danh mục!");
+    return [];
+  }
+}
+//4. xoa danh muc
+export const deleteCategories = async (id) =>{
+  try{
+    const res = await axios.delete(apiUrl(`danhmuc/${id}`));
+    return res.data;
+  }
+  catch(error){
+    console.error("Lỗi khi xóa danh mục!");
+    return [];
+  }
+}

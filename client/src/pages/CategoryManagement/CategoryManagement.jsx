@@ -41,9 +41,7 @@ const CategoryManagement = () => {
       category.MaDanhMuc.toLowerCase().includes(searchTerm.toLowerCase()) ||
       category.MoTa.toLowerCase().includes(searchTerm.toLowerCase()),
   );
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+
 
   const handleAdd = () => {
     setModalType("add");
