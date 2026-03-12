@@ -5,43 +5,43 @@ const menuItems = [
   {
     id: "dashboard",
     name: "Dashboard",
-    icon: "📊",
+    icon: "📊", 
     path: "/admin/dashboard",
   },
   {
     id: "assets",
     name: "Quản Lý Tài Sản",
-    icon: "💻",
+    icon: "🔧", 
     path: "/admin/asset-management",
   },
   {
     id: "categories",
     name: "Quản Lý Danh Mục",
-    icon: "📁",
+    icon: "📋", 
     path: "/admin/category-management",
   },
   {
-    id: "maintenance",
-    name: "Bảo trì",
-    icon: "🔧",
-    path: "/admin/maintenance",
+    id: "room",
+    name: "Quản Lý Phòng Học",
+    icon: "🏫", 
+    path: "/admin/room-management",
   },
   {
     id: "borrow",
     name: "Mượn trả",
-    icon: "📝",
+    icon: "🔄", 
     path: "/admin/borrow",
   },
   {
     id: "reports",
     name: "Báo cáo",
-    icon: "📈",
+    icon: "📑", 
     path: "/admin/reports",
   },
   {
     id: "settings",
     name: "Cài đặt",
-    icon: "⚙️",
+    icon: "⚙️", 
     path: "/admin/settings",
   },
 ];
@@ -51,7 +51,7 @@ function SidebarLayout() {
     <aside className="sidebar">
 
       <div className="logo">
-        <h2>🏢 Quản Lý Tài Sản</h2>
+        <h2>📦 Quản Lý Tài Sản</h2> 
       </div>
 
       <nav className="nav-menu">
@@ -71,7 +71,8 @@ function SidebarLayout() {
 
       <div className="sidebar-footer">
         <button className="logout-btn">
-          <span>🚪</span> Đăng xuất
+          <span className="logout-icon">🚪</span> 
+          <span>Đăng xuất</span>
         </button>
       </div>
 

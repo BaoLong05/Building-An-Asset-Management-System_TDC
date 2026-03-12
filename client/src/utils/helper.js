@@ -136,3 +136,85 @@ export const deleteCategories = async (id) => {
     };
   }
 };
+
+//====================PHONG====================
+//1. lay danh sach phong
+export const getRoom = async (page = 1) => {
+  try {
+    const res = await axios.get(apiUrl("phong"), {
+      params : {page}
+    });
+    return res.data;
+  } catch (error) {
+    if (console.error) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
+
+//2.them phong hoc
+export const addRoom = async (data) => {
+  try {
+    const res = await axios.post(apiUrl("phong"), data);
+    return res.data;
+  } catch (error) {
+    if (console.error) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
+//3.sua phong hoc
+export const updateRoom = async (id, data) => {
+  try {
+    const res = await axios.put(apiUrl(`phong/${id}`), data);
+    return res.data;
+  } catch (error) {
+    if (console.error) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
+//4. xoa phong hoc
+export const deleteRoom = async (id) => {
+  try {
+    const res = await axios.delete(apiUrl(`phong/${id}`));
+    return res.data;
+  } catch (error) {
+    if (console.error) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
+//5. tai san trong mot phong hoc
+export const getAssetRoom = async (id, page = 1) => {
+  try {
+    const res = await axios.get(apiUrl(`phong/${id}/taisan`), {
+        params : {page}
+    });
+    return res.data;
+  } catch (error) {
+    if (console.error) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
