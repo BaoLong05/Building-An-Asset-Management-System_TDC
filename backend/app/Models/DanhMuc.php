@@ -15,10 +15,9 @@ class DanhMuc extends Model
         'created_by',
         'updated_by',
         'deleted_by',
-        ];
-        
-        protected $dates = [
-        'deleted_at'
+    ];
 
-    ] ;
+    protected $dates = [
+        'deleted_at'
+    ];
 }

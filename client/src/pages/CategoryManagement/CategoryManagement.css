@@ -135,84 +135,9 @@ HEADER
   -webkit-text-fill-color: transparent;
 }
 
-/* ================================
-STATS
-================================ */
-.stats-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 28px;
-}
 
-.stat-card {
-  background: white;
-  border-radius: 14px;
-  padding: 22px;
-  border: 1px solid #eef1f6;
-  transition: 0.25s;
-  position: relative;
-  overflow: hidden;
-}
 
-.dark .stat-card {
-  background: #1f2a4a;
-  border-color: #2d3748;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-}
-
-.stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-}
-
-.dark .stat-card:hover {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-.stat-label {
-  display: block;
-  font-size: 14px;
-  color: #64748b;
-}
-
-.dark .stat-label {
-  color: #a0aec0;
-}
-
-.stat-value {
-  display: block;
-  font-size: 26px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-top: 4px;
-}
-
-.dark .stat-value {
-  color: white;
-}
-
-.stat-trend {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--success);
-  margin-top: 4px;
-  display: inline-block;
-}
-
-.stat-trend.negative {
-  color: var(--danger);
-}
 
 /* ================================
 ACTION BAR
