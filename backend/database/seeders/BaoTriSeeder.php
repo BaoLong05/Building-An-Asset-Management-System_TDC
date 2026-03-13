@@ -23,7 +23,7 @@ class BaoTriSeeder extends Seeder
                 'NgayBaoTri' => now(),
                 'NoiDung' => 'Bảo Trì Tài Sản' . $asset->TenTaiSan,
                 'ChiPhi' => rand(20000,1000000),
-                'TrangThai' => 'DangXuLy',
+                'TrangThai' => 'Đang Xử Lý',
                 'created_by' => 1
             ]);
         }

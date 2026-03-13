@@ -179,8 +179,7 @@ const MaintenanceManagement = () => {
   // =========================
   const stats = {
     total: assets.length,
-    good: assets.filter(a => a.TrangThai?.toLowerCase() === 'tốt').length,
-    maintenance: assets.filter(a => a.TrangThai?.toLowerCase() === 'đang bảo trì').length,
+    maintenance: assets.filter(a => a.TrangThai?.toLowerCase() === 'đang xử lý').length,
     broken: assets.filter(a => a.TrangThai?.toLowerCase() === 'hỏng').length,
   };
 
@@ -189,8 +188,7 @@ const MaintenanceManagement = () => {
   // =========================
   const getStatusClass = (status) => {
     switch(status?.toLowerCase()) {
-      case 'tốt': return 'good';
-      case 'đang bảo trì': return 'maintenance';
+      case 'Hoàn Thành': return 'maintenance';
       case 'hỏng': return 'broken';
       default: return '';
     }
@@ -201,8 +199,7 @@ const MaintenanceManagement = () => {
   // =========================
   const getStatusIcon = (status) => {
     switch(status?.toLowerCase()) {
-      case 'tốt': return '✅';
-      case 'đang bảo trì': return '🔧';
+      case 'Hoàn Thành': return '🔧';
       case 'hỏng': return '❌';
       default: return '❓';
     }
@@ -258,8 +255,7 @@ const MaintenanceManagement = () => {
               onChange={(e) => setFilterStatus(e.target.value)}
             >
               <option value="all">📋 Tất cả trạng thái</option>
-              <option value="good">✅ Tốt</option>
-              <option value="maintenance">🔧 Đang bảo trì</option>
+              <option value="maintenance">🔧 Đang xử lý</option>
               <option value="broken">❌ Hỏng</option>
             </select>
           </div>
@@ -282,7 +278,7 @@ const MaintenanceManagement = () => {
             <tr>
               <th>MÃ TÀI SẢN</th>
               <th>TÊN TÀI SẢN</th>
-              <th>LOẠI</th>
+              <th>GHI CHÚ</th>
               <th>PHÒNG</th>
               <th>TRẠNG THÁI</th>
               <th>HÀNH ĐỘNG</th>
@@ -526,31 +522,18 @@ const MaintenanceManagement = () => {
               <div className="form-group">
                 <label>Trạng thái mới:</label>
                 <div className="status-options">
-                  <label className="status-option">
-                    <input
-                      type="radio"
-                      name="status"
-                      value="Tốt"
-                      checked={updateStatus === "Tốt"}
-                      onChange={(e) => setUpdateStatus(e.target.value)}
-                    />
-                    <span className="status-badge good">
-                      <span className="status-dot"></span>
-                      ✅ Tốt
-                    </span>
-                  </label>
-
+                  
                   <label className="status-option">
                     <input
                       type="radio"
                       name="status"
                       value="Đang bảo trì"
-                      checked={updateStatus === "Đang bảo trì"}
+                      checked={updateStatus === "Hoàn Thành"}
                       onChange={(e) => setUpdateStatus(e.target.value)}
                     />
                     <span className="status-badge maintenance">
                       <span className="status-dot"></span>
-                      🔧 Đang bảo trì
+                      🔧 Hoàn Thành
                     </span>
                   </label>
 
