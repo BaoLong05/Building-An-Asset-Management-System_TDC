@@ -24,4 +24,8 @@ class BaoTri extends Model
     protected $dates = [
         'deleted_at'
     ];
+
+    public function taisan(){
+        return $this->belongsTo(TaiSan::class, 'MaTaiSan');
+    }
 }
