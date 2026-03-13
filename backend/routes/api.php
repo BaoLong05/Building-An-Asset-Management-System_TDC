@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TaiSanController;
 use App\Http\Controllers\Api\DanhMucController;
 use App\Http\Controllers\Api\PhongController;
+use App\Http\Controllers\Api\BaoTriController;
 
 //quan ly tai san
 //1. lay danh sach tai san
@@ -38,3 +39,8 @@ Route::put('/phong/{id}', [PhongController::class, 'phong_update']);
 Route::delete('/phong/{id}', [PhongController::class, 'phong_delete']);
 //5. tai san chi tiet trong 1 phong
 Route::get('/phong/{id}/taisan', [PhongController::class, 'phong_asset']);
+
+
+//quan ly bao tri
+//1.lay danh sach bao tri va tim kiem
+Route::get('/baotri', [BaoTriController::class, 'baotri_index']);

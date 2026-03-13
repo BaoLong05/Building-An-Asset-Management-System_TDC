@@ -142,7 +142,7 @@ export const deleteCategories = async (id) => {
 export const getRoom = async (page = 1) => {
   try {
     const res = await axios.get(apiUrl("phong"), {
-      params : {page}
+      params: { page },
     });
     return res.data;
   } catch (error) {
@@ -205,7 +205,26 @@ export const deleteRoom = async (id) => {
 export const getAssetRoom = async (id, page = 1) => {
   try {
     const res = await axios.get(apiUrl(`phong/${id}/taisan`), {
-        params : {page}
+      params: { page },
+    });
+    return res.data;
+  } catch (error) {
+    if (console.error) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
+
+//====================BAO TRI====================
+//1. lay danh bao tri
+export const getMaintenanceAssets = async (page = 1) => {
+  try {
+    const res = await axios.get(apiUrl("baotri"), {
+      params: { page },
     });
     return res.data;
   } catch (error) {

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('NgayBaoTri')->nullable();
             $table->string('NoiDung')->nullable();
             $table->decimal('ChiPhi', 18, 2)->nullable();
-            $table->string('TrangThai')->default('DangXuLy');
+            $table->enum('TrangThai', ['DangXuLy','HoanThanh'])->default('DangXuLy');
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

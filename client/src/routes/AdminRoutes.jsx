@@ -4,6 +4,7 @@ import AssetManagement from "../pages/AssetManagement/AssetManagement";
 import AdminLayout from "./AdminLayout/AdminLayout";
 import CategoryManagement from "../pages/CategoryManagement/CategoryManagement";
 import RoomManagement from "../pages/RoomManagement/RoomManagement"; 
+import MaintenanceManagement from "../pages/MaintenanceManagement/MaintenanceManagement";
 
 const AdminRoutes = {
   path: "/admin",
@@ -24,6 +25,10 @@ const AdminRoutes = {
     {
       path: "room-management",
       element: <RoomManagement/>
+    },
+    {
+      path: "maintenance-management",
+      element: <MaintenanceManagement/>
     },
   ],
 };
