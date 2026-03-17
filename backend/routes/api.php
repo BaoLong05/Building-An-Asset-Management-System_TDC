@@ -2,7 +2,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TaiSanController;
-
+use App\Http\Controllers\Api\DanhMucController;
+use App\Http\Controllers\Api\PhongController;
 
 //quan ly tai san
 //1. lay danh sach tai san
@@ -15,3 +16,25 @@ Route::put('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Update']);
 Route::delete('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Delete']);
 //5. bao tri tai san
 Route::put('/taisan/{id}/maintenance', [TaiSanController::class, 'AssetManagement_Maintenance']);
+
+//quan ly danh muc
+//1. lay danh sach va tim kiem danh muc
+Route::get('/danhmuc', [DanhMucController::class, 'danhmuc_index']);
+//2. them danh muc
+Route::post('/danhmuc', [DanhMucController::class, 'store_danhmuc']);
+//3. sua danh muc
+Route::put('/danhmuc/{id}', [DanhMucController::class, 'update_danhmuc']);
+//4. xoa danh muc
+Route::delete('/danhmuc/{id}', [DanhMucController::class, 'delete_danhmuc']);
+
+//quan ly phong hoc
+//1.lay danh sach phong hoc va tim kiem
+Route::get('/phong', [PhongController::class, 'phong_index']);
+//2.them  phong hoc 
+Route::post('/phong', [PhongController::class, 'phong_store']);
+//3.sua  phong hoc
+Route::put('/phong/{id}', [PhongController::class, 'phong_update']); 
+//4.sua  phong hoc 
+Route::delete('/phong/{id}', [PhongController::class, 'phong_delete']);
+//5. tai san chi tiet trong 1 phong
+Route::get('/phong/{id}/taisan', [PhongController::class, 'phong_asset']);

@@ -24,7 +24,12 @@ return new class extends Migration
             $table->decimal('ChiPhi', 18, 2)->nullable();
             $table->string('TrangThai')->default('DangXuLy');
 
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('MaTaiSan')
                 ->references('MaTaiSan')
