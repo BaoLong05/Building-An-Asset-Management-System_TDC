@@ -15,7 +15,12 @@ return new class extends Migration
             $table->id('MaPhong');
             $table->string('TenPhong');
             $table->string('ViTri')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
