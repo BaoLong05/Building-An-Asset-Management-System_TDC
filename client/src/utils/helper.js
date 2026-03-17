@@ -298,6 +298,7 @@ export const getAssetRoom = async (id, page = 1) => {
   try {
     const res = await axios.get(apiUrl(`phong/${id}/taisan`), {
         params : {page}
+
     });
     return res.data;
   } catch (error) {
