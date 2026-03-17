@@ -188,7 +188,7 @@ const MaintenanceManagement = () => {
   // =========================
   const getStatusClass = (status) => {
     switch(status?.toLowerCase()) {
-      case 'Hoàn Thành': return 'maintenance';
+      case 'hoàn thành': return 'maintenance';
       case 'hỏng': return 'broken';
       default: return '';
     }
@@ -199,7 +199,7 @@ const MaintenanceManagement = () => {
   // =========================
   const getStatusIcon = (status) => {
     switch(status?.toLowerCase()) {
-      case 'Hoàn Thành': return '🔧';
+      case 'hoàn thành': return '🔧';
       case 'hỏng': return '❌';
       default: return '❓';
     }
@@ -233,7 +233,48 @@ const MaintenanceManagement = () => {
         </div>
       </div>
 
-    
+      {/* Stats Cards */}
+      <div className="stats-container">
+        <div className="stat-card total">
+          <div className="stat-icon">
+            <i className="fas fa-boxes"></i>
+          </div>
+          <div className="stat-content">
+            <span className="stat-label">Tổng tài sản</span>
+            <span className="stat-value">{stats.total}</span>
+          </div>
+        </div>
+
+        <div className="stat-card good">
+          <div className="stat-icon">
+            <i className="fas fa-check-circle"></i>
+          </div>
+          <div className="stat-content">
+            <span className="stat-label">Hoạt động tốt</span>
+            <span className="stat-value">{stats.total - stats.maintenance - stats.broken}</span>
+          </div>
+        </div>
+
+        <div className="stat-card maintenance">
+          <div className="stat-icon">
+            <i className="fas fa-tools"></i>
+          </div>
+          <div className="stat-content">
+            <span className="stat-label">Đang bảo trì</span>
+            <span className="stat-value">{stats.maintenance}</span>
+          </div>
+        </div>
+
+        <div className="stat-card broken">
+          <div className="stat-icon">
+            <i className="fas fa-exclamation-triangle"></i>
+          </div>
+          <div className="stat-content">
+            <span className="stat-label">Hỏng</span>
+            <span className="stat-value">{stats.broken}</span>
+          </div>
+        </div>
+      </div>
 
       {/* ACTION BAR */}
       <div className="action-bar">
@@ -278,10 +319,10 @@ const MaintenanceManagement = () => {
             <tr>
               <th>MÃ TÀI SẢN</th>
               <th>TÊN TÀI SẢN</th>
-              <th>GHI CHÚ</th>
+              <th>LOẠI</th>
               <th>PHÒNG</th>
               <th>TRẠNG THÁI</th>
-              <th>HÀNH ĐỘNG</th>
+              <th>THAO TÁC</th>
             </tr>
           </thead>
 
@@ -373,15 +414,27 @@ const MaintenanceManagement = () => {
         </span>
       </div>
 
-      {/* DETAIL MODAL - Lịch sử bảo trì */}
+      {/* DETAIL MODAL - Lịch sử bảo trì (ĐÃ FIX: thêm nút đóng) */}
       {showDetailModal && selectedAsset && (
         <div className="modal-overlay-maintenance">
           <div className="modal-maintenance detail-modal">
             <div className="detail-header">
-              <h2>
-                <i className="fas fa-history"></i>
-                Lịch sử bảo trì
-              </h2>
+              <div className="header-with-close">
+                <h2>
+                  <i className="fas fa-history"></i>
+                  Lịch sử bảo trì
+                </h2>
+                <button 
+                  className="modal-close-btn"
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    setMaintenanceNote("");
+                  }}
+                  title="Đóng"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
               <div className="asset-info">
                 <strong>{selectedAsset.TenTaiSan}</strong>
                 <span>(Mã: {selectedAsset.MaTaiSan})</span>
@@ -485,18 +538,6 @@ const MaintenanceManagement = () => {
                 </div>
               )}
             </div>
-
-            <div className="detail-actions">
-              <button
-                className="btn-close-detail"
-                onClick={() => {
-                  setShowDetailModal(false);
-                  setMaintenanceNote("");
-                }}
-              >
-                Đóng
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -505,10 +546,19 @@ const MaintenanceManagement = () => {
       {showUpdateModal && selectedAsset && (
         <div className="modal-overlay-maintenance">
           <div className="modal-maintenance">
-            <h2>
-              <i className="fas fa-sync-alt"></i>
-              Cập nhật trạng thái
-            </h2>
+            <div className="modal-header-with-close">
+              <h2>
+                <i className="fas fa-sync-alt"></i>
+                Cập nhật trạng thái
+              </h2>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowUpdateModal(false)}
+                title="Đóng"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
 
             <form onSubmit={handleSubmitUpdate}>
               <div className="form-group">
@@ -522,18 +572,17 @@ const MaintenanceManagement = () => {
               <div className="form-group">
                 <label>Trạng thái mới:</label>
                 <div className="status-options">
-                  
                   <label className="status-option">
                     <input
                       type="radio"
                       name="status"
-                      value="Đang bảo trì"
-                      checked={updateStatus === "Hoàn Thành"}
+                      value="Hoàn thành"
+                      checked={updateStatus === "Hoàn thành"}
                       onChange={(e) => setUpdateStatus(e.target.value)}
                     />
                     <span className="status-badge maintenance">
                       <span className="status-dot"></span>
-                      🔧 Hoàn Thành
+                      🔧 Hoàn thành
                     </span>
                   </label>
 

@@ -291,20 +291,6 @@ STATS
   color: white;
 }
 
-.stat-trend {
-  position: absolute;
-  top: 16px;
-  right: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--success);
-  display: inline-block;
-}
-
-.stat-trend.negative {
-  color: var(--danger);
-}
-
 /* ================================
 ACTION BAR
 ================================ */
@@ -821,20 +807,55 @@ DETAIL MODAL
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 24px 28px;
   color: white;
+  position: relative;
 }
 
-.detail-header h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* FIX: Header với nút đóng */
+.header-with-close {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin-bottom: 8px;
 }
 
-.detail-header h2 i {
-  color: white;
-  font-size: 24px;
+.header-with-close h2 {
+  margin: 0 !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  color: white !important;
+}
+
+.header-with-close h2 i {
+  color: white !important;
+  font-size: 24px !important;
+}
+
+/* FIX: Nút đóng modal */
+.modal-close-btn {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: none !important;
+  color: white !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+  z-index: 10 !important;
+  flex-shrink: 0 !important;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: rotate(90deg) !important;
 }
 
 .asset-info {
@@ -1015,67 +1036,68 @@ DETAIL MODAL
   color: #718096;
 }
 
-/* Modal Actions */
-.detail-actions {
-  padding: 20px 24px;
-  border-top: 1px solid #eef1f6;
-  display: flex;
-  justify-content: flex-end;
-  background: #f8fafc;
-}
-
-.dark .detail-actions {
-  border-top-color: #2d3748;
-  background: #16213e;
-}
-
-.btn-close-detail {
-  background: #e2e8f0;
-  border: none;
-  padding: 12px 32px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.2s;
-  color: #475569;
-}
-
-.btn-close-detail:hover {
-  background: #cbd5e1;
-  transform: translateY(-1px);
-}
-
-.dark .btn-close-detail {
-  background: #2d3748;
-  color: white;
-}
-
-.dark .btn-close-detail:hover {
-  background: #4a5568;
-}
-
 /* ================================
 UPDATE MODAL
 ================================ */
-.modal-maintenance h2 {
-  margin: 0;
-  padding: 24px 28px;
-  font-size: 22px;
-  font-weight: 600;
-  border-bottom: 1px solid #eef1f6;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.modal-header-with-close {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 24px 28px !important;
+  border-bottom: 1px solid #eef1f6 !important;
 }
 
-.dark .modal-maintenance h2 {
-  color: white;
-  border-bottom-color: #2d3748;
+.dark .modal-header-with-close {
+  border-bottom-color: #2d3748 !important;
 }
 
-.modal-maintenance h2 i {
-  color: #2563eb;
+.modal-header-with-close h2 {
+  margin: 0 !important;
+  padding: 0 !important;
+  border-bottom: none !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.modal-header-with-close h2 i {
+  color: #2563eb !important;
+}
+
+.modal-header-with-close .modal-close-btn {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  border: none !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+  z-index: 10 !important;
+  flex-shrink: 0 !important;
+}
+
+.dark .modal-header-with-close .modal-close-btn {
+  background: #2d3748 !important;
+  color: #e2e8f0 !important;
+}
+
+.modal-header-with-close .modal-close-btn:hover {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  transform: rotate(90deg) !important;
+}
+
+.dark .modal-header-with-close .modal-close-btn:hover {
+  background: #7f1d1d !important;
+  color: #fecaca !important;
 }
 
 .modal-maintenance form {
@@ -1232,6 +1254,22 @@ UPDATE MODAL
   background: #1e40af;
 }
 
+/* Animation cho modal */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-maintenance {
+  animation: modalFadeIn 0.3s ease;
+}
+
 /* ================================
 RESPONSIVE
 ================================ */
@@ -1343,17 +1381,26 @@ RESPONSIVE
     padding: 16px 20px;
   }
 
-  .detail-header h2 {
-    font-size: 20px;
+  .header-with-close h2 {
+    font-size: 20px !important;
+  }
+
+  .modal-close-btn {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 16px !important;
+  }
+
+  .modal-header-with-close {
+    padding: 16px 20px !important;
+  }
+
+  .modal-header-with-close h2 {
+    font-size: 20px !important;
   }
 
   .modal-maintenance {
     margin: 16px;
-  }
-
-  .modal-maintenance h2 {
-    padding: 16px 20px;
-    font-size: 20px;
   }
 
   .modal-maintenance form {
