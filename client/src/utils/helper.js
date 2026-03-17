@@ -96,6 +96,7 @@ export const addCategories = async (data) => {
   try {
     const res = await axios.post(apiUrl("danhmuc"), data);
     return res.data;
+
   } catch (error) {
     if (error.response) {
       return error.response.data;
@@ -106,6 +107,22 @@ export const addCategories = async (data) => {
     };
   }
 };
+//3. sua danh muc
+export const updateCategories = async (id, data) => {
+  try {
+    const res = await axios.put(apiUrl(`danhmuc/${id}`), data);
+    return res.data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
+
 //3. sua danh muc
 export const updateCategories = async (id, data) => {
   try {
@@ -206,6 +223,7 @@ export const getAssetRoom = async (id, page = 1) => {
   try {
     const res = await axios.get(apiUrl(`phong/${id}/taisan`), {
       params: { page },
+
     });
     return res.data;
   } catch (error) {
@@ -219,12 +237,68 @@ export const getAssetRoom = async (id, page = 1) => {
   }
 };
 
+
 //====================BAO TRI====================
 //1. lay danh bao tri
 export const getMaintenanceAssets = async (page = 1) => {
   try {
     const res = await axios.get(apiUrl("baotri"), {
       params: { page },
+    });
+
+//2.them phong hoc
+export const addRoom = async (data) => {
+  try {
+    const res = await axios.post(apiUrl("phong"), data);
+
+    return res.data;
+  } catch (error) {
+    if (console.error) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
+
+//3.sua phong hoc
+export const updateRoom = async (id, data) => {
+  try {
+    const res = await axios.put(apiUrl(`phong/${id}`), data);
+    return res.data;
+  } catch (error) {
+    if (console.error) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
+//4. xoa phong hoc
+export const deleteRoom = async (id) => {
+  try {
+    const res = await axios.delete(apiUrl(`phong/${id}`));
+    return res.data;
+  } catch (error) {
+    if (console.error) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      message: "Không thể kết nối server",
+    };
+  }
+};
+//5. tai san trong mot phong hoc
+export const getAssetRoom = async (id, page = 1) => {
+  try {
+    const res = await axios.get(apiUrl(`phong/${id}/taisan`), {
+        params : {page}
+
     });
     return res.data;
   } catch (error) {
@@ -237,3 +311,4 @@ export const getMaintenanceAssets = async (page = 1) => {
     };
   }
 };
+
