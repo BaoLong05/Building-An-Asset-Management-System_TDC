@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             DanhMucSeeder::class,
             PhongSeeder::class,
             TaiSanSeeder::class,
+            BaoTriSeeder::class,
         ]);
     }
 }

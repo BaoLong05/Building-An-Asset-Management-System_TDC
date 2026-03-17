@@ -27,10 +27,10 @@ const menuItems = [
     path: "/admin/room-management",
   },
   {
-    id: "borrow",
-    name: "Mượn trả",
+    id: "maintenance",
+    name: "Quản Lý Bảo Trì",
     icon: "🔄", 
-    path: "/admin/borrow",
+    path: "/admin/maintenance-management",
   },
   {
     id: "reports",

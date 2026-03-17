@@ -19,4 +19,8 @@ class TaiSan extends Model
         'TinhTrang',
         'GhiChu'
     ];
+
+    public function baotri(){
+        return $this->belongsTo(TaiSan::class, 'MaTaiSan');
+    }
 }
