@@ -20,7 +20,7 @@ class TaiSanSeeder extends Seeder
                 'SoLuong' => rand(1, 5),
                 'DonGia' => rand(1000000, 10000000),
                 'NgayNhap' => '2026-03-01',
-                'TinhTrang' => 'Tot',
+                'TinhTrang' => 'Tốt',
                 'GhiChu' => 'Thiết bị phòng IT',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
