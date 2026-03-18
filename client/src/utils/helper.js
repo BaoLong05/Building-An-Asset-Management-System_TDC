@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { ToastContainer, toast } from "react-toastify";
 export const API_BASE_URL = "http://192.168.33.10:8000/api";
 
 export const apiUrl = (endpoint) => `${API_BASE_URL}/${endpoint}`;
@@ -20,9 +20,12 @@ const handleError = (error, defaultMessage) => {
 // =============================
 // TÀI SẢN
 // =============================
-export const getAssets = async () => {
+export const getAssets = async (page = 1) => {
   try {
-    const res = await axios.get(apiUrl("taisan"));
+    const res = await axios.get(apiUrl("taisan"),{
+      params: {page}
+    });
+    toast.success(res.data.message);
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy tài sản");
@@ -56,16 +59,6 @@ export const deleteAsset = async (id) => {
   }
 };
 
-export const toggleMaintenance = async (id, status) => {
-  try {
-    const res = await axios.put(apiUrl(`taisan/${id}/maintenance`), {
-      TinhTrang: status,
-    });
-    return res.data;
-  } catch (error) {
-    return handleError(error, "Lỗi toggle bảo trì");
-  }
-};
 
 // =============================
 // DANH MỤC

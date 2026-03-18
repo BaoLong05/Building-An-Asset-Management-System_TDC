@@ -12,18 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('baotri', function (Blueprint $table) {
-
             $table->engine = 'InnoDB';
 
             $table->bigIncrements('MaBaoTri');
-
             $table->unsignedBigInteger('MaTaiSan');
 
-            $table->date('NgayBaoTri')->nullable();
-            $table->string('NoiDung')->nullable();
-            $table->decimal('ChiPhi', 18, 2)->nullable();
-            $table->enum('TrangThai', ['Đang Xử Lý','Hoàn Thành'])->default('Đang Xử Lý');
+            $table->text('NoiDung')->nullable();
+            $table->dateTime('NgayBaoTri')->nullable();
 
+            $table->string('TrangThai')->default('Đang Xử Lý'); 
+            // Đang Xử Lý | Hoàn Thành
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
@@ -34,8 +32,7 @@ return new class extends Migration
             $table->foreign('MaTaiSan')
                 ->references('MaTaiSan')
                 ->on('taisan')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->onDelete('cascade');
         });
     }
 

@@ -3,29 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BaoTri extends Model
 {
-    protected $table = 'baotri';
+    use SoftDeletes;
 
+    protected $table = 'baotri';
     protected $primaryKey = 'MaBaoTri';
 
     protected $fillable = [
         'MaTaiSan',
-        'NgayBaoTri',
         'NoiDung',
-        'ChiPhi',
+        'NgayBaoTri',
         'TrangThai',
         'created_by',
-        'updated_by',
-        'deleted_by'
+        'deleted_by',
+        'updated_by'
     ];
 
-    protected $dates = [
-        'deleted_at'
-    ];
-
-    public function taisan(){
+    public function taisan()
+    {
         return $this->belongsTo(TaiSan::class, 'MaTaiSan');
     }
 }

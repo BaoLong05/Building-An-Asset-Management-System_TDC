@@ -15,8 +15,6 @@ Route::post('/taisan', [TaiSanController::class, 'AssetManagement_store']);
 Route::put('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Update']);
 //4. xoa tai san
 Route::delete('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Delete']);
-//5. bao tri tai san
-Route::put('/taisan/{id}/maintenance', [TaiSanController::class, 'AssetManagement_Maintenance']);
 
 //quan ly danh muc
 //1. lay danh sach va tim kiem danh muc

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('SoLuong')->default(1);
             $table->decimal('DonGia', 18, 2)->nullable();
             $table->date('NgayNhap')->nullable();
-            $table->string('TinhTrang')->default('Tot');
+            $table->enum('TinhTrang', ['Tốt', 'Đang bảo trì', 'Hỏng'])->default('Tốt');
             $table->string('GhiChu')->nullable();
 
             // Ai tạo / cập nhật / xóa
