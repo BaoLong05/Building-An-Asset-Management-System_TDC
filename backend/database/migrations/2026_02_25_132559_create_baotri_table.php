@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('NoiDung')->nullable();
             $table->dateTime('NgayBaoTri')->nullable();
 
-            $table->string('TrangThai')->default('Đang Xử Lý'); 
+            $table->enum('TinhTrang', ['Đang bảo trì', 'Hoàn thành'])->default('Đang bảo trì');
             // Đang Xử Lý | Hoàn Thành
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

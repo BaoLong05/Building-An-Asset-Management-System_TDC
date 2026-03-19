@@ -2,56 +2,60 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./MaintenanceManagement.css";
+
 import {
   getMaintenanceAssets,
+  getMaintenanceHistory,
+  updateMaintenanceStatus,
 } from "../../utils/helper";
 
 const MaintenanceManagement = () => {
   const [assets, setAssets] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
   const [darkMode, setDarkMode] = useState(false);
-  const [filterStatus, setFilterStatus] = useState("all");
 
-  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [maintenanceHistory, setMaintenanceHistory] = useState([]);
-  const [maintenanceNote, setMaintenanceNote] = useState("");
 
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [updateStatus, setUpdateStatus] = useState("");
   const [updateNote, setUpdateNote] = useState("");
 
-  const [assetPage, setAssetPage] = useState(1);
-  const [assetLastPage, setAssetLastPage] = useState(1);
-  const [historyPage, setHistoryPage] = useState(1);
-  const [historyLastPage, setHistoryLastPage] = useState(1);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+
+  // =========================
+  // TOGGLE DARK MODE
+  // =========================
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
-    document.body.classList.toggle("dark-mode-maintenance");
+    document.body.classList.toggle('dark-mode-maintenance');
   };
 
   // =========================
-  // FETCH API
+  // FETCH DATA
   // =========================
-  const fetchAssets = async (page = 1, status = filterStatus) => {
-    const res = await getMaintenanceAssets(page, status);
+  const fetchAssets = async (page = 1) => {
+    const res = await getMaintenanceAssets(page);
 
-    if (res && res.success) {
+    if (res.success) {
       setAssets(res.data.data);
-      setAssetPage(res.data.current_page);
-      setAssetLastPage(res.data.last_page);
+      setPage(res.data.current_page);
+      setLastPage(res.data.last_page);
     } else {
       toast.error(res.message);
     }
   };
 
   useEffect(() => {
-    fetchAssets(1, filterStatus);
-  }, [filterStatus]);
+    fetchAssets(1);
+  }, []);
 
   // =========================
-  // EXPORT (placeholder)
+  // EXPORT 
   // =========================
   const handleExportExcel = () => {
     toast.info("Tính năng xuất Excel sẽ được phát triển sau 📊");
@@ -62,69 +66,60 @@ const MaintenanceManagement = () => {
   };
 
   // =========================
-  // VIEW DETAILS
+  // SEARCH + FILTER
+  // =========================
+  const filteredAssets = assets.filter((asset) => {
+    const search = searchTerm.toLowerCase();
+
+    return (
+      ((asset.taisan?.TenTaiSan || "").toLowerCase().includes(search) ||
+        String(asset.MaTaiSan).includes(search)) &&
+      (filterStatus ? asset.TinhTrang === filterStatus : true)
+    );
+  });
+
+  // =========================
+  // VIEW HISTORY (CHỈ XEM)
   // =========================
   const handleViewDetails = async (asset) => {
     setSelectedAsset(asset);
     setShowDetailModal(true);
 
-    const res = await getMaintenanceHistory(asset.MaTaiSan, 1);
+    const res = await getMaintenanceHistory(asset.MaTaiSan);
+
     if (res.success) {
-      setMaintenanceHistory(res.data.data);
-      setHistoryPage(res.data.current_page);
-      setHistoryLastPage(res.data.last_page);
-    } else {
-      toast.error(res.message);
+      setMaintenanceHistory(res.data);
     }
   };
 
   // =========================
-  // CHANGE HISTORY PAGE
-  // =========================
-  const changeHistoryPage = async (page) => {
-    if (page < 1 || page > historyLastPage) return;
-    
-    const res = await getMaintenanceHistory(selectedAsset.MaTaiSan, page);
-    if (res.success) {
-      setMaintenanceHistory(res.data.data);
-      setHistoryPage(res.data.current_page);
-      setHistoryLastPage(res.data.last_page);
-    }
-  };
-
-  // =========================
-  // CHANGE ASSET PAGE
-  // =========================
-  const changeAssetPage = (page) => {
-    if (page < 1 || page > assetLastPage) return;
-    fetchAssets(page, filterStatus);
-  };
-
-  // =========================
-  // OPEN UPDATE MODAL
-  // =========================
-  const handleUpdateStatus = (asset) => {
-    setSelectedAsset(asset);
-    setUpdateStatus(asset.TrangThai);
-    setUpdateNote("");
-    setShowUpdateModal(true);
-  };
-
-  // =========================
-  // SUBMIT UPDATE
+  // UPDATE STATUS (REALTIME + ANTI 2 TAB)
   // =========================
   const handleSubmitUpdate = async (e) => {
     e.preventDefault();
 
     const res = await updateMaintenanceStatus(
-      selectedAsset.MaTaiSan,
+      selectedAsset.MaBaoTri,
       updateStatus,
-      updateNote
+      updateNote,
+      selectedAsset.updated_at 
     );
 
     if (res.success) {
-      toast.success("Cập nhật trạng thái thành công!");
-      fetchAssets(assetPage, filterStatus);
+      toast.success("Cập nhật thành công!");
+
+      setAssets((prev) =>
+        prev.map((item) =>
+          item.MaBaoTri === selectedAsset.MaBaoTri
+            ? {
+                ...item,
+                TinhTrang: updateStatus,
+                NoiDung: updateNote,
+              }
+            : item
+        )
+      );
+
       setShowUpdateModal(false);
     } else {
       toast.error(res.message);
@@ -132,64 +127,13 @@ const MaintenanceManagement = () => {
   };
 
   // =========================
-  // ADD MAINTENANCE NOTE
-  // =========================
-  const handleAddNote = async () => {
-    if (!maintenanceNote.trim()) {
-      toast.warning("Vui lòng nhập ghi chú");
-      return;
-    }
-
-    const res = await addMaintenanceNote(
-      selectedAsset.MaTaiSan,
-      maintenanceNote
-    );
-
-    if (res.success) {
-      toast.success("Thêm ghi chú thành công!");
-      setMaintenanceNote("");
-      
-      // Refresh history
-      const historyRes = await getMaintenanceHistory(selectedAsset.MaTaiSan, 1);
-      if (historyRes.success) {
-        setMaintenanceHistory(historyRes.data.data);
-        setHistoryPage(historyRes.data.current_page);
-        setHistoryLastPage(historyRes.data.last_page);
-      }
-    } else {
-      toast.error(res.message);
-    }
-  };
-
-  // =========================
-  // SEARCH
-  // =========================
-  const filteredAssets = assets.filter((asset) => {
-    const search = searchTerm.toLowerCase();
-    return (
-      asset.TenTaiSan?.toLowerCase().includes(search) ||
-      String(asset.MaTaiSan).includes(search) ||
-      (asset.LoaiTaiSan || "").toLowerCase().includes(search) ||
-      (asset.Phong?.TenPhong || "").toLowerCase().includes(search)
-    );
-  });
-
-  // =========================
-  // STATS
-  // =========================
-  const stats = {
-    total: assets.length,
-    maintenance: assets.filter(a => a.TrangThai?.toLowerCase() === 'đang xử lý').length,
-    broken: assets.filter(a => a.TrangThai?.toLowerCase() === 'hỏng').length,
-  };
-
-  // =========================
   // GET STATUS CLASS
   // =========================
   const getStatusClass = (status) => {
-    switch(status?.toLowerCase()) {
-      case 'hoàn thành': return 'maintenance';
-      case 'hỏng': return 'broken';
+    switch(status) {
+      case 'Hoàn thành': return 'good';
+      case 'Đang bảo trì': return 'maintenance';
+      case 'Hỏng': return 'broken';
       default: return '';
     }
   };
@@ -198,16 +142,28 @@ const MaintenanceManagement = () => {
   // GET STATUS ICON
   // =========================
   const getStatusIcon = (status) => {
-    switch(status?.toLowerCase()) {
-      case 'hoàn thành': return '🔧';
-      case 'hỏng': return '❌';
+    switch(status) {
+      case 'Hoàn thành': return '✅';
+      case 'Đang bảo trì': return '🔧';
+      case 'Hỏng': return '❌';
       default: return '❓';
     }
   };
 
+  const stats = {
+    total: assets.length,
+    maintenance: assets.filter(a => a.TinhTrang === 'Đang bảo trì').length,
+    completed: assets.filter(a => a.TinhTrang === 'Hoàn thành').length,
+  };
+
   return (
-    <div className={`maintenance-management ${darkMode ? "dark" : ""}`}>
-      {/* Top Bar với Theme Toggle */}
+    <div className={`maintenance-management ${darkMode ? 'dark' : ''}`}>
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000}
+        theme={darkMode ? 'dark' : 'light'}
+      />
+
       <div className="top-bar-maintenance">
         <div className="header-title">
           <h1>
@@ -218,7 +174,7 @@ const MaintenanceManagement = () => {
 
         <div className="top-bar-actions">
           <button className="theme-toggle" onClick={toggleDarkMode}>
-            {darkMode ? "☀️" : "🌙"}
+            {darkMode ? '☀️' : '🌙'}
           </button>
           <div className="language-select">
             <select>
@@ -233,14 +189,13 @@ const MaintenanceManagement = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="stats-container">
         <div className="stat-card total">
           <div className="stat-icon">
             <i className="fas fa-boxes"></i>
           </div>
           <div className="stat-content">
-            <span className="stat-label">Tổng tài sản</span>
+            <span className="stat-label">Tổng yêu cầu</span>
             <span className="stat-value">{stats.total}</span>
           </div>
         </div>
@@ -250,8 +205,8 @@ const MaintenanceManagement = () => {
             <i className="fas fa-check-circle"></i>
           </div>
           <div className="stat-content">
-            <span className="stat-label">Hoạt động tốt</span>
-            <span className="stat-value">{stats.total - stats.maintenance - stats.broken}</span>
+            <span className="stat-label">Hoàn thành</span>
+            <span className="stat-value">{stats.completed}</span>
           </div>
         </div>
 
@@ -271,12 +226,11 @@ const MaintenanceManagement = () => {
           </div>
           <div className="stat-content">
             <span className="stat-label">Hỏng</span>
-            <span className="stat-value">{stats.broken}</span>
+            <span className="stat-value">0</span>
           </div>
         </div>
       </div>
 
-      {/* ACTION BAR */}
       <div className="action-bar">
         <div className="search-wrapper">
           <input
@@ -295,32 +249,37 @@ const MaintenanceManagement = () => {
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
-              <option value="all">📋 Tất cả trạng thái</option>
-              <option value="maintenance">🔧 Đang xử lý</option>
-              <option value="broken">❌ Hỏng</option>
+              <option value="">📋 Tất cả trạng thái</option>
+              <option value="Đang bảo trì">🔧 Đang bảo trì</option>
+              <option value="Hoàn thành">✅ Hoàn thành</option>
             </select>
           </div>
 
           <div className="export-group">
-            <button className="btn-export excel" onClick={handleExportExcel}>
+            <button 
+              className="btn-export excel" 
+              onClick={handleExportExcel}
+              title="Xuất Excel"
+            >
               📊 Excel
             </button>
-            <button className="btn-export pdf" onClick={handleExportPDF}>
+            <button 
+              className="btn-export pdf" 
+              onClick={handleExportPDF}
+              title="Xuất PDF"
+            >
               📄 PDF
             </button>
           </div>
         </div>
       </div>
 
-      {/* TABLE */}
       <div className="table-wrapper">
         <table className="maintenance-table">
           <thead>
             <tr>
               <th>MÃ TÀI SẢN</th>
               <th>TÊN TÀI SẢN</th>
-              <th>LOẠI</th>
-              <th>PHÒNG</th>
               <th>TRẠNG THÁI</th>
               <th>THAO TÁC</th>
             </tr>
@@ -328,38 +287,45 @@ const MaintenanceManagement = () => {
 
           <tbody>
             {filteredAssets.length > 0 ? (
-              filteredAssets.map((asset) => (
-                <tr key={asset.MaTaiSan}>
+              filteredAssets.map((a) => (
+                <tr key={a.MaBaoTri}>
                   <td>
-                    <span className="code-badge">{asset.MaTaiSan}</span>
+                    <span className="code-badge">{a.MaTaiSan}</span>
                   </td>
+
                   <td>
                     <div className="asset-name">
                       <i className="fas fa-box"></i>
-                      {asset.TenTaiSan}
+                      {a.taisan?.TenTaiSan || "Không có tên"}
                     </div>
                   </td>
-                  <td>{asset.LoaiTaiSan || "Chưa phân loại"}</td>
-                  <td>{asset.Phong?.TenPhong || "Chưa có phòng"}</td>
+
                   <td>
-                    <span className={`status-badge ${getStatusClass(asset.TrangThai)}`}>
+                    <span className={`status-badge ${getStatusClass(a.TinhTrang)}`}>
                       <span className="status-dot"></span>
-                      {getStatusIcon(asset.TrangThai)} {asset.TrangThai || "Chưa xác định"}
+                      {getStatusIcon(a.TinhTrang)} {a.TinhTrang}
                     </span>
                   </td>
+
                   <td>
                     <div className="action-buttons">
-                      <button
+                      <button 
                         className="btn-icon view"
-                        onClick={() => handleViewDetails(asset)}
+                        onClick={() => handleViewDetails(a)}
                         title="Xem lịch sử"
                       >
                         <i className="fas fa-history"></i>
                         Lịch sử
                       </button>
+
                       <button
                         className="btn-icon edit"
-                        onClick={() => handleUpdateStatus(asset)}
+                        onClick={() => {
+                          setSelectedAsset(a);
+                          setUpdateStatus(a.TinhTrang);
+                          setUpdateNote(a.NoiDung || "");
+                          setShowUpdateModal(true);
+                        }}
                         title="Cập nhật trạng thái"
                       >
                         <i className="fas fa-sync-alt"></i>
@@ -371,7 +337,7 @@ const MaintenanceManagement = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="no-data">
+                <td colSpan={4} className="no-data">
                   <i className="fas fa-box-open"></i>
                   <p>Không có dữ liệu</p>
                 </td>
@@ -379,45 +345,45 @@ const MaintenanceManagement = () => {
             )}
           </tbody>
         </table>
+      </div>
 
-        {/* Pagination */}
-        <div className="pagination">
-          <button
-            disabled={assetPage === 1}
-            onClick={() => changeAssetPage(assetPage - 1)}
-          >
-            <i className="fas fa-chevron-left"></i>
-            Quay Lại
-          </button>
+      <div className="pagination">
+        <button 
+          className="page-btn"
+          disabled={page === 1} 
+          onClick={() => fetchAssets(page - 1)}
+        >
+          <i className="fas fa-chevron-left"></i>
+          Trước
+        </button>
 
-          <span>
-            Trang {assetPage} / {assetLastPage}
-          </span>
+        <span className="page-info">
+          Trang {page} / {lastPage}
+        </span>
 
-          <button
-            disabled={assetPage === assetLastPage}
-            onClick={() => changeAssetPage(assetPage + 1)}
-          >
-            Tiếp Theo
-            <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
+        <button
+          className="page-btn"
+          disabled={page === lastPage}
+          onClick={() => fetchAssets(page + 1)}
+        >
+          Sau
+          <i className="fas fa-chevron-right"></i>
+        </button>
       </div>
 
       <div className="table-footer">
         <span>
-          Tổng số tài sản: <strong>{filteredAssets.length}</strong>
+          Tổng số: <strong>{filteredAssets.length}</strong> yêu cầu
         </span>
         <span className="footer-note">
           <i className="fas fa-info-circle"></i>
-          {stats.maintenance} tài sản đang bảo trì, {stats.broken} tài sản hỏng
+          {stats.maintenance} đang bảo trì, {stats.completed} hoàn thành
         </span>
       </div>
 
-      {/* DETAIL MODAL - Lịch sử bảo trì (ĐÃ FIX: thêm nút đóng) */}
       {showDetailModal && selectedAsset && (
-        <div className="modal-overlay-maintenance">
-          <div className="modal-maintenance detail-modal">
+        <div className="modal-overlay-maintenance" onClick={() => setShowDetailModal(false)}>
+          <div className="modal-maintenance detail-modal" onClick={(e) => e.stopPropagation()}>
             <div className="detail-header">
               <div className="header-with-close">
                 <h2>
@@ -426,115 +392,67 @@ const MaintenanceManagement = () => {
                 </h2>
                 <button 
                   className="modal-close-btn"
-                  onClick={() => {
-                    setShowDetailModal(false);
-                    setMaintenanceNote("");
-                  }}
+                  onClick={() => setShowDetailModal(false)}
                   title="Đóng"
-                >
+                >X
                   <i className="fas fa-times"></i>
                 </button>
               </div>
               <div className="asset-info">
-                <strong>{selectedAsset.TenTaiSan}</strong>
+                <strong>{selectedAsset.taisan?.TenTaiSan}</strong>
                 <span>(Mã: {selectedAsset.MaTaiSan})</span>
               </div>
             </div>
 
             <div className="detail-table-container">
-              {/* Current Status */}
               <div className="current-status">
                 <h3>
                   <i className="fas fa-info-circle"></i>
                   Trạng thái hiện tại
                 </h3>
                 <div className="status-display">
-                  <span className={`status-badge large ${getStatusClass(selectedAsset.TrangThai)}`}>
+                  <span className={`status-badge large ${getStatusClass(selectedAsset.TinhTrang)}`}>
                     <span className="status-dot"></span>
-                    {getStatusIcon(selectedAsset.TrangThai)} {selectedAsset.TrangThai}
+                    {getStatusIcon(selectedAsset.TinhTrang)} {selectedAsset.TinhTrang}
                   </span>
                 </div>
               </div>
 
-              {/* Add Note */}
-              <div className="add-note-section">
-                <h3>
-                  <i className="fas fa-pen"></i>
-                  Thêm ghi chú bảo trì
-                </h3>
-                <div className="note-input-group">
-                  <textarea
-                    value={maintenanceNote}
-                    onChange={(e) => setMaintenanceNote(e.target.value)}
-                    placeholder="Nhập ghi chú bảo trì..."
-                    rows="3"
-                  />
-                  <button 
-                    className="btn-add-note"
-                    onClick={handleAddNote}
-                  >
-                    <i className="fas fa-plus"></i>
-                    Thêm ghi chú
-                  </button>
-                </div>
-              </div>
-
-              {/* History Table */}
               <h3>
                 <i className="fas fa-clock"></i>
                 Lịch sử bảo trì
               </h3>
-              <table className="history-table">
-                <thead>
-                  <tr>
-                    <th>Ngày</th>
-                    <th>Người thực hiện</th>
-                    <th>Trạng thái</th>
-                    <th>Ghi chú</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {maintenanceHistory.length > 0 ? (
-                    maintenanceHistory.map((item, index) => (
-                      <tr key={index}>
-                        <td>{new Date(item.NgayBaoTri).toLocaleDateString('vi-VN')}</td>
-                        <td>{item.NguoiThucHien || "Hệ thống"}</td>
-                        <td>
-                          <span className={`status-badge small ${getStatusClass(item.TrangThai)}`}>
-                            {getStatusIcon(item.TrangThai)} {item.TrangThai}
-                          </span>
-                        </td>
-                        <td>{item.GhiChu || "—"}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={4} className="no-data">
-                        Chưa có lịch sử bảo trì
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
 
-              {/* History Pagination */}
-              {maintenanceHistory.length > 0 && (
-                <div className="pagination small">
-                  <button
-                    disabled={historyPage === 1}
-                    onClick={() => changeHistoryPage(historyPage - 1)}
-                  >
-                    <i className="fas fa-chevron-left"></i>
-                  </button>
-                  <span>
-                    {historyPage} / {historyLastPage}
-                  </span>
-                  <button
-                    disabled={historyPage === historyLastPage}
-                    onClick={() => changeHistoryPage(historyPage + 1)}
-                  >
-                    <i className="fas fa-chevron-right"></i>
-                  </button>
+              {maintenanceHistory.length === 0 ? (
+                <div className="no-data">
+                  <i className="fas fa-history"></i>
+                  <p>Chưa có lịch sử bảo trì</p>
+                </div>
+              ) : (
+                <div className="history-list">
+                  {maintenanceHistory.map((h, index) => (
+                    <React.Fragment key={index}>
+                      <div className="history-item">
+                        <div className="history-time">
+                          <i className="far fa-calendar-alt"></i>
+                          {new Date(h.NgayBaoTri).toLocaleString('vi-VN')}
+                        </div>
+                        <div className="history-content">
+                          <span className={`status-badge small ${getStatusClass(h.TinhTrang)}`}>
+                            {getStatusIcon(h.TinhTrang)} {h.TinhTrang}
+                          </span>
+                          <span className="history-note">
+                            <i className="fas fa-pen"></i>
+                            {h.NoiDung || "Không có ghi chú"}
+                          </span>
+                        </div>
+                      </div>
+    
+                      {index < maintenanceHistory.length - 1 && (
+                        <div className="history-divider"></div>
+                      )}
+                    </React.Fragment>
+                  ))}
                 </div>
               )}
             </div>
@@ -542,10 +460,9 @@ const MaintenanceManagement = () => {
         </div>
       )}
 
-      {/* UPDATE STATUS MODAL */}
       {showUpdateModal && selectedAsset && (
-        <div className="modal-overlay-maintenance">
-          <div className="modal-maintenance">
+        <div className="modal-overlay-maintenance" onClick={() => setShowUpdateModal(false)}>
+          <div className="modal-maintenance" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header-with-close">
               <h2>
                 <i className="fas fa-sync-alt"></i>
@@ -555,7 +472,7 @@ const MaintenanceManagement = () => {
                 className="modal-close-btn"
                 onClick={() => setShowUpdateModal(false)}
                 title="Đóng"
-              >
+              >X
                 <i className="fas fa-times"></i>
               </button>
             </div>
@@ -564,7 +481,7 @@ const MaintenanceManagement = () => {
               <div className="form-group">
                 <label>Tài sản:</label>
                 <div className="asset-display">
-                  <strong>{selectedAsset.TenTaiSan}</strong>
+                  <strong>{selectedAsset.taisan?.TenTaiSan}</strong>
                   <span className="code">{selectedAsset.MaTaiSan}</span>
                 </div>
               </div>
@@ -576,13 +493,13 @@ const MaintenanceManagement = () => {
                     <input
                       type="radio"
                       name="status"
-                      value="Hoàn thành"
-                      checked={updateStatus === "Hoàn thành"}
+                      value="Đang bảo trì"
+                      checked={updateStatus === "Đang bảo trì"}
                       onChange={(e) => setUpdateStatus(e.target.value)}
                     />
                     <span className="status-badge maintenance">
                       <span className="status-dot"></span>
-                      🔧 Hoàn thành
+                      🔧 Đang bảo trì
                     </span>
                   </label>
 
@@ -590,13 +507,13 @@ const MaintenanceManagement = () => {
                     <input
                       type="radio"
                       name="status"
-                      value="Hỏng"
-                      checked={updateStatus === "Hỏng"}
+                      value="Hoàn thành"
+                      checked={updateStatus === "Hoàn thành"}
                       onChange={(e) => setUpdateStatus(e.target.value)}
                     />
-                    <span className="status-badge broken">
+                    <span className="status-badge good">
                       <span className="status-dot"></span>
-                      ❌ Hỏng
+                      ✅ Hoàn thành
                     </span>
                   </label>
                 </div>
@@ -605,9 +522,9 @@ const MaintenanceManagement = () => {
               <div className="form-group">
                 <label>Ghi chú:</label>
                 <textarea
+                  placeholder="Nhập ghi chú..."
                   value={updateNote}
                   onChange={(e) => setUpdateNote(e.target.value)}
-                  placeholder="Nhập ghi chú (lý do, kế hoạch sửa chữa...)"
                   rows="3"
                 />
               </div>
@@ -624,8 +541,6 @@ const MaintenanceManagement = () => {
           </div>
         </div>
       )}
-
-      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

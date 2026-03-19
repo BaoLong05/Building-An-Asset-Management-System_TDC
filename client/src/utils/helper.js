@@ -4,9 +4,7 @@ export const API_BASE_URL = "http://192.168.33.10:8000/api";
 
 export const apiUrl = (endpoint) => `${API_BASE_URL}/${endpoint}`;
 
-// =============================
-// HELPER HANDLE ERROR
-// =============================
+//file loi 
 const handleError = (error, defaultMessage) => {
   if (error.response) {
     return error.response.data;
@@ -17,13 +15,12 @@ const handleError = (error, defaultMessage) => {
   };
 };
 
-// =============================
-// TÀI SẢN
-// =============================
+//tai san
+// lay danh sach tai san
 export const getAssets = async (page = 1) => {
   try {
-    const res = await axios.get(apiUrl("taisan"),{
-      params: {page}
+    const res = await axios.get(apiUrl("taisan"), {
+      params: { page },
     });
     toast.success(res.data.message);
     return res.data;
@@ -32,6 +29,7 @@ export const getAssets = async (page = 1) => {
   }
 };
 
+//them tai san
 export const addAsset = async (data) => {
   try {
     const res = await axios.post(apiUrl("taisan"), data);
@@ -41,6 +39,7 @@ export const addAsset = async (data) => {
   }
 };
 
+//cap nhat tai san
 export const updateAsset = async (id, data) => {
   try {
     const res = await axios.put(apiUrl(`taisan/${id}`), data);
@@ -50,6 +49,7 @@ export const updateAsset = async (id, data) => {
   }
 };
 
+//xoa tai san
 export const deleteAsset = async (id) => {
   try {
     const res = await axios.delete(apiUrl(`taisan/${id}`));
@@ -59,10 +59,8 @@ export const deleteAsset = async (id) => {
   }
 };
 
-
-// =============================
-// DANH MỤC
-// =============================
+//danh muc
+//lay danh sach danh muc
 export const getCategories = async () => {
   try {
     const res = await axios.get(apiUrl("danhmuc"));
@@ -72,6 +70,7 @@ export const getCategories = async () => {
   }
 };
 
+//them danh muc
 export const addCategories = async (data) => {
   try {
     const res = await axios.post(apiUrl("danhmuc"), data);
@@ -80,7 +79,7 @@ export const addCategories = async (data) => {
     return handleError(error, "Lỗi khi thêm danh mục");
   }
 };
-
+// cap nhat danh muc
 export const updateCategories = async (id, data) => {
   try {
     const res = await axios.put(apiUrl(`danhmuc/${id}`), data);
@@ -90,6 +89,7 @@ export const updateCategories = async (id, data) => {
   }
 };
 
+//xoa danh muc
 export const deleteCategories = async (id) => {
   try {
     const res = await axios.delete(apiUrl(`danhmuc/${id}`));
@@ -99,9 +99,8 @@ export const deleteCategories = async (id) => {
   }
 };
 
-// =============================
-// PHÒNG
-// =============================
+//phong
+//lay danh sach phong
 export const getRoom = async (page = 1) => {
   try {
     const res = await axios.get(apiUrl("phong"), {
@@ -113,6 +112,8 @@ export const getRoom = async (page = 1) => {
   }
 };
 
+
+// them phong
 export const addRoom = async (data) => {
   try {
     const res = await axios.post(apiUrl("phong"), data);
@@ -122,6 +123,7 @@ export const addRoom = async (data) => {
   }
 };
 
+//cap nhat phong
 export const updateRoom = async (id, data) => {
   try {
     const res = await axios.put(apiUrl(`phong/${id}`), data);
@@ -131,6 +133,7 @@ export const updateRoom = async (id, data) => {
   }
 };
 
+//xoa phong
 export const deleteRoom = async (id) => {
   try {
     const res = await axios.delete(apiUrl(`phong/${id}`));
@@ -140,6 +143,8 @@ export const deleteRoom = async (id) => {
   }
 };
 
+//tai san
+//lay danh sach tai san
 export const getAssetRoom = async (id, page = 1) => {
   try {
     const res = await axios.get(apiUrl(`phong/${id}/taisan`), {
@@ -151,9 +156,9 @@ export const getAssetRoom = async (id, page = 1) => {
   }
 };
 
-// =============================
-// BẢO TRÌ
-// =============================
+//bao tri
+
+//lay danh sach bao tri
 export const getMaintenanceAssets = async (page = 1) => {
   try {
     const res = await axios.get(apiUrl("baotri"), {
@@ -162,5 +167,46 @@ export const getMaintenanceAssets = async (page = 1) => {
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy danh sách bảo trì");
+  }
+};
+
+// lich su bao tri
+export const getMaintenanceHistory = async (MaTaiSan, page = 1) => {
+  try {
+    const res = await axios.get(apiUrl(`baotri/lichsu/${MaTaiSan}`), {
+      params: { page },
+    });
+    return res.data;
+  } catch (error) {
+    return handleError(error, "Lỗi khi lấy lịch sử bảo trì");
+  }
+};
+
+//cap nhat bao tri
+export const updateMaintenanceStatus = async (
+  id,
+  TinhTrang,
+  NoiDung,
+  updated_at,
+) => {
+  try {
+    const res = await axios.put(apiUrl(`baotri/${id}`), {
+      TinhTrang,
+      NoiDung,
+      updated_at,
+    });
+    return res.data;
+  } catch (error) {
+    return handleError(error, "Lỗi khi cập nhật trạng thái");
+  }
+};
+
+// them record bao tri
+export const addMaintenanceNote = async (data) => {
+  try {
+    const res = await axios.post(apiUrl("baotri"), data);
+    return res.data;
+  } catch (error) {
+    return handleError(error, "Lỗi khi thêm ghi chú");
   }
 };

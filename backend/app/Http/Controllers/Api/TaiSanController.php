@@ -163,14 +163,14 @@ class TaiSanController extends Controller
             //tao bao tri tai san
             if ($request->TinhTrang == 'Đang bảo trì' && $oldTinhTrang != 'Đang bảo trì') {
                 $exists = BaoTri::where('MaTaiSan', $taisan->MaTaiSan)
-                    ->where('TrangThai', 'Đang Xử Lý')
+                    ->where('TinhTrang', 'Đang Xử Lý')
                     ->exists();
                 if (!$exists) {
                     BaoTri::create([
                         'MaTaiSan' => $taisan->MaTaiSan,
                         'NgayBaoTri' => now(),
                         'NoiDung' => $request->GhiChu,
-                        'TrangThai' => 'Đang Xử Lý',
+                        'TinhTrang' => 'Đang bảo trì',
                         'created_by' => 1
                     ]);
                 }

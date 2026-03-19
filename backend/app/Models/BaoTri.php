@@ -16,7 +16,7 @@ class BaoTri extends Model
         'MaTaiSan',
         'NoiDung',
         'NgayBaoTri',
-        'TrangThai',
+        'TinhTrang',
         'created_by',
         'deleted_by',
         'updated_by'
@@ -24,6 +24,9 @@ class BaoTri extends Model
 
     public function taisan()
     {
-        return $this->belongsTo(TaiSan::class, 'MaTaiSan');
+        return $this->belongsTo(TaiSan::class, 'MaTaiSan', 'MaTaiSan');
+    }
+    public function getTenTaiSanAttribute(){
+        return $this->taisan->TenTaiSan ?? null;
     }
 }
