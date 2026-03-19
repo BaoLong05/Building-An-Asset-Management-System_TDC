@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\TaiSanController;
 use App\Http\Controllers\Api\DanhMucController;
 use App\Http\Controllers\Api\PhongController;
 use App\Http\Controllers\Api\BaoTriController;
+use App\Models\BaoTri;
 
 //quan ly tai san
 //1. lay danh sach tai san
@@ -42,3 +43,11 @@ Route::get('/phong/{id}/taisan', [PhongController::class, 'phong_asset']);
 //quan ly bao tri
 //1.lay danh sach bao tri va tim kiem
 Route::get('/baotri', [BaoTriController::class, 'baotri_index']);
+//2. them bao tri
+Route::post('/baotri', [BaoTriController::class, 'baotri_store']);
+//3. cap nhat bao tri
+Route::put('/baotri/{id}',[BaoTriController::class, 'baotri_update']);
+//4. xoa bao tri
+Route::delete('/baotri/{id}', [BaoTriController::class, 'baotri_delete']);
+//5. bao tri history
+Route::get('/baotri/lichsu/{id}', [BaoTriController::class, 'baotri_history']);
