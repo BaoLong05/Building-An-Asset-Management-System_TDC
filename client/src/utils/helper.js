@@ -7,11 +7,27 @@ export const apiUrl = (endpoint) => `${API_BASE_URL}/${endpoint}`;
 //file loi 
 const handleError = (error, defaultMessage) => {
   if (error.response) {
-    return error.response.data;
+    const res = error.response.data;
+    if (res.errors) {
+      const messages = Object.values(res.errors).flat();
+
+      return {
+        success: false,
+        message: messages.join(", "),
+        errors: res.errors,
+      };
+    }
+    if (res.message) {
+      return {
+        success: false,
+        message: res.message,
+      };
+    }
   }
+
   return {
     success: false,
-    message: defaultMessage || "Không thể kết nối server",
+    message: defaultMessage || "Lỗi server",
   };
 };
 
