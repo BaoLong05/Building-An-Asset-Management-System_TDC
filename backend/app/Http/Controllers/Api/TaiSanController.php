@@ -57,7 +57,7 @@ class TaiSanController extends Controller
             'SoLuong' => 'required|integer|min:1',
             'DonGia' => 'required|numeric|min:0',
             'NgayNhap' => 'required|date',
-            'TinhTrang' => 'required|in:Tốt,Đang bảo trì,Hỏng',
+            'TinhTrang' => 'required|in:Tốt',
         ], [
             'TenTaiSan.required' => 'Tên tài sản không được để trống!',
             'TenTaiSan.max' => 'Tên tài sản không quá 255 ký tự!',
@@ -80,7 +80,7 @@ class TaiSanController extends Controller
             'NgayNhap.date' => 'Ngày nhập không hợp lệ!',
 
             'TinhTrang.required' => 'Chưa chọn tình trạng!',
-            'TinhTrang.in' => 'Trạng thái không hợp lệ!',
+            'TinhTrang.in' => 'Trạng thái phải là "Tốt"!',
         ]);
 
         try {
@@ -91,7 +91,7 @@ class TaiSanController extends Controller
                 'SoLuong' => $request->SoLuong,
                 'DonGia' => $request->DonGia,
                 'NgayNhap' => $request->NgayNhap,
-                'TinhTrang' => $request->TinhTrang ?? 'Tốt',
+                'TinhTrang' => $request->TinhTrang,
                 'GhiChu' => $request->GhiChu,
                 'created_by' => 1
             ]);
