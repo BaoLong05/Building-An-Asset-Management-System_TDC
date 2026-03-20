@@ -226,3 +226,31 @@ export const addMaintenanceNote = async (data) => {
     return handleError(error, "Lỗi khi thêm ghi chú");
   }
 };
+
+
+//Api pdf
+export const exportPDF = async (endpoint, params = {}, filename = "file.pdf") => {
+  try {
+    const res = await axios.get(apiUrl(endpoint), {
+      params,
+      responseType: "blob", 
+    });
+
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.setAttribute("download", filename);
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+
+    toast.success("Xuất PDF thành công");
+  } catch (error) {
+    const err = handleError(error, "Lỗi khi export PDF");
+    toast.error(err.message);
+    return err;
+  }
+};

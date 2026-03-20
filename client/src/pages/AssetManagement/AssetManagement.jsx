@@ -9,6 +9,7 @@ import {
   deleteAsset,
   getCategories,
   getRoom,
+  exportPDF,
 } from "../../utils/helper";
 
 const AssetManagement = () => {
@@ -39,6 +40,15 @@ const AssetManagement = () => {
   const [maintenanceStatus, setMaintenanceStatus] = useState("Tốt");
   const [maintenanceNote, setMaintenanceNote] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState("");
+  const [showExportModal, setShowExportModal] = useState(false);
+
+  const [exportFilters, setExportFilters] = useState({
+    keyword: "",
+    MaDanhMuc: "",
+    MaPhong: "",
+    TinhTrang: "",
+  });
 
   const [formData, setFormData] = useState({
     TenTaiSan: "",
@@ -272,7 +282,15 @@ const AssetManagement = () => {
   };
 
   const handleExportPDF = () => {
-    toast.info("Tính năng xuất PDF sẽ được phát triển sau 📄");
+    exportPDF(
+      "export/taisan",
+      {
+        MaDanhMuc: selectedCategory,
+        MaPhong: selectedRoom,
+        TinhTrang: selectedStatus,
+      },
+      "danhsach_taisan.pdf",
+    );
   };
 
   const formatPrice = (price) => {
@@ -473,8 +491,7 @@ const AssetManagement = () => {
             </button>
             <button
               className="btn-export pdf"
-              onClick={handleExportPDF}
-              title="Xuất PDF"
+              onClick={() => setShowExportModal(true)}
             >
               📄 PDF
             </button>
@@ -917,6 +934,98 @@ const AssetManagement = () => {
               </button>
               <button className="btn-save" onClick={saveMaintenance}>
                 Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* EXPORT MODAL */}
+      {showExportModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowExportModal(false)}
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Xuất PDF</h2>
+              <button onClick={() => setShowExportModal(false)}>X</button>
+            </div>
+
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Danh mục</label>
+                <select
+                  value={exportFilters.MaDanhMuc}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      MaDanhMuc: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  {categories.map((cat) => (
+                    <option key={cat.MaDanhMuc} value={cat.MaDanhMuc}>
+                      {cat.TenDanhMuc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Phòng</label>
+                <select
+                  value={exportFilters.MaPhong}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      MaPhong: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  {rooms.map((room) => (
+                    <option key={room.MaPhong} value={room.MaPhong}>
+                      {room.TenPhong}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Trạng thái</label>
+                <select
+                  value={exportFilters.TinhTrang}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      TinhTrang: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  <option value="Tốt">Tốt</option>
+                  <option value="Đang bảo trì">Đang bảo trì</option>
+                  <option value="Hỏng">Hỏng</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button onClick={() => setShowExportModal(false)}>Hủy</button>
+
+              <button
+                className="btn-save"
+                onClick={() => {
+                  exportPDF(
+                    "export/taisan",
+                    exportFilters,
+                    "danhsach_taisan.pdf",
+                  );
+                  setShowExportModal(false);
+                }}
+              >
+                Xuất PDF
               </button>
             </div>
           </div>
