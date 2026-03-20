@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <title>Danh Sách Tài Sản</title>
 
-    <style>
+        <style>
         body {
-            font-family: DejaVu Sans;
-            font-size: 12px;
+            font-size: 13px;
+            padding: 10px;
         }
 
         h2 {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .filter {
@@ -32,22 +32,39 @@
 
         th {
             background: #f2f2f2;
+            font-weight: bold;
         }
 
         th,
         td {
             border: 1px solid #000;
-            padding: 6px;
+            padding: 8px;
+        }
+
+        th:nth-child(1),
+        td:nth-child(1) {
+            width: 10%;
             text-align: center;
         }
 
-        .text-left {
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 25%;
             text-align: left;
         }
 
-        .total {
-            font-weight: bold;
-            background: #f9f9f9;
+        th:nth-child(3),
+        td:nth-child(3) {
+            width: 65%;
+            text-align: left;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
         }
     </style>
 </head>
@@ -110,16 +127,16 @@
                     <td>{{ $item->danhmuc->TenDanhMuc ?? '' }}</td>
                     <td>{{ $item->phong->TenPhong ?? '' }}</td>
                     <td>{{ $item->SoLuong }}</td>
-                    <td>{{ number_format($item->DonGia, 0, ',', '.') }} đ</td>
+                    <td>{{ number_format($item->DonGia, 0, ',', '.') }} VNĐ</td>
                     <td>{{ \Carbon\Carbon::parse($item->NgayNhap)->format('d/m/Y') }}</td>
                     <td>{{ $item->TinhTrang }}</td>
-                    <td>{{ number_format($thanhTien, 0, ',', '.') }} đ</td>
+                    <td>{{ number_format($thanhTien, 0, ',', '.') }} VNĐ</td>
                 </tr>
             @endforeach
 
             <tr class="total">
                 <td colspan="8">Tổng cộng</td>
-                <td>{{ number_format($tongTien, 0, ',', '.') }} đ</td>
+                <td>{{ number_format($tongTien, 0, ',', '.') }} VNĐ</td>
             </tr>
         </tbody>
     </table>

@@ -947,8 +947,8 @@ const AssetManagement = () => {
         >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>📄 Xuất PDF</h2>
-              <button onClick={() => setShowExportModal(false)}>×</button>
+              <h2>Xuất PDF</h2>
+              <button onClick={() => setShowExportModal(false)}>X</button>
             </div>
 
             <div className="modal-body">

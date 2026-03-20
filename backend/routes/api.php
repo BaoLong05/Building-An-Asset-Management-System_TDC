@@ -55,5 +55,11 @@ Route::get('/baotri/lichsu/{id}', [BaoTriController::class, 'baotri_history']);
 
 
 //xuat pdf
-//1. TaiSan
+//1. Tai san
 Route::get('/export/taisan', [PdfController::class, 'Export_Taisan']);
+//2. Danh muc
+Route::get('/export/danhmuc', [PdfController::class, 'Export_DanhMuc']);
+//3. phong
+Route::get('/export/phong', [PdfController::class, 'Export_Phong']);
+//4. Bao tri
+Route::get('/export/baotri', [PdfController::class, 'Export_Baotri']);

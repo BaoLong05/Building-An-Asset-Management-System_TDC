@@ -7,6 +7,7 @@ import {
   getMaintenanceAssets,
   getMaintenanceHistory,
   updateMaintenanceStatus,
+  exportPDF,
 } from "../../utils/helper";
 
 const MaintenanceManagement = () => {
@@ -14,6 +15,11 @@ const MaintenanceManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+
+  const[showExportModal, setShowExportModal] = useState(false);
+  const [exprotFilter, setExprotFilter]= useState({
+    TinhTrang:"",
+  });
 
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [maintenanceHistory, setMaintenanceHistory] = useState([]);
@@ -62,7 +68,13 @@ const MaintenanceManagement = () => {
   };
 
   const handleExportPDF = () => {
-    toast.info("Tính năng xuất PDF sẽ được phát triển sau 📄");
+    exportPDF(
+      "export/baotri",
+      {
+        TinhTrang : filterStatus,
+      },
+      "danhsach_baotri.pdf"
+    );
   };
 
   // =========================
@@ -265,7 +277,7 @@ const MaintenanceManagement = () => {
             </button>
             <button 
               className="btn-export pdf" 
-              onClick={handleExportPDF}
+              onClick={() => setShowExportModal(true)}
               title="Xuất PDF"
             >
               📄 PDF
@@ -541,6 +553,54 @@ const MaintenanceManagement = () => {
           </div>
         </div>
       )}
+    {/*Export modal*/}
+    {showExportModal && (
+      <div className="modal-overlay"
+      onClick={()=> setShowExportModal(false)}>
+        <div className="modal" onClick={(e) => e.stopPropagation()}>
+       <div className="modal-header">
+         <h2>Xuất PDF</h2>
+        <button onClick={()=> setShowExportModal(false)}>X</button>
+       </div>
+        <div className="modal-body">
+          <div className="form-group">
+            <label>Trạng Thái</label>
+            <select 
+            value={exprotFilter.TinhTrang}
+            onChange={(e) => 
+              setExprotFilter({
+                ...exprotFilter,
+                TinhTrang: e.target.value,
+              })
+            }>
+                <option value="">Tất cả</option>
+                <option value="Đang bảo trì">Đang bảo trì</option>
+                <option value="Hoàn thành">Hoàn Thành</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button onClick={()=>setShowExportModal(false)}>
+              Hủy
+          </button>
+          <button
+          className="btn-save"
+          onClick={()=> {
+            exportPDF(
+              "export/baotri",
+              exprotFilter,
+              "danhsach_baotri.pdf"
+            );
+            setShowDetailModal(false);
+          }}
+          >
+            Xuẩt PDF
+          </button>
+        </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 };
