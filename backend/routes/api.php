@@ -5,7 +5,7 @@ use App\Http\Controllers\Api\TaiSanController;
 use App\Http\Controllers\Api\DanhMucController;
 use App\Http\Controllers\Api\PhongController;
 use App\Http\Controllers\Api\BaoTriController;
-use App\Models\BaoTri;
+use App\Http\Controllers\Export\PdfController;
 
 //quan ly tai san
 //1. lay danh sach tai san
@@ -51,3 +51,9 @@ Route::put('/baotri/{id}',[BaoTriController::class, 'baotri_update']);
 Route::delete('/baotri/{id}', [BaoTriController::class, 'baotri_delete']);
 //5. bao tri history
 Route::get('/baotri/lichsu/{id}', [BaoTriController::class, 'baotri_history']);
+
+
+
+//xuat pdf
+//1. TaiSan
+Route::get('/export/taisan', [PdfController::class, 'Export_Taisan']);
