@@ -9,6 +9,7 @@ import {
   deleteAsset,
   getCategories,
   getRoom,
+  exportExcel,
 } from "../../utils/helper";
 
 const AssetManagement = () => {
@@ -39,7 +40,15 @@ const AssetManagement = () => {
   const [maintenanceStatus, setMaintenanceStatus] = useState("Tốt");
   const [maintenanceNote, setMaintenanceNote] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState("");
+  const [showExportModalExcel, setShowExportModalExcel] = useState(false);
 
+   const [exportFilters, setExportFilters] = useState({
+    keyword: "",
+    MaDanhMuc: "",
+    MaPhong: "",
+    TinhTrang: "",
+  });
   const [formData, setFormData] = useState({
     TenTaiSan: "",
     MaDanhMuc: "",
@@ -268,7 +277,14 @@ const AssetManagement = () => {
   // EXPORT (placeholder) - Giống CategoryManagement
   // =========================
   const handleExportExcel = () => {
-    toast.info("Tính năng xuất Excel sẽ được phát triển sau 📊");
+    exportExcel(
+      "export/taisan",
+      {MaDanhMuc: selectedCategory,
+        MaPhong:selectedRoom,
+        TinhTrang: selectedStatus
+      },
+      "taisan.xlsx"
+    );
   };
 
   const handleExportPDF = () => {
@@ -466,8 +482,7 @@ const AssetManagement = () => {
           <div className="export-group">
             <button
               className="btn-export excel"
-              onClick={handleExportExcel}
-              title="Xuất Excel"
+              onClick={()=> {setShowExportModalExcel(true)}}
             >
               📊 Excel
             </button>
@@ -917,6 +932,98 @@ const AssetManagement = () => {
               </button>
               <button className="btn-save" onClick={saveMaintenance}>
                 Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* {export modal excel} */}
+      {showExportModalExcel && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowExportModalExcel(false)}
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Xuất EXCEL</h2>
+              <button onClick={() => setShowExportModalExcel(false)}>X</button>
+            </div>
+
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Danh mục</label>
+                <select
+                  value={exportFilters.MaDanhMuc}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      MaDanhMuc: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  {categories.map((cat) => (
+                    <option key={cat.MaDanhMuc} value={cat.MaDanhMuc}>
+                      {cat.TenDanhMuc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Phòng</label>
+                <select
+                  value={exportFilters.MaPhong}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      MaPhong: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  {rooms.map((room) => (
+                    <option key={room.MaPhong} value={room.MaPhong}>
+                      {room.TenPhong}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Trạng thái</label>
+                <select
+                  value={exportFilters.TinhTrang}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      TinhTrang: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  <option value="Tốt">Tốt</option>
+                  <option value="Đang bảo trì">Đang bảo trì</option>
+                  <option value="Hỏng">Hỏng</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button onClick={() => setShowExportModalExcel(false)}>Hủy</button>
+
+              <button
+                className="btn-save"
+                onClick={() => {
+                  exportExcel(
+                    "export/taisan",
+                    exportFilters,
+                    "taisan.xlsx",
+                  );
+                  setShowExportModalExcel(false);
+                }}
+              >
+                Xuất Excel
               </button>
             </div>
           </div>
