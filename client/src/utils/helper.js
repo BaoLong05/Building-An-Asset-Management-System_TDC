@@ -274,7 +274,6 @@ export const exportPDF = async (endpoint, params = {}, filename = "file.pdf") =>
     link.click();
 
     document.body.removeChild(link);
-
     toast.success("Xuất PDF thành công");
   } catch (error) {
     const err = handleError(error, "Lỗi khi export PDF");
