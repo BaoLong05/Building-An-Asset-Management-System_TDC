@@ -276,10 +276,6 @@ export const exportPDF = async (endpoint, params = {}, filename = "file.pdf") =>
     document.body.removeChild(link);
     toast.success("Xuất Excel thành công!");
   } catch (error) {
-    const err = handleError(error, "Lỗi khi xuất Excel");
-
-    toast.success("Xuất PDF thành công");
-  } catch (error) {
     const err = handleError(error, "Lỗi khi export PDF");
     toast.error(err.message);
     return err;
