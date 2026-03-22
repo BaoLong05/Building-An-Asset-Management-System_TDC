@@ -8,6 +8,7 @@ import {
   updateRoom,
   deleteRoom,
   getAssetRoom,
+  exportExcel,
 } from "../../utils/helper";
 
 const RoomManagement = () => {
@@ -70,7 +71,11 @@ const RoomManagement = () => {
   // EXPORT (placeholder)
   // =========================
   const handleExportExcel = () => {
-    toast.info("Tính năng xuất Excel sẽ được phát triển sau 📊");
+    exportExcel(
+      "exportExcel/phong",
+      {},
+      "phong.xlsx"
+    );
   };
 
   const handleExportPDF = () => {

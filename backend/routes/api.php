@@ -55,4 +55,11 @@ Route::get('/baotri/lichsu/{id}', [BaoTriController::class, 'baotri_history']);
 
 
 //export excel
-Route::get('export/taisan', [ExcelController::class, 'exportTaisan']);
+//1. tai san
+Route::get('exportExcel/taisan', [ExcelController::class, 'exportTaisan']);
+//2.Bao tri
+Route::get('exportExcel/baotri', [ExcelController::class, 'exportBaotri']);
+//3.danh muc
+Route::get('exportExcel/danhmuc', [ExcelController::class, 'exportDanhmuc']);
+//4. phong
+Route::get('exportExcel/phong', [ExcelController::class, 'exportPhong']);

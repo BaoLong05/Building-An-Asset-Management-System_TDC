@@ -7,6 +7,7 @@ import {
   addCategories,
   updateCategories,
   deleteCategories,
+  exportExcel
 } from "../../utils/helper";
 
 const CategoryManagement = () => {
@@ -52,7 +53,11 @@ const CategoryManagement = () => {
   // EXPORT (placeholder)
   // =========================
   const handleExportExcel = () => {
-    toast.info("Tính năng xuất Excel sẽ được phát triển sau 📊");
+    exportExcel(
+      "exportExcel/danhmuc",
+      {},
+      "danhmuc.xlsx"
+    );
   };
 
   const handleExportPDF = () => {

@@ -278,7 +278,7 @@ const AssetManagement = () => {
   // =========================
   const handleExportExcel = () => {
     exportExcel(
-      "export/taisan",
+      "exportExcel/taisan",
       {MaDanhMuc: selectedCategory,
         MaPhong:selectedRoom,
         TinhTrang: selectedStatus
@@ -1016,7 +1016,7 @@ const AssetManagement = () => {
                 className="btn-save"
                 onClick={() => {
                   exportExcel(
-                    "export/taisan",
+                    "exportExcel/taisan",
                     exportFilters,
                     "taisan.xlsx",
                   );
