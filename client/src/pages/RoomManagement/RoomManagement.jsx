@@ -9,6 +9,8 @@ import {
   deleteRoom,
   getAssetRoom,
   exportExcel,
+  exportPDF,
+
 } from "../../utils/helper";
 
 const RoomManagement = () => {
@@ -79,7 +81,11 @@ const RoomManagement = () => {
   };
 
   const handleExportPDF = () => {
-    toast.info("Tính năng xuất PDF sẽ được phát triển sau 📄");
+    exportPDF(
+      "export/phong",
+      {},
+      "danhsach_phong.pdf"
+    );
   };
 
   // =========================

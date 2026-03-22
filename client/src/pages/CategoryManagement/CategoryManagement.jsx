@@ -8,6 +8,7 @@ import {
   updateCategories,
   deleteCategories,
   exportExcel
+  exportPDF,
 } from "../../utils/helper";
 
 const CategoryManagement = () => {
@@ -61,7 +62,11 @@ const CategoryManagement = () => {
   };
 
   const handleExportPDF = () => {
-    toast.info("Tính năng xuất PDF sẽ được phát triển sau 📄");
+    exportPDF(
+      "export/danhmuc",
+      {},
+      "danhsach_danhmuc.pdf"
+    );
   };
 
   // =========================
