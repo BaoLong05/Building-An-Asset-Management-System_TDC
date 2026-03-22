@@ -4,7 +4,7 @@ export const API_BASE_URL = "http://192.168.33.10:8000/api";
 
 export const apiUrl = (endpoint) => `${API_BASE_URL}/${endpoint}`;
 
-//file loi 
+//file loi
 const handleError = (error, defaultMessage) => {
   if (error.response) {
     const res = error.response.data;
@@ -128,7 +128,6 @@ export const getRoom = async (page = 1) => {
   }
 };
 
-
 // them phong
 export const addRoom = async (data) => {
   try {
@@ -226,6 +225,17 @@ export const addMaintenanceNote = async (data) => {
     return handleError(error, "Lỗi khi thêm ghi chú");
   }
 };
+//api excel
+export const exportExcel = async (
+  endpoint,
+  params = {},
+  filename = "file.xlsx",
+) => {
+  try {
+    const res = await axios.get(apiUrl(endpoint), {
+      params,
+      responseType: "blob",
+    });
 
 
 //Api pdf
@@ -246,6 +256,9 @@ export const exportPDF = async (endpoint, params = {}, filename = "file.pdf") =>
     link.click();
 
     document.body.removeChild(link);
+    toast.success("Xuất Excel thành công!");
+  } catch (error) {
+    const err = handleError(error, "Lỗi khi xuất Excel");
 
     toast.success("Xuất PDF thành công");
   } catch (error) {
