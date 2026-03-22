@@ -295,9 +295,6 @@ const MaintenanceManagement = () => {
             >
               📊 Excel
             </button>
-            <button
-              className="btn-export pdf"
-              onClick={handleExportPDF}
             <button 
               className="btn-export pdf" 
               onClick={() => setShowExportModal(true)}

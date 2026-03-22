@@ -45,13 +45,6 @@ const AssetManagement = () => {
   const [showExportModalExcel, setShowExportModalExcel] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
-  const [exportFilters, setExportFilters] = useState({
-    keyword: "",
-    MaDanhMuc: "",
-    MaPhong: "",
-    TinhTrang: "",
-  });
-
    const [exportFilters, setExportFilters] = useState({
     keyword: "",
     MaDanhMuc: "",
@@ -953,7 +946,7 @@ const AssetManagement = () => {
           </div>
         </div>
       )}
-      {/* {export modal excel} */}
+     {/* {export modal excel} */}
       {showExportModalExcel && (
         <div
           className="modal-overlay"
@@ -963,8 +956,90 @@ const AssetManagement = () => {
             <div className="modal-header">
               <h2>Xuất EXCEL</h2>
               <button onClick={() => setShowExportModalExcel(false)}>X</button>
+            </div>
 
-      {/* EXPORT MODAL */}
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Danh mục</label>
+                <select
+                  value={exportFilters.MaDanhMuc}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      MaDanhMuc: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  {categories.map((cat) => (
+                    <option key={cat.MaDanhMuc} value={cat.MaDanhMuc}>
+                      {cat.TenDanhMuc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Phòng</label>
+                <select
+                  value={exportFilters.MaPhong}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      MaPhong: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  {rooms.map((room) => (
+                    <option key={room.MaPhong} value={room.MaPhong}>
+                      {room.TenPhong}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Trạng thái</label>
+                <select
+                  value={exportFilters.TinhTrang}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      TinhTrang: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  <option value="Tốt">Tốt</option>
+                  <option value="Đang bảo trì">Đang bảo trì</option>
+                  <option value="Hỏng">Hỏng</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button onClick={() => setShowExportModalExcel(false)}>Hủy</button>
+
+              <button
+                className="btn-save"
+                onClick={() => {
+                  exportExcel(
+                    "exportExcel/taisan",
+                    exportFilters,
+                    "taisan.xlsx",
+                  );
+                  setShowExportModalExcel(false);
+                }}
+              >
+                Xuất Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+       {/* EXPORT MODAL */}
       {showExportModal && (
         <div
           className="modal-overlay"
@@ -1037,21 +1112,11 @@ const AssetManagement = () => {
             </div>
 
             <div className="modal-footer">
-              <button onClick={() => setShowExportModalExcel(false)}>Hủy</button>
               <button onClick={() => setShowExportModal(false)}>Hủy</button>
 
               <button
                 className="btn-save"
                 onClick={() => {
-                  exportExcel(
-                    "exportExcel/taisan",
-                    exportFilters,
-                    "taisan.xlsx",
-                  );
-                  setShowExportModalExcel(false);
-                }}
-              >
-                Xuất Excel
                   exportPDF(
                     "export/taisan",
                     exportFilters,
