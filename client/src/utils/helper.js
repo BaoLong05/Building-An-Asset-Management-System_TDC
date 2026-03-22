@@ -236,7 +236,7 @@ export const exportExcel = async (
       params,
       responseType: "blob",
     });
-
+  }
 
 //Api pdf
 export const exportPDF = async (endpoint, params = {}, filename = "file.pdf") => {
