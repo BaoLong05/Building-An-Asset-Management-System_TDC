@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <title>Danh Sách Tài Sản</title>
 
-        <style>
+    <style>
         body {
-            font-size: 13px;
-            padding: 10px;
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 11px;
         }
 
         h2 {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .filter {
@@ -28,44 +28,39 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed; /* QUAN TRỌNG */
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 5px;
+            font-size: 10px;
+            text-align: center;
+            word-break: break-word; /* chống tràn chữ */
         }
 
         th {
             background: #f2f2f2;
-            font-weight: bold;
         }
 
-        th,
-        td {
-            border: 1px solid #000;
-            padding: 8px;
+        /* FIX WIDTH CỘT */
+        th:nth-child(1), td:nth-child(1) { width: 5%; }
+        th:nth-child(2), td:nth-child(2) { width: 15%; text-align: left; }
+        th:nth-child(3), td:nth-child(3) { width: 10%; }
+        th:nth-child(4), td:nth-child(4) { width: 10%; }
+        th:nth-child(5), td:nth-child(5) { width: 6%; }
+        th:nth-child(6), td:nth-child(6) { width: 10%; }
+        th:nth-child(7), td:nth-child(7) { width: 10%; }
+        th:nth-child(8), td:nth-child(8) { width: 12%; }
+        th:nth-child(9), td:nth-child(9) { width: 7%; }
+        th:nth-child(10), td:nth-child(10) { width: 7%; }
+        th:nth-child(11), td:nth-child(11) { width: 8%; }
+
+        /* chống vỡ trang */
+        tr {
+            page-break-inside: avoid;
         }
 
-        th:nth-child(1),
-        td:nth-child(1) {
-            width: 10%;
-            text-align: center;
-        }
-
-        th:nth-child(2),
-        td:nth-child(2) {
-            width: 25%;
-            text-align: left;
-        }
-
-        th:nth-child(3),
-        td:nth-child(3) {
-            width: 65%;
-            text-align: left;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #fafafa;
-        }
-
-        tbody tr:hover {
-            background-color: #f1f1f1;
-        }
     </style>
 </head>
 
@@ -76,20 +71,19 @@
     <div class="filter">
         <strong>Bộ lọc:</strong>
         <ul>
-
-            @if(request('TinhTrang'))
+            @if (request('TinhTrang'))
                 <li>Trạng thái: {{ request('TinhTrang') }}</li>
             @endif
 
-            @if(request('MaDanhMuc'))
+            @if (request('MaDanhMuc'))
                 <li>Mã danh mục: {{ request('MaDanhMuc') }}</li>
             @endif
 
-            @if(request('MaPhong'))
+            @if (request('MaPhong'))
                 <li>Mã phòng: {{ request('MaPhong') }}</li>
             @endif
 
-            @if(!request()->hasAny(['keyword','TinhTrang','MaDanhMuc','MaPhong']))
+            @if (!request()->hasAny(['keyword', 'TinhTrang', 'MaDanhMuc', 'MaPhong']))
                 <li>Tất cả dữ liệu</li>
             @endif
         </ul>
@@ -103,44 +97,46 @@
                 <th>Danh mục</th>
                 <th>Phòng</th>
                 <th>Số lượng</th>
-                <th>Đơn giá</th>
                 <th>Ngày nhập</th>
                 <th>Trạng thái</th>
-                <th>Thành tiền</th>
+                <th>Ghi chú</th>
+                <th>Người tạo</th>
+                <th>Người sửa</th>
+                <th>Người xóa</th>
             </tr>
         </thead>
 
         <tbody>
-            @php
-                $tongTien = 0;
-            @endphp
-
-            @foreach ($taisan as $item)
-                @php
-                    $thanhTien = $item->SoLuong * $item->DonGia;
-                    $tongTien += $thanhTien;
-                @endphp
-
-                <tr>
-                    <td>{{ $item->MaTaiSan }}</td>
-                    <td class="text-left">{{ $item->TenTaiSan }}</td>
-                    <td>{{ $item->danhmuc->TenDanhMuc ?? '' }}</td>
-                    <td>{{ $item->phong->TenPhong ?? '' }}</td>
-                    <td>{{ $item->SoLuong }}</td>
-                    <td>{{ number_format($item->DonGia, 0, ',', '.') }} VNĐ</td>
-                    <td>{{ \Carbon\Carbon::parse($item->NgayNhap)->format('d/m/Y') }}</td>
-                    <td>{{ $item->TinhTrang }}</td>
-                    <td>{{ number_format($thanhTien, 0, ',', '.') }} VNĐ</td>
-                </tr>
-            @endforeach
-
-            <tr class="total">
-                <td colspan="8">Tổng cộng</td>
-                <td>{{ number_format($tongTien, 0, ',', '.') }} VNĐ</td>
+    @if ($taisan->isEmpty())
+        <tr>
+            <td colspan="11" style="text-align: center; padding: 10px;">
+                Không có dữ liệu
+            </td>
+        </tr>
+    @else
+        @foreach ($taisan as $item)
+            <tr>
+                <td>{{ $item->MaTaiSan }}</td>
+                <td style="text-align:left">{{ $item->TenTaiSan }}</td>
+                <td>{{ $item->danhmuc->TenDanhMuc ?? '' }}</td>
+                <td>{{ $item->phong->TenPhong ?? '' }}</td>
+                <td>{{ $item->SoLuong }}</td>
+                <td>
+                    {{ $item->NgayNhap 
+                        ? \Carbon\Carbon::parse($item->NgayNhap)->format('d/m/Y') 
+                        : '' 
+                    }}
+                </td>
+                <td>{{ $item->TinhTrang }}</td>
+                <td>{{ $item->GhiChu }}</td>
+                <td>{{ $item->created_by }}</td>
+                <td>{{ $item->updated_by }}</td>
+                <td>{{ $item->deleted_by }}</td>
             </tr>
-        </tbody>
+        @endforeach
+    @endif
+</tbody>
     </table>
 
 </body>
-
 </html>
