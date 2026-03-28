@@ -16,13 +16,13 @@ return new class extends Migration
             $table->engine = 'InnoDB';
 
             $table->bigIncrements('MaTaiSan');
+            $table->string('HinhAnh')->nullable();
             $table->string('TenTaiSan');
 
             $table->unsignedBigInteger('MaDanhMuc')->nullable();
             $table->unsignedBigInteger('MaPhong')->nullable();
 
             $table->integer('SoLuong')->default(1);
-            $table->decimal('DonGia', 18, 2)->nullable();
             $table->date('NgayNhap')->nullable();
             $table->enum('TinhTrang', ['Tốt', 'Đang bảo trì', 'Hỏng'])->default('Tốt');
             $table->string('GhiChu')->nullable();

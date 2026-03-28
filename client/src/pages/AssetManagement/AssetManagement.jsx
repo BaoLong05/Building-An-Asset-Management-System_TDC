@@ -45,32 +45,41 @@ const AssetManagement = () => {
   const [showExportModalExcel, setShowExportModalExcel] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
-   const [exportFilters, setExportFilters] = useState({
+  const [exportFilters, setExportFilters] = useState({
     keyword: "",
     MaDanhMuc: "",
     MaPhong: "",
     TinhTrang: "",
   });
   const [formData, setFormData] = useState({
+    HinhAnh: "",
     TenTaiSan: "",
     MaDanhMuc: "",
     MaPhong: "",
     SoLuong: "",
-    DonGia: "",
     NgayNhap: "",
     TinhTrang: "Tốt",
     GhiChu: "",
   });
 
-  useEffect(() => {
-    fetchAssets();
-    fetchCategories();
-    fetchRooms();
-  }, []);
+  // const handleFileChange = (e) => {
+  //    const file = e.target.files[0];
+  //    console.log(file);
+
+  //    setFormData((prev) => ({
+  //      ...prev,
+  //      HinhAnh: file,
+  //     }));
+  // };
 
   useEffect(() => {
-    fetchAssets(currentPage);
-  }, [currentPage]);
+  fetchCategories();
+  fetchRooms();
+}, []);
+
+useEffect(() => {
+  fetchAssets(currentPage);
+}, [currentPage]);
 
   useEffect(() => {
     if (darkMode) {
@@ -103,7 +112,7 @@ const AssetManagement = () => {
         calculateStats(data);
       }
     } catch (err) {
-      toast.error("Lỗi khi tải dữ liệu");
+      toast.error(response?.message);
     } finally {
       setLoading(false);
     }
@@ -138,29 +147,37 @@ const AssetManagement = () => {
       (a) => a.TinhTrang === "Đang bảo trì",
     ).length;
     const broken = assetList.filter((a) => a.TinhTrang === "Hỏng").length;
-    const totalValue = assetList.reduce(
-      (sum, a) => sum + parseFloat(a.DonGia) * a.SoLuong,
-      0,
-    );
+
     setStats({ total, good, maintenance, broken, totalValue });
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const { name, value, files } = e.target;
+
+  if (name === "HinhAnh") {
+    setFormData((prev) => ({
+      ...prev,
+      HinhAnh: files[0], // ✅ lấy file đúng
+    }));
+  } else {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  console.log(files);
+};
 
   const handleAdd = () => {
     setEditAsset(null);
     setEditId(null);
     setFormData({
+      HinhAnh: "",
       TenTaiSan: "",
       MaDanhMuc: "",
       MaPhong: "",
       SoLuong: "",
-      DonGia: "",
       NgayNhap: "",
       TinhTrang: "Tốt",
       GhiChu: "",
@@ -172,11 +189,11 @@ const AssetManagement = () => {
     setEditId(asset.MaTaiSan);
     setEditAsset(asset);
     setFormData({
+      HinhAnh: null,
       TenTaiSan: asset.TenTaiSan,
       MaDanhMuc: asset.MaDanhMuc,
       MaPhong: asset.MaPhong,
       SoLuong: asset.SoLuong,
-      DonGia: asset.DonGia,
       NgayNhap: asset.NgayNhap,
       TinhTrang: asset.TinhTrang,
       GhiChu: asset.GhiChu || "",
@@ -189,10 +206,10 @@ const AssetManagement = () => {
     try {
       const payload = {
         ...formData,
+        HinhAnh: formData.HinhAnh,
         MaDanhMuc: formData.MaDanhMuc ? Number(formData.MaDanhMuc) : null,
         MaPhong: formData.MaPhong ? Number(formData.MaPhong) : null,
         SoLuong: formData.SoLuong,
-        DonGia: formData.DonGia,
         TinhTrang: formData.TinhTrang || "Tốt",
       };
 
@@ -281,25 +298,26 @@ const AssetManagement = () => {
   const handleExportExcel = () => {
     exportExcel(
       "exportExcel/taisan",
-      {MaDanhMuc: selectedCategory,
-        MaPhong:selectedRoom,
-        TinhTrang: selectedStatus
-      },
-      "taisan.xlsx"
-    );
-  };
-
-  const handleExportPDF = () => {
-    exportPDF(
-      "export/taisan",
       {
         MaDanhMuc: selectedCategory,
         MaPhong: selectedRoom,
         TinhTrang: selectedStatus,
       },
-      "danhsach_taisan.pdf",
+      "taisan.xlsx",
     );
   };
+
+const handleExportPDF = () => {
+  exportPDF(
+    "export/taisan",
+    {
+      MaDanhMuc: selectedCategory,
+      MaPhong: selectedRoom,
+      TinhTrang: selectedStatus,
+    },
+    "danhsach_taisan.pdf"
+  );
+};
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -492,7 +510,9 @@ const AssetManagement = () => {
           <div className="export-group">
             <button
               className="btn-export excel"
-              onClick={()=> {setShowExportModalExcel(true)}}
+              onClick={() => {
+                setShowExportModalExcel(true);
+              }}
             >
               📊 Excel
             </button>
@@ -512,11 +532,11 @@ const AssetManagement = () => {
           <thead>
             <tr>
               <th>Mã</th>
+              <th>Hình Ảnh</th>
               <th>Tên tài sản</th>
               <th>Danh mục</th>
               <th>Phòng</th>
               <th>Số lượng</th>
-              <th>Đơn giá</th>
               <th>Ngày nhập</th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
@@ -546,11 +566,15 @@ const AssetManagement = () => {
               filteredAssets.map((asset) => (
                 <tr key={asset.MaTaiSan}>
                   <td className="code">{asset.MaTaiSan}</td>
+                  <td>{asset.HinhAnh ? (
+                    <img src={asset.HinhAnh} width="60" />
+                  ):(
+                    "Không có ảnh"
+                  )}</td>
                   <td>{asset.TenTaiSan}</td>
                   <td>{asset.TenDanhMuc}</td>
                   <td>{asset.TenPhong}</td>
                   <td>{asset.SoLuong}</td>
-                  <td className="price">{formatPrice(asset.DonGia)}</td>
                   <td>{formatDate(asset.NgayNhap)}</td>
                   <td>
                     <span
@@ -639,6 +663,16 @@ const AssetManagement = () => {
 
             <div className="modal-body">
               <div className="form-group">
+                <label>Hình ảnh</label>
+                <input
+                  type="file"
+                  name="HinhAnh"
+                  accept="image/*"
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
                 <label>
                   Tên tài sản <span className="required">*</span>
                 </label>
@@ -700,20 +734,6 @@ const AssetManagement = () => {
                     onChange={handleChange}
                     placeholder="Nhập số lượng"
                     min="1"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>
-                    Đơn giá <span className="required">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="DonGia"
-                    value={formData.DonGia}
-                    onChange={handleChange}
-                    placeholder="Nhập đơn giá"
-                    min="0"
                   />
                 </div>
               </div>
@@ -816,20 +836,7 @@ const AssetManagement = () => {
                   <span className="detail-label">Số lượng:</span>
                   <span className="detail-value">{selectedAsset.SoLuong}</span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Đơn giá:</span>
-                  <span className="detail-value price">
-                    {formatPrice(selectedAsset.DonGia)}
-                  </span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Thành tiền:</span>
-                  <span className="detail-value total">
-                    {formatPrice(
-                      parseFloat(selectedAsset.DonGia) * selectedAsset.SoLuong,
-                    )}
-                  </span>
-                </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Ngày nhập:</span>
                   <span className="detail-value">
@@ -946,7 +953,7 @@ const AssetManagement = () => {
           </div>
         </div>
       )}
-     {/* {export modal excel} */}
+      {/* {export modal excel} */}
       {showExportModalExcel && (
         <div
           className="modal-overlay"
@@ -1019,7 +1026,9 @@ const AssetManagement = () => {
             </div>
 
             <div className="modal-footer">
-              <button onClick={() => setShowExportModalExcel(false)}>Hủy</button>
+              <button onClick={() => setShowExportModalExcel(false)}>
+                Hủy
+              </button>
 
               <button
                 className="btn-save"
@@ -1039,7 +1048,7 @@ const AssetManagement = () => {
         </div>
       )}
 
-       {/* EXPORT MODAL */}
+      {/* EXPORT MODAL */}
       {showExportModal && (
         <div
           className="modal-overlay"

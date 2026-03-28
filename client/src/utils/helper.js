@@ -8,22 +8,28 @@ export const apiUrl = (endpoint) => `${API_BASE_URL}/${endpoint}`;
 const handleError = (error, defaultMessage) => {
   if (error.response) {
     const res = error.response.data;
+
     if (res.errors) {
       const messages = Object.values(res.errors).flat();
 
+      messages.forEach((msg) => toast.error(msg));
+
       return {
         success: false,
-        message: messages.join(", "),
         errors: res.errors,
       };
     }
+
     if (res.message) {
+      toast.error(res.message);
       return {
         success: false,
         message: res.message,
       };
     }
   }
+
+  toast.error(defaultMessage || "Lỗi server");
 
   return {
     success: false,
@@ -45,10 +51,23 @@ export const getAssets = async (page = 1) => {
   }
 };
 
-//them tai san
+  //them tai san
 export const addAsset = async (data) => {
   try {
-    const res = await axios.post(apiUrl("taisan"), data);
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      if (data[key] !== null && data[key] !== "") {
+        formData.append(key, data[key]);
+      }
+    });
+
+    const res = await axios.post(apiUrl("taisan"), formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi thêm tài sản");
@@ -58,7 +77,18 @@ export const addAsset = async (data) => {
 //cap nhat tai san
 export const updateAsset = async (id, data) => {
   try {
-    const res = await axios.put(apiUrl(`taisan/${id}`), data);
+    const formData = new FormData;
+    Object.keys(data).forEach((key)=> {
+      if(data[key] !== null && data[key] !== ""){
+        formData.append(key, data[key]);
+      }
+    });
+    formData.append("_method", "PUT");
+    const res = await axios.post(apiUrl(`taisan/${id}`), formData,{
+      headers:{
+        "Content-Type": "multipart/form-data"
+      }
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi sửa tài sản");
