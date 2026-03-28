@@ -112,7 +112,9 @@ useEffect(() => {
         calculateStats(data);
       }
     } catch (err) {
-      toast.error(response?.message);
+      toast.error(
+      err.response.data.message || "Không thể tải danh sách tài sản"
+    );
     } finally {
       setLoading(false);
     }

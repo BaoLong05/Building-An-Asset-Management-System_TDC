@@ -44,6 +44,7 @@ class TaiSanController extends Controller
         } else {
             return response()->json([
                 'success' => true,
+                'message' => 'Lấy danh sách tài sản thành công!',
                 'data' => $taisan
             ]);
         }
