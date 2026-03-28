@@ -7,6 +7,9 @@ import {
   getMaintenanceAssets,
   getMaintenanceHistory,
   updateMaintenanceStatus,
+  exportExcel,
+  exportPDF,
+
 } from "../../utils/helper";
 
 const MaintenanceManagement = () => {
@@ -14,6 +17,16 @@ const MaintenanceManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [showModalExcel, setShowModalExcel] = useState(false);
+
+  const [exportFilters, setExportFilters] = useState({
+    TinhTrang: "",
+  });
+
+  const[showExportModal, setShowExportModal] = useState(false);
+  const [exprotFilter, setExprotFilter]= useState({
+    TinhTrang:"",
+  });
 
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [maintenanceHistory, setMaintenanceHistory] = useState([]);
@@ -32,7 +45,7 @@ const MaintenanceManagement = () => {
   // =========================
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
-    document.body.classList.toggle('dark-mode-maintenance');
+    document.body.classList.toggle("dark-mode-maintenance");
   };
 
   // =========================
@@ -55,14 +68,26 @@ const MaintenanceManagement = () => {
   }, []);
 
   // =========================
-  // EXPORT 
+  // EXPORT
   // =========================
   const handleExportExcel = () => {
-    toast.info("Tính năng xuất Excel sẽ được phát triển sau 📊");
+    exportExcel(
+      "exportExcel/baotri",
+      {
+        TinhTrang: filterStatus,
+      },
+      "baotri.xlsx",
+    );
   };
 
   const handleExportPDF = () => {
-    toast.info("Tính năng xuất PDF sẽ được phát triển sau 📄");
+    exportPDF(
+      "export/baotri",
+      {
+        TinhTrang : filterStatus,
+      },
+      "danhsach_baotri.pdf"
+    );
   };
 
   // =========================
@@ -102,7 +127,7 @@ const MaintenanceManagement = () => {
       selectedAsset.MaBaoTri,
       updateStatus,
       updateNote,
-      selectedAsset.updated_at 
+      selectedAsset.updated_at,
     );
 
     if (res.success) {
@@ -116,8 +141,8 @@ const MaintenanceManagement = () => {
                 TinhTrang: updateStatus,
                 NoiDung: updateNote,
               }
-            : item
-        )
+            : item,
+        ),
       );
 
       setShowUpdateModal(false);
@@ -130,11 +155,15 @@ const MaintenanceManagement = () => {
   // GET STATUS CLASS
   // =========================
   const getStatusClass = (status) => {
-    switch(status) {
-      case 'Hoàn thành': return 'good';
-      case 'Đang bảo trì': return 'maintenance';
-      case 'Hỏng': return 'broken';
-      default: return '';
+    switch (status) {
+      case "Hoàn thành":
+        return "good";
+      case "Đang bảo trì":
+        return "maintenance";
+      case "Hỏng":
+        return "broken";
+      default:
+        return "";
     }
   };
 
@@ -142,28 +171,31 @@ const MaintenanceManagement = () => {
   // GET STATUS ICON
   // =========================
   const getStatusIcon = (status) => {
-    switch(status) {
-      case 'Hoàn thành': return '✅';
-      case 'Đang bảo trì': return '🔧';
-      case 'Hỏng': return '❌';
-      default: return '❓';
+    switch (status) {
+      case "Hoàn thành":
+        return "✅";
+      case "Đang bảo trì":
+        return "🔧";
+      case "Hỏng":
+        return "❌";
+      default:
+        return "❓";
     }
   };
 
   const stats = {
     total: assets.length,
-    maintenance: assets.filter(a => a.TinhTrang === 'Đang bảo trì').length,
-    completed: assets.filter(a => a.TinhTrang === 'Hoàn thành').length,
+    maintenance: assets.filter((a) => a.TinhTrang === "Đang bảo trì").length,
+    completed: assets.filter((a) => a.TinhTrang === "Hoàn thành").length,
   };
 
   return (
-    <div className={`maintenance-management ${darkMode ? 'dark' : ''}`}>
-      <ToastContainer 
-        position="top-right" 
+    <div className={`maintenance-management ${darkMode ? "dark" : ""}`}>
+      <ToastContainer
+        position="top-right"
         autoClose={3000}
-        theme={darkMode ? 'dark' : 'light'}
+        theme={darkMode ? "dark" : "light"}
       />
-
       <div className="top-bar-maintenance">
         <div className="header-title">
           <h1>
@@ -174,7 +206,7 @@ const MaintenanceManagement = () => {
 
         <div className="top-bar-actions">
           <button className="theme-toggle" onClick={toggleDarkMode}>
-            {darkMode ? '☀️' : '🌙'}
+            {darkMode ? "☀️" : "🌙"}
           </button>
           <div className="language-select">
             <select>
@@ -188,7 +220,6 @@ const MaintenanceManagement = () => {
           </div>
         </div>
       </div>
-
       <div className="stats-container">
         <div className="stat-card total">
           <div className="stat-icon">
@@ -230,7 +261,6 @@ const MaintenanceManagement = () => {
           </div>
         </div>
       </div>
-
       <div className="action-bar">
         <div className="search-wrapper">
           <input
@@ -244,7 +274,7 @@ const MaintenanceManagement = () => {
 
         <div className="right-actions">
           <div className="filter-group">
-            <select 
+            <select
               className="filter-select"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
@@ -256,16 +286,18 @@ const MaintenanceManagement = () => {
           </div>
 
           <div className="export-group">
-            <button 
-              className="btn-export excel" 
-              onClick={handleExportExcel}
+            <button
+              className="btn-export excel"
+              onClick={() => {
+                setShowModalExcel(true);
+              }}
               title="Xuất Excel"
             >
               📊 Excel
             </button>
             <button 
               className="btn-export pdf" 
-              onClick={handleExportPDF}
+              onClick={() => setShowExportModal(true)}
               title="Xuất PDF"
             >
               📄 PDF
@@ -273,7 +305,6 @@ const MaintenanceManagement = () => {
           </div>
         </div>
       </div>
-
       <div className="table-wrapper">
         <table className="maintenance-table">
           <thead>
@@ -301,7 +332,9 @@ const MaintenanceManagement = () => {
                   </td>
 
                   <td>
-                    <span className={`status-badge ${getStatusClass(a.TinhTrang)}`}>
+                    <span
+                      className={`status-badge ${getStatusClass(a.TinhTrang)}`}
+                    >
                       <span className="status-dot"></span>
                       {getStatusIcon(a.TinhTrang)} {a.TinhTrang}
                     </span>
@@ -309,7 +342,7 @@ const MaintenanceManagement = () => {
 
                   <td>
                     <div className="action-buttons">
-                      <button 
+                      <button
                         className="btn-icon view"
                         onClick={() => handleViewDetails(a)}
                         title="Xem lịch sử"
@@ -346,11 +379,10 @@ const MaintenanceManagement = () => {
           </tbody>
         </table>
       </div>
-
       <div className="pagination">
-        <button 
+        <button
           className="page-btn"
-          disabled={page === 1} 
+          disabled={page === 1}
           onClick={() => fetchAssets(page - 1)}
         >
           <i className="fas fa-chevron-left"></i>
@@ -370,7 +402,6 @@ const MaintenanceManagement = () => {
           <i className="fas fa-chevron-right"></i>
         </button>
       </div>
-
       <div className="table-footer">
         <span>
           Tổng số: <strong>{filteredAssets.length}</strong> yêu cầu
@@ -380,22 +411,27 @@ const MaintenanceManagement = () => {
           {stats.maintenance} đang bảo trì, {stats.completed} hoàn thành
         </span>
       </div>
-
       {showDetailModal && selectedAsset && (
-        <div className="modal-overlay-maintenance" onClick={() => setShowDetailModal(false)}>
-          <div className="modal-maintenance detail-modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-overlay-maintenance"
+          onClick={() => setShowDetailModal(false)}
+        >
+          <div
+            className="modal-maintenance detail-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="detail-header">
               <div className="header-with-close">
                 <h2>
                   <i className="fas fa-history"></i>
                   Lịch sử bảo trì
                 </h2>
-                <button 
+                <button
                   className="modal-close-btn"
                   onClick={() => setShowDetailModal(false)}
                   title="Đóng"
-                >X
-                  <i className="fas fa-times"></i>
+                >
+                  X<i className="fas fa-times"></i>
                 </button>
               </div>
               <div className="asset-info">
@@ -411,9 +447,12 @@ const MaintenanceManagement = () => {
                   Trạng thái hiện tại
                 </h3>
                 <div className="status-display">
-                  <span className={`status-badge large ${getStatusClass(selectedAsset.TinhTrang)}`}>
+                  <span
+                    className={`status-badge large ${getStatusClass(selectedAsset.TinhTrang)}`}
+                  >
                     <span className="status-dot"></span>
-                    {getStatusIcon(selectedAsset.TinhTrang)} {selectedAsset.TinhTrang}
+                    {getStatusIcon(selectedAsset.TinhTrang)}{" "}
+                    {selectedAsset.TinhTrang}
                   </span>
                 </div>
               </div>
@@ -435,10 +474,12 @@ const MaintenanceManagement = () => {
                       <div className="history-item">
                         <div className="history-time">
                           <i className="far fa-calendar-alt"></i>
-                          {new Date(h.NgayBaoTri).toLocaleString('vi-VN')}
+                          {new Date(h.NgayBaoTri).toLocaleString("vi-VN")}
                         </div>
                         <div className="history-content">
-                          <span className={`status-badge small ${getStatusClass(h.TinhTrang)}`}>
+                          <span
+                            className={`status-badge small ${getStatusClass(h.TinhTrang)}`}
+                          >
                             {getStatusIcon(h.TinhTrang)} {h.TinhTrang}
                           </span>
                           <span className="history-note">
@@ -447,7 +488,7 @@ const MaintenanceManagement = () => {
                           </span>
                         </div>
                       </div>
-    
+
                       {index < maintenanceHistory.length - 1 && (
                         <div className="history-divider"></div>
                       )}
@@ -459,21 +500,26 @@ const MaintenanceManagement = () => {
           </div>
         </div>
       )}
-
       {showUpdateModal && selectedAsset && (
-        <div className="modal-overlay-maintenance" onClick={() => setShowUpdateModal(false)}>
-          <div className="modal-maintenance" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-overlay-maintenance"
+          onClick={() => setShowUpdateModal(false)}
+        >
+          <div
+            className="modal-maintenance"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header-with-close">
               <h2>
                 <i className="fas fa-sync-alt"></i>
                 Cập nhật trạng thái
               </h2>
-              <button 
+              <button
                 className="modal-close-btn"
                 onClick={() => setShowUpdateModal(false)}
                 title="Đóng"
-              >X
-                <i className="fas fa-times"></i>
+              >
+                X<i className="fas fa-times"></i>
               </button>
             </div>
 
@@ -512,8 +558,7 @@ const MaintenanceManagement = () => {
                       onChange={(e) => setUpdateStatus(e.target.value)}
                     />
                     <span className="status-badge good">
-                      <span className="status-dot"></span>
-                      ✅ Hoàn thành
+                      <span className="status-dot"></span>✅ Hoàn thành
                     </span>
                   </label>
                 </div>
@@ -541,6 +586,103 @@ const MaintenanceManagement = () => {
           </div>
         </div>
       )}
+      {/* {Modal export excel} */}
+      {showModalExcel && (
+        <div className="modal-overlay" onClick={() => setShowModalExcel(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Xuất EXCEL</h2>
+              <button onClick={() => setShowModalExcel(false)}>X</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label htmlFor="Tình Trạng"></label>
+                <select
+                  value={exportFilters.TinhTrang}
+                  onChange={(e) =>
+                    setExportFilters({
+                      ...exportFilters,
+                      TinhTrang: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  <option value="Đang bảo trì">Đang bảo trì</option>
+                  <option value="Hoàn thành">Hoàn thành</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button onClick={() => setShowModalExcel(false)}>Hủy</button>
+
+              <button
+                className="btn-save"
+                onClick={() => {
+                  exportExcel(
+                    "exportExcel/baotri",
+                    exportFilters,
+                    "baotri.xlsx",
+                  );
+                  setShowModalExcel(false);
+                }}
+              >
+                {" "}
+                Xuất Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      ;
+    {/*Export modal*/}
+    {showExportModal && (
+      <div className="modal-overlay"
+      onClick={()=> setShowExportModal(false)}>
+        <div className="modal" onClick={(e) => e.stopPropagation()}>
+       <div className="modal-header">
+         <h2>Xuất PDF</h2>
+        <button onClick={()=> setShowExportModal(false)}>X</button>
+       </div>
+        <div className="modal-body">
+          <div className="form-group">
+            <label>Trạng Thái</label>
+            <select 
+            value={exprotFilter.TinhTrang}
+            onChange={(e) => 
+              setExprotFilter({
+                ...exprotFilter,
+                TinhTrang: e.target.value,
+              })
+            }>
+                <option value="">Tất cả</option>
+                <option value="Đang bảo trì">Đang bảo trì</option>
+                <option value="Hoàn thành">Hoàn Thành</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button onClick={()=>setShowExportModal(false)}>
+              Hủy
+          </button>
+          <button
+          className="btn-save"
+          onClick={()=> {
+            exportPDF(
+              "export/baotri",
+              exprotFilter,
+              "danhsach_baotri.pdf"
+            );
+            setShowDetailModal(false);
+          }}
+          >
+            Xuẩt PDF
+          </button>
+        </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 };

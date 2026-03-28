@@ -14,11 +14,11 @@ class TaiSanSeeder extends Seeder
 
         for ($i = 1; $i <= 15; $i++) {
             $data[] = [
+                 'HinhAnh' => 'uploads/taisan/p.jpeg',
                 'TenTaiSan' => 'Tài sản IT ' . $i,
                 'MaDanhMuc' => rand(1, 5),
                 'MaPhong' => 1, // cùng 1 phòng
                 'SoLuong' => rand(1, 5),
-                'DonGia' => rand(1000000, 10000000),
                 'NgayNhap' => '2026-03-01',
                 'TinhTrang' => 'Tốt',
                 'GhiChu' => 'Thiết bị phòng IT',

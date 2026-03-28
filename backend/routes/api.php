@@ -5,7 +5,10 @@ use App\Http\Controllers\Api\TaiSanController;
 use App\Http\Controllers\Api\DanhMucController;
 use App\Http\Controllers\Api\PhongController;
 use App\Http\Controllers\Api\BaoTriController;
+use App\Http\Controllers\Export\ExcelController;
 use App\Models\BaoTri;
+use App\Http\Controllers\Export\PdfController;
+
 
 //quan ly tai san
 //1. lay danh sach tai san
@@ -51,3 +54,26 @@ Route::put('/baotri/{id}',[BaoTriController::class, 'baotri_update']);
 Route::delete('/baotri/{id}', [BaoTriController::class, 'baotri_delete']);
 //5. bao tri history
 Route::get('/baotri/lichsu/{id}', [BaoTriController::class, 'baotri_history']);
+
+
+
+//export excel
+//1. tai san
+Route::get('exportExcel/taisan', [ExcelController::class, 'exportTaisan']);
+//2.Bao tri
+Route::get('exportExcel/baotri', [ExcelController::class, 'exportBaotri']);
+//3.danh muc
+Route::get('exportExcel/danhmuc', [ExcelController::class, 'exportDanhmuc']);
+//4. phong
+Route::get('exportExcel/phong', [ExcelController::class, 'exportPhong']);
+
+//xuat pdf
+//1. Tai san
+Route::get('/export/taisan', [PdfController::class, 'Export_Taisan']);
+//2. Danh muc
+Route::get('/export/danhmuc', [PdfController::class, 'Export_DanhMuc']);
+//3. phong
+Route::get('/export/phong', [PdfController::class, 'Export_Phong']);
+//4. Bao tri
+Route::get('/export/baotri', [PdfController::class, 'Export_Baotri']);
+

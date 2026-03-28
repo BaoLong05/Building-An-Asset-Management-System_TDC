@@ -14,13 +14,16 @@ class TaiSan extends Model
 
     protected $fillable = [
         'TenTaiSan',
+        'HinhAnh',
         'MaDanhMuc',
         'MaPhong',
         'SoLuong',
-        'DonGia',
         'NgayNhap',
         'TinhTrang',
-        'GhiChu'
+        'GhiChu',
+        'created_by',
+        'updated_by',
+        'deleted_by'
     ];
 
     protected $appends = ['TenPhong','TenDanhMuc'];

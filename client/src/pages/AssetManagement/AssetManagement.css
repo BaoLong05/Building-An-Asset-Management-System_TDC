@@ -535,16 +535,37 @@ ACTION BAR
 }
 
 /* ================================
-TABLE
+TABLE - CẢI THIỆN SCROLL VÀ XUỐNG DÒNG
 ================================ */
+
 .table-container {
   background: white;
   border-radius: 16px;
-  overflow: hidden;
   border: 1px solid #eef1f6;
   margin-bottom: 20px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: auto;
+  max-height: calc(100vh - 380px);
+  min-height: 400px;
+  position: relative;
+}
+
+/* Responsive cho chiều cao màn hình khác nhau */
+@media (min-height: 900px) {
+  .table-container {
+    max-height: calc(100vh - 400px);
+  }
+}
+
+@media (max-height: 700px) {
+  .table-container {
+    max-height: 400px;
+  }
+}
+
+@media (max-height: 600px) {
+  .table-container {
+    max-height: 320px;
+  }
 }
 
 .dark .table-container {
@@ -552,15 +573,50 @@ TABLE
   border-color: #2d3748;
 }
 
+/* Scrollbar styling cho table container */
+.table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark .table-container::-webkit-scrollbar-track {
+  background: #1f2a4a;
+}
+
+.dark .table-container::-webkit-scrollbar-thumb {
+  background: #2d3748;
+}
+
+.dark .table-container::-webkit-scrollbar-thumb:hover {
+  background: #4a5568;
+}
+
 .asset-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1000px;
+  min-width: 800px;
 }
 
 .asset-table thead {
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .dark .asset-table thead {
@@ -569,31 +625,95 @@ TABLE
 }
 
 .asset-table th {
-  padding: 16px;
+  padding: 14px 12px;
   text-align: left;
   font-size: 13px;
   font-weight: 600;
   color: #475569;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  white-space: nowrap;
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  background: #f8fafc;
 }
 
 .dark .asset-table th {
   color: #a0aec0;
+  background: #16213e;
 }
 
 .asset-table td {
-  padding: 16px;
+  padding: 14px 12px;
   border-bottom: 1px solid #f1f5f9;
   font-size: 14px;
   color: #1e293b;
-  white-space: nowrap;
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  vertical-align: middle;
 }
 
 .dark .asset-table td {
   color: #e2e8f0;
   border-bottom-color: #2d3748;
+}
+
+/* Độ rộng cụ thể cho từng cột */
+.asset-table th:nth-child(1),
+.asset-table td:nth-child(1) {
+  min-width: 80px;
+  max-width: 100px;
+}
+
+.asset-table th:nth-child(2),
+.asset-table td:nth-child(2) {
+  min-width: 80px;
+  max-width: 100px;
+  text-align: center;
+}
+
+.asset-table th:nth-child(3),
+.asset-table td:nth-child(3) {
+  min-width: 180px;
+  max-width: 250px;
+}
+
+.asset-table th:nth-child(4),
+.asset-table td:nth-child(4) {
+  min-width: 120px;
+  max-width: 180px;
+}
+
+.asset-table th:nth-child(5),
+.asset-table td:nth-child(5) {
+  min-width: 120px;
+  max-width: 180px;
+}
+
+.asset-table th:nth-child(6),
+.asset-table td:nth-child(6) {
+  min-width: 70px;
+  max-width: 90px;
+  text-align: center;
+}
+
+.asset-table th:nth-child(7),
+.asset-table td:nth-child(7) {
+  min-width: 100px;
+  max-width: 120px;
+}
+
+.asset-table th:nth-child(8),
+.asset-table td:nth-child(8) {
+  min-width: 110px;
+  max-width: 130px;
+}
+
+.asset-table th:nth-child(9),
+.asset-table td:nth-child(9) {
+  min-width: 140px;
+  max-width: 180px;
 }
 
 .asset-table tbody tr {
@@ -618,25 +738,40 @@ TABLE
   color: #90caf9;
 }
 
-.asset-table .price {
-  font-weight: 600;
-  color: #16a34a;
+/* Hình ảnh trong bảng */
+.asset-table td img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  transition: transform 0.2s ease;
 }
 
-.dark .asset-table .price {
-  color: #6ee7b7;
+.asset-table td img:hover {
+  transform: scale(1.5);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  position: relative;
+}
+
+.dark .asset-table td img {
+  border-color: #2d3748;
+  background: #16213e;
 }
 
 /* Status Badge */
 .status-badge {
   display: inline-block;
-  padding: 6px 12px;
+  padding: 5px 12px;
   border-radius: 30px;
   font-size: 12px;
   font-weight: 500;
   text-align: center;
-  min-width: 100px;
   white-space: nowrap;
+  min-width: 90px;
 }
 
 .status-badge.good {
@@ -680,21 +815,23 @@ TABLE
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .action-buttons button {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
-  display: flex;
+  font-size: 14px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
   background: #f1f5f9;
   color: #475569;
+  flex-shrink: 0;
 }
 
 .dark .action-buttons button {
@@ -838,12 +975,13 @@ LOADING & EMPTY
 }
 
 /* ================================
-MODAL
+MODAL - CẢI THIỆN SCROLL
 ================================ */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -863,18 +1001,20 @@ MODAL
 
 .modal {
   background: white;
-  border-radius: 20px;
+  border-radius: 24px;
   width: 100%;
-  max-width: 500px;
-  max-height: 90vh;
+  max-width: 550px;
+  max-height: 85vh;
   overflow-y: auto;
   animation: slideIn 0.3s ease;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
 }
 
 .dark .modal {
   background: #1f2a4a;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes slideIn {
@@ -889,7 +1029,38 @@ MODAL
 }
 
 .detail-modal {
-  max-width: 600px;
+  max-width: 650px;
+}
+
+/* Scrollbar cho modal */
+.modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.modal::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark .modal::-webkit-scrollbar-track {
+  background: #1f2a4a;
+}
+
+.dark .modal::-webkit-scrollbar-thumb {
+  background: #2d3748;
+}
+
+.dark .modal::-webkit-scrollbar-thumb:hover {
+  background: #4a5568;
 }
 
 .modal-header {
@@ -899,10 +1070,11 @@ MODAL
   align-items: center;
   justify-content: space-between;
   background: #f8fafc;
-  border-radius: 20px 20px 0 0;
+  border-radius: 24px 24px 0 0;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
+  flex-shrink: 0;
 }
 
 .dark .modal-header {
@@ -954,10 +1126,12 @@ MODAL
 
 .modal-body {
   padding: 24px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .modal-footer {
-  padding: 20px 24px;
+  padding: 16px 24px;
   border-top: 1px solid #eef1f6;
   display: flex;
   gap: 12px;
@@ -965,7 +1139,8 @@ MODAL
   position: sticky;
   bottom: 0;
   background: white;
-  z-index: 10;
+  z-index: 20;
+  flex-shrink: 0;
 }
 
 .dark .modal-footer {
@@ -1039,6 +1214,7 @@ MODAL
 .form-group textarea {
   resize: vertical;
   min-height: 80px;
+  max-height: 150px;
 }
 
 /* Modal Buttons */
@@ -1125,10 +1301,11 @@ MODAL
 }
 
 .detail-label {
-  min-width: 120px;
+  min-width: 110px;
   font-size: 14px;
   font-weight: 600;
   color: #64748b;
+  flex-shrink: 0;
 }
 
 .dark .detail-label {
@@ -1140,6 +1317,7 @@ MODAL
   font-size: 14px;
   color: #0f172a;
   word-break: break-word;
+  white-space: normal;
 }
 
 .dark .detail-value {
@@ -1234,6 +1412,29 @@ TOAST CUSTOMIZATION
 }
 
 /* ================================
+EXPORT MODAL STYLES
+================================ */
+.modal-overlay .modal-header h2::before {
+  content: "📄";
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.modal-overlay .modal-body select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 40px;
+}
+
+.dark .modal-overlay .modal-body select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a0aec0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}
+
+/* ================================
 RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
 ================================ */
 
@@ -1259,6 +1460,10 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
   
   .stat-value {
     font-size: 26px;
+  }
+  
+  .table-container {
+    max-height: calc(100vh - 420px);
   }
 }
 
@@ -1302,6 +1507,10 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
   .btn-add {
     padding: 10px 20px;
     font-size: 14px;
+  }
+  
+  .table-container {
+    max-height: calc(100vh - 400px);
   }
 }
 
@@ -1413,6 +1622,28 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
     grid-template-columns: 1fr;
     gap: 12px;
   }
+  
+  .table-container {
+    max-height: calc(100vh - 420px);
+    min-height: 350px;
+  }
+  
+  .asset-table th,
+  .asset-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+  
+  .asset-table td img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .action-buttons button {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
 }
 
 /* Mobile lớn (576px - 767px) */
@@ -1471,10 +1702,34 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
     margin: 0 -16px;
     border-radius: 0;
     width: calc(100% + 32px);
+    max-height: calc(100vh - 380px);
   }
   
   .asset-table {
-    min-width: 800px;
+    min-width: 700px;
+  }
+  
+  .asset-table th,
+  .asset-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .asset-table td img {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .status-badge {
+    padding: 3px 8px;
+    font-size: 10px;
+    min-width: 70px;
+  }
+  
+  .action-buttons button {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
   }
   
   .pagination {
@@ -1489,8 +1744,7 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
   
   .modal {
     width: 100%;
-    max-height: 100vh;
-    border-radius: 16px;
+    max-height: 85vh;
   }
   
   .modal-header {
@@ -1525,12 +1779,6 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
   
   .action-buttons {
     gap: 4px;
-  }
-  
-  .action-buttons button {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
   }
   
   .maintenance-info p {
@@ -1611,6 +1859,42 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
     font-size: 12px;
   }
   
+  .table-container {
+    max-height: calc(100vh - 360px);
+    min-height: 280px;
+  }
+  
+  .asset-table {
+    min-width: 600px;
+  }
+  
+  .asset-table th,
+  .asset-table td {
+    padding: 6px 4px;
+    font-size: 11px;
+  }
+  
+  .asset-table td img {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .status-badge {
+    padding: 2px 6px;
+    font-size: 9px;
+    min-width: 60px;
+  }
+  
+  .action-buttons {
+    gap: 3px;
+  }
+  
+  .action-buttons button {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+  
   .pagination {
     gap: 2px;
   }
@@ -1642,6 +1926,10 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
     font-size: 16px;
   }
   
+  .modal {
+    max-height: 90vh;
+  }
+  
   .modal-header {
     padding: 14px 16px;
   }
@@ -1661,24 +1949,24 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
   }
   
   .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
   
   .form-group label {
     font-size: 12px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
   }
   
   .form-group input,
   .form-group select,
   .form-group textarea {
-    padding: 10px;
-    font-size: 13px;
+    padding: 8px 10px;
+    font-size: 12px;
   }
   
   .btn-save, .btn-edit, .btn-cancel {
-    padding: 10px 20px;
-    font-size: 14px;
+    padding: 8px 16px;
+    font-size: 13px;
   }
   
   .detail-label {
@@ -1692,12 +1980,16 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
 
 /* Chiều cao màn hình nhỏ (mobile landscape) */
 @media (max-height: 600px) and (orientation: landscape) {
+  .table-container {
+    max-height: 280px;
+  }
+  
   .modal {
-    max-height: 95vh;
+    max-height: 90vh;
   }
   
   .modal-body {
-    max-height: 60vh;
+    max-height: 50vh;
     overflow-y: auto;
   }
   
@@ -1727,6 +2019,7 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
     border: none;
     box-shadow: none;
     overflow: visible;
+    max-height: none;
   }
   
   .asset-table {
@@ -1737,6 +2030,8 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
   .asset-table td {
     color: black !important;
     border-color: #ddd !important;
+    white-space: normal;
+    word-break: break-word;
   }
   
   .status-badge {

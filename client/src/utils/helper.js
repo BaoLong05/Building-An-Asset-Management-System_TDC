@@ -4,26 +4,32 @@ export const API_BASE_URL = "http://192.168.33.10:8000/api";
 
 export const apiUrl = (endpoint) => `${API_BASE_URL}/${endpoint}`;
 
-//file loi 
+//file loi
 const handleError = (error, defaultMessage) => {
   if (error.response) {
     const res = error.response.data;
+
     if (res.errors) {
       const messages = Object.values(res.errors).flat();
 
+      messages.forEach((msg) => toast.error(msg));
+
       return {
         success: false,
-        message: messages.join(", "),
         errors: res.errors,
       };
     }
+
     if (res.message) {
+      toast.error(res.message);
       return {
         success: false,
         message: res.message,
       };
     }
   }
+
+  toast.error(defaultMessage || "Lỗi server");
 
   return {
     success: false,
@@ -45,10 +51,23 @@ export const getAssets = async (page = 1) => {
   }
 };
 
-//them tai san
+  //them tai san
 export const addAsset = async (data) => {
   try {
-    const res = await axios.post(apiUrl("taisan"), data);
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      if (data[key] !== null && data[key] !== "") {
+        formData.append(key, data[key]);
+      }
+    });
+
+    const res = await axios.post(apiUrl("taisan"), formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi thêm tài sản");
@@ -58,7 +77,18 @@ export const addAsset = async (data) => {
 //cap nhat tai san
 export const updateAsset = async (id, data) => {
   try {
-    const res = await axios.put(apiUrl(`taisan/${id}`), data);
+    const formData = new FormData;
+    Object.keys(data).forEach((key)=> {
+      if(data[key] !== null && data[key] !== ""){
+        formData.append(key, data[key]);
+      }
+    });
+    formData.append("_method", "PUT");
+    const res = await axios.post(apiUrl(`taisan/${id}`), formData,{
+      headers:{
+        "Content-Type": "multipart/form-data"
+      }
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi sửa tài sản");
@@ -127,7 +157,6 @@ export const getRoom = async (page = 1) => {
     return handleError(error, "Lỗi khi lấy phòng");
   }
 };
-
 
 // them phong
 export const addRoom = async (data) => {
@@ -224,5 +253,61 @@ export const addMaintenanceNote = async (data) => {
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi thêm ghi chú");
+  }
+};
+//api excel
+export const exportExcel = async (
+  endpoint,
+  params = {},
+  filename = "file.xlsx",
+) => {
+  try {
+    const res = await axios.get(apiUrl(endpoint), {
+      params,
+      responseType: "blob",
+    });
+
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.setAttribute("download", filename);
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+
+    toast.success("Xuất Excel thành công!");
+  } catch (error) {
+    const err = handleError(error, "Lỗi khi xuất Excel");
+    toast.error(err.message);
+    return err;
+  }
+};
+
+//Api pdf
+export const exportPDF = async (endpoint, params = {}, filename = "file.pdf") => {
+  try {
+    const res = await axios.get(apiUrl(endpoint), {
+      params,
+      responseType: "blob", 
+    });
+
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.setAttribute("download", filename);
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    toast.success("Xuất PDF thành công");
+  } catch (error) {
+    const err = handleError(error, "Lỗi khi export PDF");
+    toast.error(err.message);
+    return err;
   }
 };

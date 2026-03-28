@@ -8,6 +8,8 @@ use App\Models\TaiSan;
 use App\Models\BaoTri;
 use Exception;
 
+use function PHPUnit\Framework\isEmpty;
+
 class TaiSanController extends Controller
 {
     public function index(Request $request)
@@ -47,20 +49,25 @@ class TaiSanController extends Controller
         }
     }
 
-    // them tai san
     public function AssetManagement_store(Request $request)
     {
-        $request->validate([
+
+        $validated = $request->validate([
+            'HinhAnh' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'TenTaiSan' => 'required|string|max:255',
             'MaDanhMuc' => 'required|exists:danhmuc,MaDanhMuc',
             'MaPhong' => 'required|exists:phong,MaPhong',
             'SoLuong' => 'required|integer|min:1',
-            'DonGia' => 'required|numeric|min:0',
             'NgayNhap' => 'required|date',
             'TinhTrang' => 'required|in:Tốt',
         ], [
+            'HinhAnh.image' => 'File phải là hình ảnh!',
+            'HinhAnh.mimes' => 'Ảnh phải có định dạng jpg, jpeg, png, gif hoặc webp!',
+            'HinhAnh.max' => 'Ảnh không được vượt quá 2MB!',
+
             'TenTaiSan.required' => 'Tên tài sản không được để trống!',
             'TenTaiSan.max' => 'Tên tài sản không quá 255 ký tự!',
+
 
             'MaDanhMuc.required' => 'Vui lòng chọn danh mục!',
             'MaDanhMuc.exists' => 'Danh mục không hợp lệ!',
@@ -72,10 +79,6 @@ class TaiSanController extends Controller
             'SoLuong.integer' => 'Số lượng phải là số!',
             'SoLuong.min' => 'Số lượng phải lớn hơn 0!',
 
-            'DonGia.required' => 'Đơn giá không được để trống!',
-            'DonGia.numeric' => 'Đơn giá phải là số!',
-            'DonGia.min' => 'Đơn giá không được âm!',
-
             'NgayNhap.required' => 'Vui lòng chọn ngày nhập!',
             'NgayNhap.date' => 'Ngày nhập không hợp lệ!',
 
@@ -83,43 +86,66 @@ class TaiSanController extends Controller
             'TinhTrang.in' => 'Trạng thái phải là "Tốt"!',
         ]);
 
-        try {
-            $taisan = TaiSan::create([
-                'TenTaiSan' => $request->TenTaiSan,
-                'MaDanhMuc' => $request->MaDanhMuc,
-                'MaPhong' => $request->MaPhong,
-                'SoLuong' => $request->SoLuong,
-                'DonGia' => $request->DonGia,
-                'NgayNhap' => $request->NgayNhap,
-                'TinhTrang' => $request->TinhTrang,
-                'GhiChu' => $request->GhiChu,
-                'created_by' => 1
-            ]);
+        $imagePath = null;
+        $imageUrl = null;
 
-            $taisan->load('phong', 'danhmuc');
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Thêm tài sản thành công!',
-                'data' => $taisan
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm tài sản thất bại!',
-                'error' => $e->getMessage()
-            ], 500);
+        if ($request->hasFile('HinhAnh')) {
+            $imagePath = $request->file('HinhAnh')->store('taisan', 'public');
+            $imageUrl = asset('storage/' . $imagePath);
         }
+        $taisan = TaiSan::create([
+            'HinhAnh' => $imageUrl,
+            'TenTaiSan' => $validated['TenTaiSan'],
+            'MaDanhMuc' => $validated['MaDanhMuc'],
+            'MaPhong' => $validated['MaPhong'],
+            'SoLuong' => $validated['SoLuong'],
+            'NgayNhap' => $validated['NgayNhap'],
+            'TinhTrang' => $validated['TinhTrang'],
+            'GhiChu' => $validated['GhiChu'] ?? null,
+            'created_by' => 1,
+        ]);
+
+        $taisan->load('phong', 'danhmuc');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thêm tài sản thành công!',
+            'data' => [
+                'MaTaiSan' => $taisan->MaTaiSan,
+                'HinhAnh' => $taisan->HinhAnh,
+                'HinhAnh_url' => $taisan->HinhAnh ? asset($taisan->HinhAnh) : null,
+                'TenTaiSan' => $taisan->TenTaiSan,
+                'MaDanhMuc' => $taisan->MaDanhMuc,
+                'MaPhong' => $taisan->MaPhong,
+                'SoLuong' => $taisan->SoLuong,
+                'NgayNhap' => $taisan->NgayNhap,
+                'TinhTrang' => $taisan->TinhTrang,
+                'GhiChu' => $taisan->GhiChu,
+                'phong' => $taisan->phong,
+                'danhmuc' => $taisan->danhmuc,
+            ]
+        ], 201);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Dữ liệu không hợp lệ!',
+            'errors' => $e->errors(),
+        ], 422);
     }
 
     //cap nhat tai san
     public function AssetManagement_Update(Request $request, $id)
     {
         $request->validate([
+            'HinhAnh' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'TenTaiSan' => 'required|string|max:255',
             'SoLuong' => 'required|integer|min:1',
             'TinhTrang' => 'required|in:Tốt,Đang bảo trì,Hỏng',
         ], [
+            'HinhAnh.image' => 'File phải là hình ảnh!',
+            'HinhAnh.mimes' => 'Ảnh phải có định dạng jpg, jpeg, png, gif hoặc webp!',
+            'HinhAnh.max' => 'Ảnh không được vượt quá 2MB!',
+
             'TenTaiSan.required' => 'Tên tài sản không được để trống',
             'TenTaiSan.max' => 'Tên tài sản không quá 255 ký tự',
 
@@ -147,13 +173,22 @@ class TaiSanController extends Controller
             ]);
         }
         $oldTinhTrang = $taisan->TinhTrang;
+
         try {
+            $imagePath = null;
+            $imageUrl = $taisan->HinhAnh;
+
+            if ($request->hasFile('HinhAnh')) {
+                $imagePath = $request->file('HinhAnh')->store('taisan', 'public');
+                $imageUrl = asset('storage/' . $imagePath);
+            }
+
             $taisan->update([
+                'HinhAnh' => $imageUrl,
                 'TenTaiSan' => $request->TenTaiSan,
                 'MaDanhMuc' => $request->MaDanhMuc,
                 'MaPhong' => $request->MaPhong,
                 'SoLuong' => $request->SoLuong,
-                'DonGia' => $request->DonGia,
                 'NgayNhap' => $request->NgayNhap,
                 'TinhTrang' => $request->TinhTrang,
                 'GhiChu' => $request->GhiChu,
@@ -176,7 +211,6 @@ class TaiSanController extends Controller
                 }
             }
             $taisan->load('phong', 'danhmuc');
-
             return response()->json([
                 'success' => true,
                 'message' => 'Thông tin tài sản đã được cập nhật!',
@@ -190,7 +224,6 @@ class TaiSanController extends Controller
             ], 500);
         }
     }
-
     //xoa tai san
     public function AssetManagement_Delete($id)
     {
@@ -202,6 +235,8 @@ class TaiSanController extends Controller
             ], 404);
         }
         try {
+            $taisan->deleted_by = 1;
+            $taisan->save();
             $taisan->delete();
             return response()->json([
                 'success' => true,
