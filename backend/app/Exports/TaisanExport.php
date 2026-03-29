@@ -50,7 +50,6 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
                     'danhmuc' => null,
                     'phong' => null,
                     'SoLuong' => '',
-                    'DonGia' => '',
                     'NgayNhap' => '',
                     'TinhTrang' => '',
                     'GhiChu' => '',
@@ -68,7 +67,6 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
             optional($row->danhmuc)->TenDanhMuc,
             optional($row->phong)->TenPhong,
             $row->SoLuong,
-            $row->DonGia,
             $row->NgayNhap,
             $row->TinhTrang,
             $row->GhiChu,
@@ -83,7 +81,6 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
             'Tên Danh Mục',
             'Tên Phòng',
             'Số Lượng',
-            'Đơn Giá',
             'Ngày Nhập',
             'Tình Trạng',
             'Ghi Chú'
@@ -95,7 +92,7 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
         $highestColumn = $sheet->getHighestColumn();
 
         // in dam - nen -can giua
-        $sheet->getStyle('A1:I1')->applyFromArray([
+        $sheet->getStyle('A1:H1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 12,
@@ -121,11 +118,6 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
         $sheet->getStyle("A2:A{$highestRow}")->getAlignment()->setHorizontal('center');
         $sheet->getStyle("E2:E{$highestRow}")->getAlignment()->setHorizontal('center');
         $sheet->getStyle("F2:F{$highestRow}")->getAlignment()->setHorizontal('right');
-
-        // format lai don gia
-        $sheet->getStyle("F2:F{$highestRow}")
-            ->getNumberFormat()
-            ->setFormatCode('#,##0');
 
         // format ngay
         $sheet->getStyle("G2:G{$highestRow}")
