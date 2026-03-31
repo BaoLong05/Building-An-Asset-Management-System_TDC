@@ -51,7 +51,7 @@ export const getAssets = async (page = 1) => {
   }
 };
 
-  //them tai san
+//them tai san
 export const addAsset = async (data) => {
   try {
     const formData = new FormData();
@@ -77,17 +77,17 @@ export const addAsset = async (data) => {
 //cap nhat tai san
 export const updateAsset = async (id, data) => {
   try {
-    const formData = new FormData;
-    Object.keys(data).forEach((key)=> {
-      if(data[key] !== null && data[key] !== ""){
+    const formData = new FormData();
+    Object.keys(data).forEach((key) => {
+      if (data[key] !== null && data[key] !== "") {
         formData.append(key, data[key]);
       }
     });
     formData.append("_method", "PUT");
-    const res = await axios.post(apiUrl(`taisan/${id}`), formData,{
-      headers:{
-        "Content-Type": "multipart/form-data"
-      }
+    const res = await axios.post(apiUrl(`taisan/${id}`), formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     return res.data;
   } catch (error) {
@@ -287,11 +287,15 @@ export const exportExcel = async (
 };
 
 //Api pdf
-export const exportPDF = async (endpoint, params = {}, filename = "file.pdf") => {
+export const exportPDF = async (
+  endpoint,
+  params = {},
+  filename = "file.pdf",
+) => {
   try {
     const res = await axios.get(apiUrl(endpoint), {
       params,
-      responseType: "blob", 
+      responseType: "blob",
     });
 
     const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -309,5 +313,16 @@ export const exportPDF = async (endpoint, params = {}, filename = "file.pdf") =>
     const err = handleError(error, "Lỗi khi export PDF");
     toast.error(err.message);
     return err;
+  }
+};
+
+// =========LOGIN=============
+//1.login
+export const getLogin = async (data) => {
+  try {
+    const res = await axios.post(apiUrl("login"), data);
+    return res.data;
+  } catch (error) {
+    return handleError(error, "Đăng nhập không thành công!");
   }
 };
