@@ -51,51 +51,52 @@ class PasswordController extends Controller
         ], 400);
     }
 
-    public function ResetPassword(Request $request)
+    public function resetPassword(Request $request)
     {
-        $request->merge([
-            'email' => trim($request->email),
-            'password' => trim($request->password),
-        ]);
+        
 
         $request->validate([
-            'email' => [
-                'required',
-                'string',
-                'max:255',
-                new Email,
-                'regex:/^\S+@\S+\.\S+$/'
-            ],
+            'email' => 'required|email|max:255',
+            'token' => 'required',
             'password' => [
                 'required',
-                'string',
                 'min:6',
-
-                Password::min(6)
+                'confirmed',
+                \Illuminate\Validation\Rules\Password::min(6)
                     ->letters()
                     ->numbers()
                     ->mixedCase()
                     ->symbols()
             ],
         ], [
+
             'email.required' => 'Email không được để trống!',
-            'email.string' => 'Email không hợp lệ!',
-            'email.max' => 'Email không được dài hơn 255 ký tự!',
-            'email.regex' => 'Email không được chứa khoảng trắng!',
+            'email.email' => 'Email phải đúng định dạng!',
+            'email.max' => 'Email không được dài quá 255 ký tự!',
+
+            'token.required' => 'Token không hợp lệ hoặc đã hết hạn!',
 
             'password.required' => 'Mật khẩu không được để trống!',
-            'password.string' => 'Mật khẩu không hợp lệ!',
             'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự!',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp!',
+
+            'password.letters' => 'Mật khẩu phải chứa ít nhất 1 chữ cái!',
+            'password.numbers' => 'Mật khẩu phải chứa ít nhất 1 số!',
+            'password.mixed' => 'Mật khẩu phải bao gồm chữ hoa và chữ thường!',
+            'password.symbols' => 'Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt!',
         ]);
 
         $status = Password::reset(
-            $request->only('email', 'password'),
+            $request->only('email', 'token', 'password', 'password_confirmation'),
             function ($user, $password) {
                 $user->update([
                     'password' => Hash::make($password)
                 ]);
+                $user->save();
             }
         );
+
+
         if ($status === Password::PASSWORD_RESET) {
             return response()->json([
                 'success' => true,
@@ -105,7 +106,11 @@ class PasswordController extends Controller
 
         return response()->json([
             'success' => false,
-            'message' => "Đổi mật khẩu không thành công!"
+            'message' => match ($status) {
+                Password::INVALID_TOKEN => 'Token không hợp lệ hoặc đã hết hạn!',
+                Password::INVALID_USER => 'Email không tồn tại!',
+                default => 'Đổi mật khẩu thất bại!'
+            }
         ], 400);
     }
 }
