@@ -317,6 +317,12 @@ export const exportPDF = async (
 };
 
 // =========LOGIN=============
+// TOKEN
+export const authHeader = () => ({
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+});
 //1.login
 export const getLogin = async (data) => {
   try {
@@ -326,3 +332,12 @@ export const getLogin = async (data) => {
     return handleError(error, "Đăng nhập không thành công!");
   }
 };
+
+//2. Logout
+export const logout = async()=>{
+  try{
+    const res = await axios.post(apiUrl("logout"));
+  }catch(error){
+    return handleError(error, "Đăng xuất thất bại!")
+  }
+}

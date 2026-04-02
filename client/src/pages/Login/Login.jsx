@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import "./Login.css";
 import { getLogin } from "../../utils/helper";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   document.title = "Đăng Nhập";
@@ -41,7 +41,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      toast.error("Lỗi Serve");
+      toast.error("Lỗi Server");
     }
 
     // Giả lập API call
@@ -89,35 +89,7 @@ const Login = () => {
         <div className="login-header">
           <div className="school-logo">
             <div className="logo-icon">
-              <svg
-                width="60"
-                height="60"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 2L2 7L12 12L22 7L12 2Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M2 17L12 22L22 17"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M2 12L12 17L22 12"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <img src="./public/logo/logo1.png" alt="logo" />
             </div>
           </div>
           <h1 className="school-name">TRƯỜNG CAO ĐẲNG CÔNG NGHỆ</h1>
@@ -267,6 +239,12 @@ const Login = () => {
             </div>
           </div>
 
+          <div className="forgot-password-wrapper">
+            <Link to="/forgot-password" className="forgot-password-link">
+              Quên mật khẩu?
+            </Link>
+          </div>
+
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? (
               <>
@@ -308,11 +286,7 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Footer Info */}
         <div className="login-footer">
-          <p className="demo-info">
-            <span>🔐 Tài khoản demo: admin / admin123</span>
-          </p>
           <p className="copyright">© 2024 Trường Cao đẳng Công nghệ Thủ Đức</p>
         </div>
       </div>

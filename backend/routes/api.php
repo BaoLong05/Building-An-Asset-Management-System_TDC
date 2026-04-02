@@ -95,8 +95,4 @@ Route::middleware(['auth:sanctum', 'activity', 'token.expiry'])->group(function(
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    //admin
-    Route::middleware('role:admin')->group(function(){
-        Route::get('/user', fn()=> 'Admin only');
-    });
 });
