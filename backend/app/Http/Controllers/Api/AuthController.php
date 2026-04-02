@@ -52,6 +52,12 @@ class AuthController extends Controller
         $user->update([
             'last_activity_at' => now()
         ]);
+        if(!$user){
+            return response()->json([
+                "success" => false,
+                "message" => "Tài khoản hoặc mật khẩu không chính xác!"
+            ]);
+        }
 
         return response()->json([
             'success' => true,

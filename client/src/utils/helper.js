@@ -13,6 +13,7 @@ const handleError = (error, defaultMessage) => {
       return {
         success: false,
         errors: res.errors,
+         message: "Dữ liệu không hợp lệ!"
       };
     }
 
@@ -313,7 +314,7 @@ export const exportPDF = async (
 // TOKEN
 export const authHeader = () => ({
   headers: {
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
+    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
   },
 });
 //1.login

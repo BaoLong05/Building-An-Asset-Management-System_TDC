@@ -29,35 +29,21 @@ const Login = () => {
         email: username,
         password: password,
       });
-      if (res.success) {
-        toast.success('Đăng nhập thành công!"');
-
-        sessionStorage.setItem("token", res.token);
-        sessionStorage.setItem("user", JSON.stringify(res.user));
-        if (res.user.role == "admin") {
-          navigate("/admin/dashboard");
-        } else {
-          toast.error(res.message || "Đăng nhập thất bại!");
-        }
+      if (!res.success) {
+        toast.error(res.message || "Đăng nhập thất bại!");
+        setLoading(false);
+        return;
       }
+      toast.success("Đăng nhập thành công!");
+
+      sessionStorage.setItem("token", res.token);
+      sessionStorage.setItem("user", JSON.stringify(res.user));
+      setTimeout(() => {
+        navigate("/admin/dashboard");
+      }, 1000);
     } catch (error) {
       toast.error("Lỗi Server");
     }
-
-    // Giả lập API call
-    setTimeout(() => {
-      // Demo: kiểm tra tài khoản mặc định
-      if (username === "admin" && password === "admin123") {
-        toast.success("Đăng nhập thành công!");
-        // Chuyển hướng sau 1.5 giây
-        setTimeout(() => {
-          window.location.href = "/dashboard";
-        }, 1500);
-      } else {
-        toast.error("Tên đăng nhập hoặc mật khẩu không đúng!");
-        setLoading(false);
-      }
-    }, 1000);
   };
 
   return (

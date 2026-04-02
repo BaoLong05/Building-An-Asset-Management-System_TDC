@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Mail\ResetPasswordCustom;
 
 class User extends Authenticatable
 {
@@ -29,4 +30,8 @@ class User extends Authenticatable
         'password' => 'hashed',
         'email_verified_at' => 'datetime',
     ];
+
+    public function sendPasswordResetNotification($token){
+        $this->notify(new ResetPasswordCustom($token));
+    }
 }
