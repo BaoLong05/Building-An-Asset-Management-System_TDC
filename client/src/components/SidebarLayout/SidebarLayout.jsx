@@ -1,57 +1,35 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./SidebarLayout.css";
+import { logout } from "../../utils/helper";
+import { toast } from "react-toastify";
 
 const menuItems = [
-  {
-    id: "dashboard",
-    name: "Dashboard",
-    icon: "📊", 
-    path: "/admin/dashboard",
-  },
-  {
-    id: "assets",
-    name: "Quản Lý Tài Sản",
-    icon: "🔧", 
-    path: "/admin/asset-management",
-  },
-  {
-    id: "categories",
-    name: "Quản Lý Danh Mục",
-    icon: "📋", 
-    path: "/admin/category-management",
-  },
-  {
-    id: "room",
-    name: "Quản Lý Phòng Học",
-    icon: "🏫", 
-    path: "/admin/room-management",
-  },
-  {
-    id: "maintenance",
-    name: "Quản Lý Bảo Trì",
-    icon: "🔄", 
-    path: "/admin/maintenance-management",
-  },
-  {
-    id: "reports",
-    name: "Báo cáo",
-    icon: "📑", 
-    path: "/admin/reports",
-  },
-  {
-    id: "settings",
-    name: "Cài đặt",
-    icon: "⚙️", 
-    path: "/admin/settings",
-  },
+  { id: "dashboard", name: "Dashboard", icon: "📊", path: "/admin/dashboard" },
+  { id: "assets", name: "Quản Lý Tài Sản", icon: "🔧", path: "/admin/asset-management" },
+  { id: "categories", name: "Quản Lý Danh Mục", icon: "📋", path: "/admin/category-management" },
+  { id: "room", name: "Vị trí sử dụng", icon: "🏫", path: "/admin/room-management" },
+  { id: "maintenance", name: "Quản Lý Bảo Trì", icon: "🔄", path: "/admin/maintenance-management" },
+  { id: "reports", name: "Báo cáo", icon: "📑", path: "/admin/reports" },
+  { id: "settings", name: "Cài đặt", icon: "⚙️", path: "/admin/settings" },
 ];
 
-function SidebarLayout() {
+const SidebarLayout = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const res = await logout();
+
+    if (res) {
+      toast.success("Đăng xuất thành công");
+      sessionStorage.removeItem("token");
+      navigate("/");
+    }
+  };
+
   return (
     <aside className="sidebar">
-
       <div className="logo">
-        <h2>📦 Quản Lý Tài Sản</h2> 
+        <h2>📦 Quản Lý Tài Sản</h2>
       </div>
 
       <nav className="nav-menu">
@@ -70,14 +48,13 @@ function SidebarLayout() {
       </nav>
 
       <div className="sidebar-footer">
-        <button className="logout-btn">
-          <span className="logout-icon">🚪</span> 
+        <button onClick={handleLogout} className="logout-btn">
+          <span className="logout-icon">🚪</span>
           <span>Đăng xuất</span>
         </button>
       </div>
-
     </aside>
   );
-}
+};
 
 export default SidebarLayout;

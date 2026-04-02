@@ -215,7 +215,7 @@ const RoomManagement = () => {
       {/* Top Bar với Theme Toggle */}
       <div className="top-bar-room">
         <div className="header-title">
-          <h1>Quản Lý Phòng Học</h1>
+          <h1>Vị trí sử dụng</h1>
         </div>
 
         <div className="top-bar-actions">
@@ -241,7 +241,7 @@ const RoomManagement = () => {
           <input
             type="text"
             className="search-input"
-            placeholder="🔍 Tìm kiếm phòng học..."
+            placeholder="🔍 Tìm kiếm vị trí..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -259,7 +259,7 @@ const RoomManagement = () => {
           </div>
 
           <button className="btn-add-room" onClick={handleAdd}>
-            ➕ Thêm phòng học
+            ➕ Thêm vị trí
           </button>
         </div>
       </div>
@@ -357,14 +357,14 @@ const RoomManagement = () => {
       </div>
 
       <div className="table-footer">
-        Tổng số phòng học: <strong>{rooms.length}</strong>
+        Tổng số vị trí: <strong>{rooms.length}</strong>
       </div>
 
       {/* MODAL ADD EDIT */}
       {showModal && (
         <div className="modal-overlay-room">
           <div className="modal-room">
-            <h2>{modalType === "add" ? "Thêm phòng học" : "Sửa phòng học"}</h2>
+            <h2>{modalType === "add" ? "Thêm vị trí" : "Sửa vị trí"}</h2>
 
             <form onSubmit={handleSubmit}>
               <input
@@ -372,7 +372,7 @@ const RoomManagement = () => {
                 name="TenPhong"
                 value={currentRoom.TenPhong}
                 onChange={handleInputChange}
-                placeholder="Tên phòng học"
+                placeholder="Tên vị trí"
                 required
               />
 
@@ -402,7 +402,7 @@ const RoomManagement = () => {
             <div className="detail-header">
               <h2>
                 <i className="fas fa-info-circle"></i>
-                Chi tiết phòng học
+                Chi tiết vị trí
               </h2>
             </div>
 
@@ -472,7 +472,7 @@ const RoomManagement = () => {
         <div className="modal-overlay-room">
           <div className="modal-room">
             <h2>Xác nhận xóa</h2>
-            <p>Bạn có chắc muốn xóa phòng học</p>
+            <p>Bạn có chắc muốn xóa vị trí</p>
             <strong>{roomToDelete?.TenPhong}</strong>
 
             <div>

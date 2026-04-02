@@ -331,6 +331,8 @@ export const getLogin = async (data) => {
 export const logout = async()=>{
   try{
     const res = await axios.post(apiUrl("logout"));
+    sessionStorage.removeItem("token");
+    res.data;
   }catch(error){
     return handleError(error, "Đăng xuất thất bại!")
   }
