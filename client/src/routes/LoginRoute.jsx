@@ -13,10 +13,11 @@ const LoginRoute = {
     {
       path: "forgot-password",
       element: <ForgotPassword />,
-    },{
+    },
+    {
       path: "reset-password",
-      element: <ResetPassword/>
-    }
+      element: <ResetPassword />,
+    },
   ],
 };
 export default LoginRoute;
