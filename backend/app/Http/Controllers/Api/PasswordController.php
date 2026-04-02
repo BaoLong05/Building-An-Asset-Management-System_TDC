@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class PasswordController extends Controller
 {
-    public function senndResetLink(Request $request)
+    public function sendResetLink(Request $request)
     {
         $request->validate(
             [
@@ -21,13 +22,28 @@ class PasswordController extends Controller
                 'email.max' => 'email không được dài hơn 255 ký tự!',
             ]
         );
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email không tồn tại trong hệ thống!'
+            ], 404);
+        }
         $status = Password::sendResetLink(
             $request->only('email')
         );
+        if ($status === Password::RESET_LINK_SENT) {
+            return response()->json([
+                'success' => true,
+                'message' => "Đã gửi link reset mật khẩu vào email của bạn. Vui lòng kiểm tra email!"
+            ]);
+        }
+
         return response()->json([
-            'success' => true,
-            'message' => 'Đã gửi vào email, vui lòng kiểm tra email của bạn!'
-        ]);
+            'success' => false,
+            'message' => "Gửi reset link email thất bại. Vui lòng kiểm tra lại email của bạn!"
+        ], 400);
+       
     }
 
     public function ResetPassword(Request $request)
@@ -50,13 +66,20 @@ class PasswordController extends Controller
             $request->only('email', 'token', 'password'),
             function ($user, $password) {
                 $user->update([
-                    'password' => Hash::mkae($password)
+                    'password' => Hash::make($password)
                 ]);
             }
         );
+        if ($status === Password::PASSWORD_RESET) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đổi mật khẩu thành công!'
+            ]);
+        }
+
         return response()->json([
-            'success' => true,
-            'message' => 'Đổi mật khẩu thành công!'
-        ]);
+            'success' => false,
+            'message' => __($status)
+        ], 400);
     }
 }

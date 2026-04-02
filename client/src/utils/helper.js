@@ -10,10 +10,6 @@ const handleError = (error, defaultMessage) => {
     const res = error.response.data;
 
     if (res.errors) {
-      const messages = Object.values(res.errors).flat();
-
-      messages.forEach((msg) => toast.error(msg));
-
       return {
         success: false,
         errors: res.errors,
@@ -21,15 +17,12 @@ const handleError = (error, defaultMessage) => {
     }
 
     if (res.message) {
-      toast.error(res.message);
       return {
         success: false,
         message: res.message,
       };
     }
   }
-
-  toast.error(defaultMessage || "Lỗi server");
 
   return {
     success: false,
@@ -339,5 +332,27 @@ export const logout = async()=>{
     const res = await axios.post(apiUrl("logout"));
   }catch(error){
     return handleError(error, "Đăng xuất thất bại!")
+  }
+}
+//3.forgot password
+export const forgotPassword = async (email) => {
+  try{
+    const res = await axios.post(apiUrl("forgot-password"),{
+      email
+    });
+
+    return res.data;
+  }catch(error){
+    return handleError(error, "Gửi email thất bại!");
+  }
+}
+//4. reset password
+export const resetPassword = async(data) => {
+  try{
+    const res = await axios.post(apiUrl("reset-password"), data);
+
+    return res.data;
+  }catch(error){
+    return handleError(error, "Đổi mật khẩu không thành công!")
   }
 }
