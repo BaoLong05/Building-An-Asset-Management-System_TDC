@@ -1,0 +1,511 @@
+/* Login.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-blue: #1e3c72;
+  --primary-blue-dark: #0f2a4a;
+  --primary-gold: #ffd700;
+  --primary-gold-dark: #e6c300;
+  --gradient-start: #1e3c72;
+  --gradient-end: #2a5298;
+  --text-light: #f0f0f0;
+  --text-dark: #2d3748;
+  --error: #e53e3e;
+  --success: #38a169;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+  position: relative;
+  padding: 20px;
+}
+
+/* Background Decoration */
+.bg-decoration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  animation: float 20s ease-in-out infinite;
+}
+
+.bg-circle-1 {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  right: -150px;
+  animation-delay: 0s;
+}
+
+.bg-circle-2 {
+  width: 500px;
+  height: 500px;
+  bottom: -250px;
+  left: -250px;
+  animation-delay: 5s;
+}
+
+.bg-circle-3 {
+  width: 200px;
+  height: 200px;
+  top: 40%;
+  left: 10%;
+  animation-delay: 10s;
+}
+
+.bg-circle-4 {
+  width: 400px;
+  height: 400px;
+  bottom: 20%;
+  right: -150px;
+  animation-delay: 15s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(5deg);
+  }
+}
+
+/* Login Card - Đã giảm padding */
+.login-card {
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 28px;
+  padding: 30px 35px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.5s ease-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header - Đã giảm margin */
+.login-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.school-logo {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.logo-icon {
+  width: 70px;
+  height: 70px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.15);
+  animation: pulse 2s ease-in-out infinite;
+  overflow: hidden;
+  padding: 4px;
+  transition: all 0.3s ease;
+}
+
+/* Style for img inside logo-icon */
+.logo-icon img {
+  width: 82px;
+  height: 82px;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.logo-icon:hover img {
+  transform: scale(1.05);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.school-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--primary-blue);
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+
+.school-subname {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary-blue);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.system-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #4a5568;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+
+.divider {
+  width: 50px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-blue), var(--primary-gold));
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* Form - Đã giảm margin */
+.login-form {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.input-icon {
+  color: var(--primary-blue);
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: white;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #718096;
+  transition: color 0.2s ease;
+}
+
+.toggle-password:hover {
+  color: var(--primary-blue);
+}
+
+/* Forgot Password Link */
+.forgot-password-wrapper {
+  text-align: right;
+  margin-bottom: 18px;
+  margin-top: -5px;
+}
+
+.forgot-password-link {
+  font-size: 12px;
+  color: var(--primary-blue);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.forgot-password-link:hover {
+  color: var(--primary-gold);
+  text-decoration: underline;
+  transform: translateX(-2px);
+}
+
+/* Login Button - Đã giảm padding */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--gradient-end) 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.login-btn:hover::before {
+  left: 100%;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -5px rgba(30, 60, 114, 0.4);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Footer - Đã giảm margin */
+.login-footer {
+  text-align: center;
+}
+
+.demo-info {
+  font-size: 11px;
+  color: #718096;
+  background: #f7fafc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.copyright {
+  font-size: 10px;
+  color: #a0aec0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .login-card {
+    padding: 25px 22px;
+    max-width: 95%;
+  }
+  
+  .school-subname {
+    font-size: 18px;
+  }
+  
+  .school-name {
+    font-size: 14px;
+  }
+  
+  .logo-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .form-input {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  .login-btn {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .login-header {
+    margin-bottom: 20px;
+  }
+  
+  .forgot-password-wrapper {
+    margin-bottom: 15px;
+  }
+  
+  .demo-info {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 20px 18px;
+  }
+  
+  .school-subname {
+    font-size: 16px;
+  }
+  
+  .system-title {
+    font-size: 11px;
+  }
+  
+  .logo-icon {
+    width: 55px;
+    height: 55px;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-label {
+    font-size: 12px;
+  }
+  
+  .demo-info {
+    font-size: 9px;
+  }
+}
+
+/* Animation for inputs */
+.form-input {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-blue);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-blue-dark);
+}
+
+/* Toast customization */
+.Toastify__toast {
+  border-radius: 10px !important;
+  font-family: "Inter", sans-serif !important;
+  font-size: 13px !important;
+}
+
+.Toastify__toast--success {
+  background: #c6f6d5 !important;
+  color: #22543d !important;
+}
+
+.Toastify__toast--error {
+  background: #fed7d7 !important;
+  color: #742a2a !important;
+}

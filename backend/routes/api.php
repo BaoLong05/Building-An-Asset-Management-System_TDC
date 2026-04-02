@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TaiSanController;
@@ -6,8 +7,10 @@ use App\Http\Controllers\Api\DanhMucController;
 use App\Http\Controllers\Api\PhongController;
 use App\Http\Controllers\Api\BaoTriController;
 use App\Http\Controllers\Export\ExcelController;
-use App\Models\BaoTri;
 use App\Http\Controllers\Export\PdfController;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\PasswordController;
+
 
 
 //quan ly tai san
@@ -36,7 +39,7 @@ Route::get('/phong', [PhongController::class, 'phong_index']);
 //2.them  phong hoc 
 Route::post('/phong', [PhongController::class, 'phong_store']);
 //3.sua  phong hoc
-Route::put('/phong/{id}', [PhongController::class, 'phong_update']); 
+Route::put('/phong/{id}', [PhongController::class, 'phong_update']);
 //4.sua  phong hoc 
 Route::delete('/phong/{id}', [PhongController::class, 'phong_delete']);
 //5. tai san chi tiet trong 1 phong
@@ -49,7 +52,7 @@ Route::get('/baotri', [BaoTriController::class, 'baotri_index']);
 //2. them bao tri
 Route::post('/baotri', [BaoTriController::class, 'baotri_store']);
 //3. cap nhat bao tri
-Route::put('/baotri/{id}',[BaoTriController::class, 'baotri_update']);
+Route::put('/baotri/{id}', [BaoTriController::class, 'baotri_update']);
 //4. xoa bao tri
 Route::delete('/baotri/{id}', [BaoTriController::class, 'baotri_delete']);
 //5. bao tri history
@@ -77,3 +80,19 @@ Route::get('/export/phong', [PdfController::class, 'Export_Phong']);
 //4. Bao tri
 Route::get('/export/baotri', [PdfController::class, 'Export_Baotri']);
 
+
+//Login , Logout
+
+//1.login
+Route::post('/login', [AuthController::class, 'login']);
+
+//2. reset password
+
+Route::post('/forgot-password', [PasswordController::class, 'sendResetLink']);
+Route::post('/reset-password', [PasswordController::class, 'resetPassword']);
+
+Route::middleware(['auth:sanctum', 'activity', 'token.expiry'])->group(function(){
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+});
