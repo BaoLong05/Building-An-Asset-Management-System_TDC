@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Validation\Rules\Email;
 
 class PasswordController extends Controller
 {
@@ -14,12 +15,17 @@ class PasswordController extends Controller
     {
         $request->validate(
             [
-                'email' => 'required|email|max:255'
+                'email' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    'regex:/^\S+@\S+\.\S+$/',
+                ]
             ],
             [
-                'email.required' => 'email không được để trống!',
-                'email.email' => 'email phải đúng định dạng!',
-                'email.max' => 'email không được dài hơn 255 ký tự!',
+                'email.required' => 'Email không được để trống!',
+                'email.regex' => 'Email không đúng định dạng!',
+                'email.max' => 'Email không được dài hơn 255 ký tự!',
             ]
         );
         $user = User::where('email', $request->email)->first();
@@ -43,27 +49,47 @@ class PasswordController extends Controller
             'success' => false,
             'message' => "Gửi reset link email thất bại. Vui lòng kiểm tra lại email của bạn!"
         ], 400);
-       
     }
 
     public function ResetPassword(Request $request)
     {
+        $request->merge([
+            'email' => trim($request->email),
+            'password' => trim($request->password),
+        ]);
+
         $request->validate([
-            'email' => 'required|email|max:255',
-            'token' => 'required',
-            'password' => 'required|min:6'
+            'email' => [
+                'required',
+                'string',
+                'max:255',
+                new Email,
+                'regex:/^\S+@\S+\.\S+$/'
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:6',
+
+                Password::min(6)
+                    ->letters()
+                    ->numbers()
+                    ->mixedCase()
+                    ->symbols()
+            ],
         ], [
-            'email.required' => 'email không được để trống!',
-            'email.email' => 'email phải đúng định dạng!',
-            'email.max' => 'email không được dài hơn 255 ký tự!',
-            'token.required' => 'Token không được rỗng!',
+            'email.required' => 'Email không được để trống!',
+            'email.string' => 'Email không hợp lệ!',
+            'email.max' => 'Email không được dài hơn 255 ký tự!',
+            'email.regex' => 'Email không được chứa khoảng trắng!',
 
             'password.required' => 'Mật khẩu không được để trống!',
-            'password.min' => 'Mật khẩu không được nhỏ hơn 6 ký tự'
+            'password.string' => 'Mật khẩu không hợp lệ!',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự!',
         ]);
 
         $status = Password::reset(
-            $request->only('email', 'token', 'password'),
+            $request->only('email', 'password'),
             function ($user, $password) {
                 $user->update([
                     'password' => Hash::make($password)
@@ -79,7 +105,7 @@ class PasswordController extends Controller
 
         return response()->json([
             'success' => false,
-            'message' => __($status)
+            'message' => "Đổi mật khẩu không thành công!"
         ], 400);
     }
 }
