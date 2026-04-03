@@ -5,6 +5,7 @@ import AdminLayout from "./AdminLayout/AdminLayout";
 import CategoryManagement from "../pages/CategoryManagement/CategoryManagement";
 import RoomManagement from "../pages/RoomManagement/RoomManagement"; 
 import MaintenanceManagement from "../pages/MaintenanceManagement/MaintenanceManagement";
+import Profile from "../pages/Profile/Profile";
 
 const AdminRoutes = {
   path: "/admin",
@@ -30,6 +31,10 @@ const AdminRoutes = {
       path: "maintenance-management",
       element: <MaintenanceManagement/>
     },
+    {
+      path: "profile",
+      element: <Profile/>
+    }
   ],
 };
 

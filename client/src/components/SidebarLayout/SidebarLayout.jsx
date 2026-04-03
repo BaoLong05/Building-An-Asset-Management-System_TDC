@@ -9,6 +9,7 @@ const menuItems = [
   { id: "categories", name: "Quản Lý Danh Mục", icon: "📋", path: "/admin/category-management" },
   { id: "room", name: "Vị trí sử dụng", icon: "🏫", path: "/admin/room-management" },
   { id: "maintenance", name: "Quản Lý Bảo Trì", icon: "🔄", path: "/admin/maintenance-management" },
+  { id: "profile", name: "Thông tin cá nhân", icon: "🔄", path: "/admin/profile" },
   { id: "reports", name: "Báo cáo", icon: "📑", path: "/admin/reports" },
   { id: "settings", name: "Cài đặt", icon: "⚙️", path: "/admin/settings" },
 ];
