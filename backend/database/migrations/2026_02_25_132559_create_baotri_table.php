@@ -23,6 +23,8 @@ return new class extends Migration
             $table->enum('TinhTrang', ['Đang bảo trì', 'Hoàn thành'])->default('Đang bảo trì');
             // Đang Xử Lý | Hoàn Thành
             $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('assigned_to')->nullable();
+
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
 
@@ -33,6 +35,16 @@ return new class extends Migration
                 ->references('MaTaiSan')
                 ->on('taisan')
                 ->onDelete('cascade');
+
+            $table->foreign('created_by')
+                ->references('id')
+                ->on('users')
+                ->onDelete('set null');
+
+            $table->foreign('assigned_to')
+                ->references('id')
+                ->on('users')
+                ->onDelete('set null');
         });
     }
 

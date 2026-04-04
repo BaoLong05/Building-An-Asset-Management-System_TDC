@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\TaiSan;
 use App\Models\BaoTri;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -103,7 +104,7 @@ class TaiSanController extends Controller
             'NgayNhap' => $validated['NgayNhap'],
             'TinhTrang' => $validated['TinhTrang'],
             'GhiChu' => $validated['GhiChu'] ?? null,
-            'created_by' => 1,
+            'created_by' => Auth::id(),
         ]);
 
         $taisan->load('phong', 'danhmuc');
@@ -142,6 +143,8 @@ class TaiSanController extends Controller
             'TenTaiSan' => 'required|string|max:255',
             'SoLuong' => 'required|integer|min:1',
             'TinhTrang' => 'required|in:Tốt,Đang bảo trì,Hỏng',
+            'MaTaiSan' => 'required|exists:taisan,MaTaiSan',
+            'assigned_to' => 'nullable|exists:users,id',
         ], [
             'HinhAnh.image' => 'File phải là hình ảnh!',
             'HinhAnh.mimes' => 'Ảnh phải có định dạng jpg, jpeg, png, gif hoặc webp!',
@@ -193,7 +196,7 @@ class TaiSanController extends Controller
                 'NgayNhap' => $request->NgayNhap,
                 'TinhTrang' => $request->TinhTrang,
                 'GhiChu' => $request->GhiChu,
-                'updated_by' => 1
+                'updated_by' => Auth::id()
             ]);
 
             //tao bao tri tai san
@@ -207,7 +210,9 @@ class TaiSanController extends Controller
                         'NgayBaoTri' => now(),
                         'NoiDung' => $request->GhiChu,
                         'TinhTrang' => 'Đang bảo trì',
-                        'created_by' => 1
+                        'created_by' => Auth::id(),
+                        'assigned_to' => $request->assigned_to
+
                     ]);
                 }
             }
@@ -236,7 +241,7 @@ class TaiSanController extends Controller
             ], 404);
         }
         try {
-            $taisan->deleted_by = 1;
+            $taisan->deleted_by = Auth::id();
             $taisan->save();
             $taisan->delete();
             return response()->json([
