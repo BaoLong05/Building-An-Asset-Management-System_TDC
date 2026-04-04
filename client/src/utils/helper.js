@@ -13,7 +13,7 @@ const handleError = (error, defaultMessage) => {
       return {
         success: false,
         errors: res.errors,
-         message: "Dữ liệu không hợp lệ!"
+        message: "Dữ liệu không hợp lệ!",
       };
     }
 
@@ -328,34 +328,56 @@ export const getLogin = async (data) => {
 };
 
 //2. Logout
-export const logout = async()=>{
-  try{
+export const logout = async () => {
+  try {
     const res = await axios.post(apiUrl("logout"));
     sessionStorage.removeItem("token");
     res.data;
-  }catch(error){
-    return handleError(error, "Đăng xuất thất bại!")
+  } catch (error) {
+    return handleError(error, "Đăng xuất thất bại!");
   }
-}
+};
 //3.forgot password
 export const forgotPassword = async (email) => {
-  try{
-    const res = await axios.post(apiUrl("forgot-password"),{
-      email
+  try {
+    const res = await axios.post(apiUrl("forgot-password"), {
+      email,
     });
 
     return res.data;
-  }catch(error){
+  } catch (error) {
     return handleError(error, "Gửi email thất bại!");
   }
-}
+};
 //4. reset password
-export const resetPassword = async(data) => {
-  try{
+export const resetPassword = async (data) => {
+  try {
     const res = await axios.post(apiUrl("reset-password"), data);
 
     return res.data;
-  }catch(error){
-    return handleError(error, "Đổi mật khẩu không thành công!")
+  } catch (error) {
+    return handleError(error, "Đổi mật khẩu không thành công!");
   }
-}
+};
+//5. Lấy thông tin đăng nhập
+export const getMe = async (token) => {
+  if (!token) {
+    return {
+      success: false,
+      message: "Không có token!",
+    };
+  }
+
+  try {
+    const res = await axios.get(apiUrl("me"), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    return handleError(error, "Lấy thông tin cá nhân thất bại!");
+  }
+};

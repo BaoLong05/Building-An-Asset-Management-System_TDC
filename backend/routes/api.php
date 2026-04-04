@@ -92,7 +92,9 @@ Route::post('/forgot-password', [PasswordController::class, 'sendResetLink']);
 Route::post('/reset-password', [PasswordController::class, 'resetPassword']);
 
 Route::middleware(['auth:sanctum', 'activity', 'token.expiry'])->group(function(){
-    Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
 });
+
+//3. lay ra user
+Route::middleware(['auth:sanctum'])->get('/me', [AuthController::class, 'getUser']);

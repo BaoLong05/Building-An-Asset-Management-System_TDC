@@ -12,6 +12,23 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    public function getUser()
+    {
+        /** @var User $user **/ 
+        $user = Auth::user();
+        if (!$user) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Tải thông tin thất bại!'
+            ], 401);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Tải thông tin cá nhân thành công!',
+            'data' => $user,
+        ]);
+    }
     public function login(Request $request)
     {
         $request->validate([
@@ -52,7 +69,7 @@ class AuthController extends Controller
         $user->update([
             'last_activity_at' => now()
         ]);
-        if(!$user){
+        if (!$user) {
             return response()->json([
                 "success" => false,
                 "message" => "Tài khoản hoặc mật khẩu không chính xác!"
@@ -76,8 +93,4 @@ class AuthController extends Controller
         ]);
     }
 
-    public function me(Request $request)
-    {
-        return response()->json($request->user());
-    }
 }

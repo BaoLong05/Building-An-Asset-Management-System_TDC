@@ -16,6 +16,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'address',
         'role',
         'status',
         'last_activity_at'
@@ -31,7 +33,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function sendPasswordResetNotification($token){
+    public function sendPasswordResetNotification($token)
+    {
         $this->notify(new ResetPasswordCustom($token));
     }
 }
