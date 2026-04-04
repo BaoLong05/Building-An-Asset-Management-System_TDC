@@ -381,3 +381,13 @@ export const getMe = async (token) => {
     return handleError(error, "Lấy thông tin cá nhân thất bại!");
   }
 };
+
+//6. danh sach user
+export const getUsers = async (data) => {
+  try {
+    const res = await axios.get(apiUrl("user"), data);
+    return res.data;
+  } catch (error) {
+    return handleError(error);
+  }
+};

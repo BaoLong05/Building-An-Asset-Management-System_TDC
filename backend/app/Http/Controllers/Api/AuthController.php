@@ -12,7 +12,20 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function getUser()
+    public function getUser(){
+        $user = User::get();
+        if(!$user){
+            return response()->json([
+                'success' => false,
+                'message' => 'không có người dùng!'
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+            'data' =>  $user
+        ]);
+    }
+    public function me()
     {
         /** @var User $user **/ 
         $user = Auth::user();

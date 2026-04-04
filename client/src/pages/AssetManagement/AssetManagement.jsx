@@ -11,7 +11,7 @@ import {
   getRoom,
   exportExcel,
   exportPDF,
-  // getUsers, // THÊM: Import API lấy danh sách người dùng
+  getUsers, 
 } from "../../utils/helper";
 
 const AssetManagement = () => {
@@ -46,11 +46,8 @@ const AssetManagement = () => {
   const [showExportModalExcel, setShowExportModalExcel] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
-  // =========================
-  // THÊM STATE CHO COMBOBOX NGƯỜI NHẬN
-  // =========================
-  const [users, setUsers] = useState([]); // Danh sách người dùng
-  const [selectedReceiver, setSelectedReceiver] = useState(""); // Người nhận được chọn
+  const [users, setUsers] = useState([]); 
+  const [selectedReceiver, setSelectedReceiver] = useState(""); 
 
   const [exportFilters, setExportFilters] = useState({
     keyword: "",
@@ -72,7 +69,7 @@ const AssetManagement = () => {
   useEffect(() => {
     fetchCategories();
     fetchRooms();
-    fetchUsers(); // THÊM: Gọi API lấy danh sách người dùng
+    fetchUsers();
   }, []);
 
   useEffect(() => {
@@ -91,9 +88,6 @@ const AssetManagement = () => {
     setDarkMode(!darkMode);
   };
 
-  // =========================
-  // THÊM HÀM FETCH USERS
-  // =========================
   const fetchUsers = async () => {
     try {
       const response = await getUsers();
@@ -124,7 +118,9 @@ const AssetManagement = () => {
         calculateStats(data);
       }
     } catch (err) {
-      toast.error(err.response.data.message || "Không thể tải danh sách tài sản");
+      toast.error(
+        err.response.data.message || "Không thể tải danh sách tài sản",
+      );
     } finally {
       setLoading(false);
     }
@@ -213,6 +209,9 @@ const AssetManagement = () => {
   };
 
   const handleSave = async () => {
+    if (loading) return;
+
+    setLoading(true);
     try {
       const payload = {
         ...formData,
@@ -272,35 +271,40 @@ const AssetManagement = () => {
     setShowDetail(true);
   };
 
-  // =========================
-  // SỬA HÀM HANDLE MAINTENANCE - RESET COMBOBOX
-  // =========================
   const handleMaintenance = (asset) => {
     setMaintenanceAsset(asset);
     setMaintenanceStatus(asset.TinhTrang);
     setMaintenanceNote("");
-    setSelectedReceiver(""); // Reset người nhận
+    setSelectedReceiver("");
     setShowMaintenanceForm(true);
   };
 
-  // =========================
-  // SỬA HÀM SAVE MAINTENANCE - THÊM NGƯỜI NHẬN
-  // =========================
   const saveMaintenance = async () => {
     try {
       await updateAsset(maintenanceAsset.MaTaiSan, {
-        ...maintenanceAsset,
+        TenTaiSan: maintenanceAsset.TenTaiSan,
+        MaDanhMuc: maintenanceAsset.MaDanhMuc,
+        MaPhong: maintenanceAsset.MaPhong,
+        SoLuong: maintenanceAsset.SoLuong,
+        NgayNhap: maintenanceAsset.NgayNhap,
+
         TinhTrang: maintenanceStatus,
         GhiChu: maintenanceNote || maintenanceAsset.GhiChu,
-        NguoiNhanBaoTri: selectedReceiver, // THÊM: Lưu người nhận bảo trì
+        assigned_to: selectedReceiver,
+        updated_at: maintenanceAsset.updated_at,
       });
 
       toast.success("Cập nhật bảo trì thành công");
       setShowMaintenanceForm(false);
       fetchAssets();
     } catch (err) {
-      console.error(err);
-      toast.error("Lỗi cập nhật bảo trì");
+      console.log(err.response?.data);
+
+      if (err.response?.data?.message) {
+        toast.error(err.response.data.message);
+      } else {
+        toast.error("Lỗi cập nhật bảo trì");
+      }
     }
   };
 
@@ -329,7 +333,7 @@ const AssetManagement = () => {
         MaPhong: selectedRoom,
         TinhTrang: selectedStatus,
       },
-      "danhsach_taisan.pdf"
+      "danhsach_taisan.pdf",
     );
   };
 
@@ -383,7 +387,6 @@ const AssetManagement = () => {
         theme={darkMode ? "dark" : "light"}
       />
 
-      {/* Top Bar với Theme Toggle */}
       <div className="top-bar-asset">
         <div className="header-title">
           <h1>Quản Lý Tài Sản</h1>
@@ -406,14 +409,12 @@ const AssetManagement = () => {
         </div>
       </div>
 
-      {/* Header */}
       <div className="header-section">
         <button className="btn-add" onClick={handleAdd}>
           <span>➕</span> Thêm tài sản
         </button>
       </div>
 
-      {/* Stats Cards */}
       <div className="stats-section">
         <div className="stat-card">
           <div className="stat-icon blue">📊</div>
@@ -452,7 +453,6 @@ const AssetManagement = () => {
         </div>
       </div>
 
-      {/* Action Bar (Search, Filter, Export) */}
       <div className="action-bar">
         <div className="search-filter-section">
           <div className="search-box">
@@ -562,8 +562,8 @@ const AssetManagement = () => {
                 <td colSpan="9" className="loading-cell">
                   <div className="spinner"></div>
                   <p>Đang tải...</p>
-                 </td>
-               </tr>
+                </td>
+              </tr>
             ) : filteredAssets.length === 0 ? (
               <tr>
                 <td colSpan="9" className="empty-cell">
@@ -574,15 +574,19 @@ const AssetManagement = () => {
                       Thêm mới
                     </button>
                   </div>
-                 </td>
-               </tr>
+                </td>
+              </tr>
             ) : (
               filteredAssets.map((asset) => (
                 <tr key={asset.MaTaiSan}>
                   <td className="code">{asset.MaTaiSan}</td>
                   <td>
                     {asset.HinhAnh ? (
-                      <img src={asset.HinhAnh} width="60" alt={asset.TenTaiSan} />
+                      <img
+                        src={asset.HinhAnh}
+                        width="60"
+                        alt={asset.TenTaiSan}
+                      />
                     ) : (
                       "Không có ảnh"
                     )}
@@ -628,7 +632,6 @@ const AssetManagement = () => {
         </table>
       </div>
 
-      {/* Pagination */}
       {!loading && filteredAssets.length > 0 && (
         <div className="pagination">
           <button
@@ -663,7 +666,6 @@ const AssetManagement = () => {
         </div>
       )}
 
-      {/* Form Modal */}
       {showForm && (
         <div className="modal-overlay" onClick={() => setShowForm(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -806,7 +808,6 @@ const AssetManagement = () => {
         </div>
       )}
 
-      {/* Detail Modal */}
       {showDetail && selectedAsset && (
         <div className="modal-overlay" onClick={() => setShowDetail(false)}>
           <div
@@ -896,9 +897,6 @@ const AssetManagement = () => {
         </div>
       )}
 
-      {/* ========================= */}
-      {/* MAINTENANCE MODAL - ĐÃ THÊM COMBOBOX NGƯỜI NHẬN */}
-      {/* ========================= */}
       {showMaintenanceForm && (
         <div
           className="modal-overlay"
@@ -946,11 +944,8 @@ const AssetManagement = () => {
                   >
                     <option value="">-- Chọn người nhận --</option>
                     {users.map((user) => (
-                      <option 
-                        key={user.MaNguoiDung || user.id} 
-                        value={user.TenNguoiDung || user.name || user.email}
-                      >
-                        {user.TenNguoiDung || user.name} - {user.Email || user.email}
+                      <option key={user.id} value={user.id}>
+                        {user.name}
                       </option>
                     ))}
                   </select>
@@ -969,7 +964,6 @@ const AssetManagement = () => {
                 >
                   <option value="Tốt">Tốt</option>
                   <option value="Đang bảo trì">Đang bảo trì</option>
-                  <option value="Hỏng">Hỏng</option>
                 </select>
               </div>
 
@@ -999,7 +993,6 @@ const AssetManagement = () => {
         </div>
       )}
 
-      {/* Export Modal Excel */}
       {showExportModalExcel && (
         <div
           className="modal-overlay"
@@ -1094,7 +1087,6 @@ const AssetManagement = () => {
         </div>
       )}
 
-      {/* EXPORT MODAL */}
       {showExportModal && (
         <div
           className="modal-overlay"
