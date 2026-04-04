@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
 
 class BaoTri extends Model
 {
@@ -18,6 +19,7 @@ class BaoTri extends Model
         'NgayBaoTri',
         'TinhTrang',
         'created_by',
+        'assigned_to',
         'deleted_by',
         'updated_by'
     ];
@@ -26,7 +28,16 @@ class BaoTri extends Model
     {
         return $this->belongsTo(TaiSan::class, 'MaTaiSan', 'MaTaiSan');
     }
-    public function getTenTaiSanAttribute(){
+    public function getTenTaiSanAttribute()
+    {
         return $this->taisan->TenTaiSan ?? null;
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function assignee()
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 }
