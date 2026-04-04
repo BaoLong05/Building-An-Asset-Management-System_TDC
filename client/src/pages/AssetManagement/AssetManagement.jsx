@@ -11,6 +11,7 @@ import {
   getRoom,
   exportExcel,
   exportPDF,
+  // getUsers, // THÊM: Import API lấy danh sách người dùng
 } from "../../utils/helper";
 
 const AssetManagement = () => {
@@ -45,6 +46,12 @@ const AssetManagement = () => {
   const [showExportModalExcel, setShowExportModalExcel] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
+  // =========================
+  // THÊM STATE CHO COMBOBOX NGƯỜI NHẬN
+  // =========================
+  const [users, setUsers] = useState([]); // Danh sách người dùng
+  const [selectedReceiver, setSelectedReceiver] = useState(""); // Người nhận được chọn
+
   const [exportFilters, setExportFilters] = useState({
     keyword: "",
     MaDanhMuc: "",
@@ -62,24 +69,15 @@ const AssetManagement = () => {
     GhiChu: "",
   });
 
-  // const handleFileChange = (e) => {
-  //    const file = e.target.files[0];
-  //    console.log(file);
-
-  //    setFormData((prev) => ({
-  //      ...prev,
-  //      HinhAnh: file,
-  //     }));
-  // };
+  useEffect(() => {
+    fetchCategories();
+    fetchRooms();
+    fetchUsers(); // THÊM: Gọi API lấy danh sách người dùng
+  }, []);
 
   useEffect(() => {
-  fetchCategories();
-  fetchRooms();
-}, []);
-
-useEffect(() => {
-  fetchAssets(currentPage);
-}, [currentPage]);
+    fetchAssets(currentPage);
+  }, [currentPage]);
 
   useEffect(() => {
     if (darkMode) {
@@ -91,6 +89,20 @@ useEffect(() => {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+  };
+
+  // =========================
+  // THÊM HÀM FETCH USERS
+  // =========================
+  const fetchUsers = async () => {
+    try {
+      const response = await getUsers();
+      if (response.success) {
+        setUsers(response.data);
+      }
+    } catch (err) {
+      console.error("Không thể tải danh sách người dùng:", err);
+    }
   };
 
   const fetchAssets = async (page = 1) => {
@@ -112,9 +124,7 @@ useEffect(() => {
         calculateStats(data);
       }
     } catch (err) {
-      toast.error(
-      err.response.data.message || "Không thể tải danh sách tài sản"
-    );
+      toast.error(err.response.data.message || "Không thể tải danh sách tài sản");
     } finally {
       setLoading(false);
     }
@@ -154,22 +164,20 @@ useEffect(() => {
   };
 
   const handleChange = (e) => {
-  const { name, value, files } = e.target;
+    const { name, value, files } = e.target;
 
-  if (name === "HinhAnh") {
-    setFormData((prev) => ({
-      ...prev,
-      HinhAnh: files[0], // ✅ lấy file đúng
-    }));
-  } else {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-
-  console.log(files);
-};
+    if (name === "HinhAnh") {
+      setFormData((prev) => ({
+        ...prev,
+        HinhAnh: files[0],
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
 
   const handleAdd = () => {
     setEditAsset(null);
@@ -235,7 +243,6 @@ useEffect(() => {
 
       if (err.response?.data?.errors) {
         const errors = err.response.data.errors;
-
         Object.values(errors).forEach((arr) => {
           arr.forEach((msg) => toast.error(msg));
         });
@@ -265,19 +272,27 @@ useEffect(() => {
     setShowDetail(true);
   };
 
+  // =========================
+  // SỬA HÀM HANDLE MAINTENANCE - RESET COMBOBOX
+  // =========================
   const handleMaintenance = (asset) => {
     setMaintenanceAsset(asset);
     setMaintenanceStatus(asset.TinhTrang);
     setMaintenanceNote("");
+    setSelectedReceiver(""); // Reset người nhận
     setShowMaintenanceForm(true);
   };
 
+  // =========================
+  // SỬA HÀM SAVE MAINTENANCE - THÊM NGƯỜI NHẬN
+  // =========================
   const saveMaintenance = async () => {
     try {
       await updateAsset(maintenanceAsset.MaTaiSan, {
         ...maintenanceAsset,
         TinhTrang: maintenanceStatus,
         GhiChu: maintenanceNote || maintenanceAsset.GhiChu,
+        NguoiNhanBaoTri: selectedReceiver, // THÊM: Lưu người nhận bảo trì
       });
 
       toast.success("Cập nhật bảo trì thành công");
@@ -294,9 +309,6 @@ useEffect(() => {
     fetchAssets(page);
   };
 
-  // =========================
-  // EXPORT (placeholder) - Giống CategoryManagement
-  // =========================
   const handleExportExcel = () => {
     exportExcel(
       "exportExcel/taisan",
@@ -309,17 +321,17 @@ useEffect(() => {
     );
   };
 
-const handleExportPDF = () => {
-  exportPDF(
-    "export/taisan",
-    {
-      MaDanhMuc: selectedCategory,
-      MaPhong: selectedRoom,
-      TinhTrang: selectedStatus,
-    },
-    "danhsach_taisan.pdf"
-  );
-};
+  const handleExportPDF = () => {
+    exportPDF(
+      "export/taisan",
+      {
+        MaDanhMuc: selectedCategory,
+        MaPhong: selectedRoom,
+        TinhTrang: selectedStatus,
+      },
+      "danhsach_taisan.pdf"
+    );
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -550,8 +562,8 @@ const handleExportPDF = () => {
                 <td colSpan="9" className="loading-cell">
                   <div className="spinner"></div>
                   <p>Đang tải...</p>
-                </td>
-              </tr>
+                 </td>
+               </tr>
             ) : filteredAssets.length === 0 ? (
               <tr>
                 <td colSpan="9" className="empty-cell">
@@ -562,17 +574,19 @@ const handleExportPDF = () => {
                       Thêm mới
                     </button>
                   </div>
-                </td>
-              </tr>
+                 </td>
+               </tr>
             ) : (
               filteredAssets.map((asset) => (
                 <tr key={asset.MaTaiSan}>
                   <td className="code">{asset.MaTaiSan}</td>
-                  <td>{asset.HinhAnh ? (
-                    <img src={asset.HinhAnh} width="60" />
-                  ):(
-                    "Không có ảnh"
-                  )}</td>
+                  <td>
+                    {asset.HinhAnh ? (
+                      <img src={asset.HinhAnh} width="60" alt={asset.TenTaiSan} />
+                    ) : (
+                      "Không có ảnh"
+                    )}
+                  </td>
                   <td>{asset.TenTaiSan}</td>
                   <td>{asset.TenDanhMuc}</td>
                   <td>{asset.TenPhong}</td>
@@ -763,7 +777,6 @@ const handleExportPDF = () => {
                     onChange={handleChange}
                   >
                     <option value="Tốt">Tốt</option>
-                    <option value="Đang bảo trì">Đang bảo trì</option>
                     <option value="Hỏng">Hỏng</option>
                   </select>
                 </div>
@@ -883,7 +896,9 @@ const handleExportPDF = () => {
         </div>
       )}
 
-      {/* Maintenance Modal */}
+      {/* ========================= */}
+      {/* MAINTENANCE MODAL - ĐÃ THÊM COMBOBOX NGƯỜI NHẬN */}
+      {/* ========================= */}
       {showMaintenanceForm && (
         <div
           className="modal-overlay"
@@ -916,6 +931,34 @@ const handleExportPDF = () => {
                     {maintenanceAsset?.TinhTrang}
                   </span>
                 </p>
+              </div>
+
+              {/* ===== COMBOBOX NGƯỜI NHẬN BẢO TRÌ (THÊM MỚI) ===== */}
+              <div className="form-group">
+                <label>
+                  <span className="required-icon">👤</span> Người nhận bảo trì:
+                </label>
+                <div className="receiver-select-wrapper">
+                  <select
+                    className="receiver-select"
+                    value={selectedReceiver}
+                    onChange={(e) => setSelectedReceiver(e.target.value)}
+                  >
+                    <option value="">-- Chọn người nhận --</option>
+                    {users.map((user) => (
+                      <option 
+                        key={user.MaNguoiDung || user.id} 
+                        value={user.TenNguoiDung || user.name || user.email}
+                      >
+                        {user.TenNguoiDung || user.name} - {user.Email || user.email}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="receiver-icon">🔧</div>
+                </div>
+                <small className="form-hint">
+                  Chọn người phụ trách bảo trì tài sản này
+                </small>
               </div>
 
               <div className="form-group">
@@ -955,7 +998,8 @@ const handleExportPDF = () => {
           </div>
         </div>
       )}
-      {/* {export modal excel} */}
+
+      {/* Export Modal Excel */}
       {showExportModalExcel && (
         <div
           className="modal-overlay"

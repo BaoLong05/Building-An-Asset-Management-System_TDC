@@ -143,8 +143,7 @@ class TaiSanController extends Controller
             'TenTaiSan' => 'required|string|max:255',
             'SoLuong' => 'required|integer|min:1',
             'TinhTrang' => 'required|in:Tốt,Đang bảo trì,Hỏng',
-            'MaTaiSan' => 'required|exists:taisan,MaTaiSan',
-            'assigned_to' => 'nullable|exists:users,id',
+            'GhiChu' => 'nullable|string',
         ], [
             'HinhAnh.image' => 'File phải là hình ảnh!',
             'HinhAnh.mimes' => 'Ảnh phải có định dạng jpg, jpeg, png, gif hoặc webp!',

@@ -28,7 +28,8 @@ class BaoTriSeeder extends Seeder
                     'NgayBaoTri' => now(),
                     'NoiDung' => 'Bảo trì tài sản: ' . $asset->TenTaiSan,
                     'TinhTrang' => 'Đang bảo trì',
-                    'created_by' => 1
+                    'created_by' => 1,
+                    'assigned_to' => 2
                 ]);
 
                 $asset->update([

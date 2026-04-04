@@ -13,7 +13,7 @@ const handleError = (error, defaultMessage) => {
       return {
         success: false,
         errors: res.errors,
-        message: "Dữ liệu không hợp lệ!",
+        message: res.message || "có lỗi xảy ra",
       };
     }
 
@@ -85,7 +85,7 @@ export const updateAsset = async (id, data) => {
     });
     return res.data;
   } catch (error) {
-    return handleError(error, "Lỗi khi sửa tài sản");
+    return handleError(error, "Lỗi khi thêm tài sản");
   }
 };
 

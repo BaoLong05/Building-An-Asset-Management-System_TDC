@@ -2040,3 +2040,122 @@ RESPONSIVE - TỐI ƯU CHO MỌI THIẾT BỊ
     color: black !important;
   }
 }
+/* ================================
+RECEIVER COMBOBOX STYLES - CHO MODAL BẢO TRÌ
+================================ */
+
+/* Receiver Select Wrapper */
+.receiver-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.receiver-select {
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  font-family: inherit;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #1f2937;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.dark .receiver-select {
+  background: #16213e;
+  border-color: #2d3748;
+  color: #e2e8f0;
+}
+
+.receiver-select:hover {
+  border-color: #667eea;
+}
+
+.receiver-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.receiver-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 18px;
+  opacity: 0.6;
+}
+
+.dark .receiver-icon {
+  opacity: 0.8;
+}
+
+/* Required Icon */
+.required-icon {
+  margin-right: 4px;
+  font-size: 14px;
+}
+
+/* Form Hint */
+.form-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.dark .form-hint {
+  color: #a0aec0;
+}
+
+/* Option styling */
+.receiver-select option {
+  padding: 10px;
+  background: white;
+  color: #1f2937;
+}
+
+.dark .receiver-select option {
+  background: #1f2a4a;
+  color: #e2e8f0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .receiver-select {
+    padding: 10px 36px 10px 14px;
+    font-size: 13px;
+  }
+  
+  .receiver-icon {
+    font-size: 16px;
+    right: 10px;
+  }
+  
+  .form-hint {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .receiver-select {
+    padding: 8px 32px 8px 12px;
+    font-size: 12px;
+  }
+  
+  .receiver-icon {
+    font-size: 14px;
+    right: 8px;
+  }
+  
+  .form-hint {
+    font-size: 10px;
+  }
+}
