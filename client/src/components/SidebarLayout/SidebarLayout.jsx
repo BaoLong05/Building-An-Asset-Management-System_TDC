@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "./SidebarLayout.css";
 import { logout } from "../../utils/helper";
-import { toast } from "react-toastify";
+import { ToastContainer,toast } from "react-toastify";
 
 const menuItems = [
   { id: "dashboard", name: "Dashboard", icon: "📊", path: "/admin/dashboard" },
@@ -9,7 +9,7 @@ const menuItems = [
   { id: "categories", name: "Quản Lý Danh Mục", icon: "📋", path: "/admin/category-management" },
   { id: "room", name: "Vị trí sử dụng", icon: "🏫", path: "/admin/room-management" },
   { id: "maintenance", name: "Quản Lý Bảo Trì", icon: "🔄", path: "/admin/maintenance-management" },
-  { id: "profile", name: "Thông tin cá nhân", icon: "🔄", path: "/admin/profile" },
+  { id: "profile", name: "Thông tin cá nhân", icon: "👤", path: "/admin/profile" },
   { id: "reports", name: "Báo cáo", icon: "📑", path: "/admin/reports" },
   { id: "settings", name: "Cài đặt", icon: "⚙️", path: "/admin/settings" },
 ];
@@ -23,12 +23,26 @@ const SidebarLayout = () => {
     if (res) {
       toast.success("Đăng xuất thành công");
       sessionStorage.removeItem("token");
-      navigate("/");
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     }
   };
 
   return (
     <aside className="sidebar">
+       <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
       <div className="logo">
         <h2>📦 Quản Lý Tài Sản</h2>
       </div>

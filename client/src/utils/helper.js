@@ -361,15 +361,23 @@ export const resetPassword = async (data) => {
 };
 //5. Lấy thông tin đăng nhập
 export const getMe = async (token) => {
+  if (!token) {
+    return {
+      success: false,
+      message: "Không có token!",
+    };
+  }
+
   try {
     const res = await axios.get(apiUrl("me"), {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json"
+        Accept: "application/json",
       },
     });
+
     return res.data;
   } catch (error) {
-    return handleError(error, "Lấy Thông tin cá nhân thành công!");
+    return handleError(error, "Lấy thông tin cá nhân thất bại!");
   }
 };
