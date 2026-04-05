@@ -474,7 +474,7 @@ export const Readed = async (id) => {
     );
     return res.data;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 };
 
@@ -493,6 +493,6 @@ export const readed_All = async () => {
     );
     return res.data;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 };

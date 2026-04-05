@@ -171,6 +171,7 @@ class BaoTriController extends Controller
         $task = BaoTri::with('taisan:MaTaiSan,TenTaiSan')
             ->where('assigned_to', $userId)
             ->where('TinhTrang', 'Đang bảo trì')
+            ->where('is_read', false)
             ->orderBy('NgayBaoTri', 'desc')
             ->get();
         if (!$task) {
@@ -202,7 +203,7 @@ class BaoTriController extends Controller
                 'message' => 'Bạn không có quyền!'
             ], 403);
         }
-        $baotri->updata([
+        $baotri->update([
             'is_read' => true
         ]);
         return response()->json([

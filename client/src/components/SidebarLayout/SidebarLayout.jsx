@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "./SidebarLayout.css";
 import { logout } from "../../utils/helper";
 import { toast } from "react-toastify";
+import { useNotification } from "../../context/NotificationContext"; // 👈 thêm
 
 const menuItems = [
   { id: "dashboard", name: "Dashboard", icon: "📊", path: "/admin/dashboard" },
@@ -9,13 +10,15 @@ const menuItems = [
   { id: "categories", name: "Quản Lý Danh Mục", icon: "📋", path: "/admin/category-management" },
   { id: "room", name: "Vị trí sử dụng", icon: "🏫", path: "/admin/room-management" },
   { id: "maintenance", name: "Quản Lý Bảo Trì", icon: "🔄", path: "/admin/maintenance-management" },
-  { id: "notification", name: "Thông Báo", icon: "📑", path: "/admin/notification" },
+  { id: "notification", name: "Thông Báo", icon: "🔔", path: "/admin/notification" },
   { id: "profile", name: "Thông tin cá nhân", icon: "👤", path: "/admin/profile" },
-  { id: "settings", name: "Cài đặt", icon: "⚙️", path: "/admin/settings" },
 ];
 
 const SidebarLayout = () => {
   const navigate = useNavigate();
+  const { notifications } = useNotification();
+
+  const unreadCount = notifications?.filter(n => !n.is_read)?.length || 0;
 
   const handleLogout = async () => {
     const res = await logout();
@@ -31,7 +34,6 @@ const SidebarLayout = () => {
 
   return (
     <aside className="sidebar">
-       
       <div className="logo">
         <h2>📦 Quản Lý Tài Sản</h2>
       </div>
@@ -46,7 +48,13 @@ const SidebarLayout = () => {
             }
           >
             <span className="nav-icon">{item.icon}</span>
-            <span className="nav-text">{item.name}</span>
+
+            <span className="nav-text" style={{ position: "relative" }}>
+              {item.name}
+              {item.id === "notification" && unreadCount > 0 && (
+                <span className="badge">{unreadCount}</span>
+              )}
+            </span>
           </NavLink>
         ))}
       </nav>
