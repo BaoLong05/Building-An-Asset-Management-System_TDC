@@ -93,13 +93,19 @@ class BaoTriController extends Controller
         ]);
 
         $baotri = BaoTri::find($id);
-
         if (!$baotri) {
             return response()->json([
                 'success' => false,
                 'message' => 'Không tìm thấy dữ liệu!'
             ]);
         }
+        if ($baotri->assigned_to  != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền cập nhật bảo trì này!'
+            ], 403);
+        }
+
 
         if ($baotri->TinhTrang == 'Hoàn thành') {
             return response()->json([
@@ -140,9 +146,15 @@ class BaoTriController extends Controller
     }
 
     //lich su
+    // lịch sử
     public function baotri_history($MaTaiSan)
     {
-        $history = BaoTri::where('MaTaiSan', $MaTaiSan)
+        $history = BaoTri::with([
+            'creator:id,name',
+            'assignee:id,name',
+            'taisan:MaTaiSan,TenTaiSan'
+        ])
+            ->where('MaTaiSan', $MaTaiSan)
             ->orderBy('updated_at', 'desc')
             ->get();
 

@@ -9,10 +9,12 @@ import {
   updateMaintenanceStatus,
   exportExcel,
   exportPDF,
-
+  getMe,
 } from "../../utils/helper";
 
 const MaintenanceManagement = () => {
+  document.title = "Quản Lý Bảo Trì";
+  const [currentUser, setCurrentUsers] = useState(null);
   const [assets, setAssets] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -23,9 +25,9 @@ const MaintenanceManagement = () => {
     TinhTrang: "",
   });
 
-  const[showExportModal, setShowExportModal] = useState(false);
-  const [exprotFilter, setExprotFilter]= useState({
-    TinhTrang:"",
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exprotFilter, setExprotFilter] = useState({
+    TinhTrang: "",
   });
 
   const [selectedAsset, setSelectedAsset] = useState(null);
@@ -51,21 +53,28 @@ const MaintenanceManagement = () => {
   // =========================
   // FETCH DATA
   // =========================
-  const fetchAssets = async (page = 1) => {
-    const res = await getMaintenanceAssets(page);
+const fetchAssets = async (page = 1, search = "", status = "") => {
+  const res = await getMaintenanceAssets(page, search, status);
 
-    if (res.success) {
-      setAssets(res.data.data);
-      setPage(res.data.current_page);
-      setLastPage(res.data.last_page);
-    } else {
-      toast.error(res.message);
-    }
-  };
+  if (res.success) {
+    setAssets(res.data.data);
+    setPage(res.data.current_page);
+    setLastPage(res.data.last_page);
+  } else {
+    toast.error(res.message);
+  }
+};
 
   useEffect(() => {
-    fetchAssets(1);
-  }, []);
+  fetchAssets(page, searchTerm, filterStatus);
+
+  const token = sessionStorage.getItem("token");
+  if (token) {
+    getMe(token).then((res) => {
+      if (res.data) setCurrentUsers(res.data);
+    });
+  }
+}, [page, searchTerm, filterStatus]);
 
   // =========================
   // EXPORT
@@ -84,28 +93,14 @@ const MaintenanceManagement = () => {
     exportPDF(
       "export/baotri",
       {
-        TinhTrang : filterStatus,
+        TinhTrang: filterStatus,
       },
-      "danhsach_baotri.pdf"
+      "danhsach_baotri.pdf",
     );
   };
 
-  // =========================
-  // SEARCH + FILTER
-  // =========================
-  const filteredAssets = assets.filter((asset) => {
-    const search = searchTerm.toLowerCase();
 
-    return (
-      ((asset.taisan?.TenTaiSan || "").toLowerCase().includes(search) ||
-        String(asset.MaTaiSan).includes(search)) &&
-      (filterStatus ? asset.TinhTrang === filterStatus : true)
-    );
-  });
 
-  // =========================
-  // VIEW HISTORY (CHỈ XEM)
-  // =========================
   const handleViewDetails = async (asset) => {
     setSelectedAsset(asset);
     setShowDetailModal(true);
@@ -113,13 +108,13 @@ const MaintenanceManagement = () => {
     const res = await getMaintenanceHistory(asset.MaTaiSan);
 
     if (res.success) {
-      setMaintenanceHistory(res.data);
+      const sorted = res.data.sort(
+        (a, b) => new Date(b.NgayBaoTri) - new Date(a.NgayBaoTri),
+      );
+      setMaintenanceHistory(sorted);
     }
   };
 
-  // =========================
-  // UPDATE STATUS (REALTIME + ANTI 2 TAB)
-  // =========================
   const handleSubmitUpdate = async (e) => {
     e.preventDefault();
 
@@ -189,6 +184,40 @@ const MaintenanceManagement = () => {
     completed: assets.filter((a) => a.TinhTrang === "Hoàn thành").length,
   };
 
+  //kiem tra user truoc khi cap nhat
+  const handleEditClick = (assets) => {
+    if (assets.assigned_to !== currentUser?.id) {
+      toast.warning("Bạn không có quyền cập nhật bảo trì này!");
+      return;
+    }
+    setSelectedAsset(assets);
+    setUpdateStatus(assets.TinhTrang);
+    setUpdateNote(assets.NoiDung || "");
+    setShowUpdateModal(true);
+  };
+  const groupedAssets = Object.values(
+    assets.reduce((acc, item) => {
+      const key = item.MaTaiSan;
+
+      if (!acc[key]) {
+        acc[key] = {
+          ...item,
+          historyCount: 1,
+        };
+      } else {
+        acc[key].historyCount += 1;
+
+        if (new Date(item.NgayBaoTri) > new Date(acc[key].NgayBaoTri)) {
+          acc[key] = {
+            ...item,
+            historyCount: acc[key].historyCount,
+          };
+        }
+      }
+
+      return acc;
+    }, {}),
+  ).sort((a, b) => new Date(b.NgayBaoTri || 0) - new Date(a.NgayBaoTri || 0));
   return (
     <div className={`maintenance-management ${darkMode ? "dark" : ""}`}>
       <ToastContainer
@@ -217,47 +246,6 @@ const MaintenanceManagement = () => {
           <div className="user-profile">
             <span className="avatar">👤</span>
             <span className="user-name">Admin</span>
-          </div>
-        </div>
-      </div>
-      <div className="stats-container">
-        <div className="stat-card total">
-          <div className="stat-icon">
-            <i className="fas fa-boxes"></i>
-          </div>
-          <div className="stat-content">
-            <span className="stat-label">Tổng yêu cầu</span>
-            <span className="stat-value">{stats.total}</span>
-          </div>
-        </div>
-
-        <div className="stat-card good">
-          <div className="stat-icon">
-            <i className="fas fa-check-circle"></i>
-          </div>
-          <div className="stat-content">
-            <span className="stat-label">Hoàn thành</span>
-            <span className="stat-value">{stats.completed}</span>
-          </div>
-        </div>
-
-        <div className="stat-card maintenance">
-          <div className="stat-icon">
-            <i className="fas fa-tools"></i>
-          </div>
-          <div className="stat-content">
-            <span className="stat-label">Đang bảo trì</span>
-            <span className="stat-value">{stats.maintenance}</span>
-          </div>
-        </div>
-
-        <div className="stat-card broken">
-          <div className="stat-icon">
-            <i className="fas fa-exclamation-triangle"></i>
-          </div>
-          <div className="stat-content">
-            <span className="stat-label">Hỏng</span>
-            <span className="stat-value">0</span>
           </div>
         </div>
       </div>
@@ -295,8 +283,8 @@ const MaintenanceManagement = () => {
             >
               📊 Excel
             </button>
-            <button 
-              className="btn-export pdf" 
+            <button
+              className="btn-export pdf"
               onClick={() => setShowExportModal(true)}
               title="Xuất PDF"
             >
@@ -313,61 +301,73 @@ const MaintenanceManagement = () => {
               <th>TÊN TÀI SẢN</th>
               <th>TRẠNG THÁI</th>
               <th>THAO TÁC</th>
+              <th>NGƯỜI NHẬN</th>
+              <th>NGƯỜI GỬI</th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredAssets.length > 0 ? (
-              filteredAssets.map((a) => (
-                <tr key={a.MaBaoTri}>
-                  <td>
-                    <span className="code-badge">{a.MaTaiSan}</span>
-                  </td>
+            {assets.length > 0 ? (
+              groupedAssets
+                .filter((a) => {
+                  const search = searchTerm.toLowerCase();
 
-                  <td>
-                    <div className="asset-name">
-                      <i className="fas fa-box"></i>
-                      {a.taisan?.TenTaiSan || "Không có tên"}
-                    </div>
-                  </td>
+                  return (
+                    ((a.taisan?.TenTaiSan || "")
+                      .toLowerCase()
+                      .includes(search) ||
+                      String(a.MaTaiSan).includes(search)) &&
+                    (filterStatus ? a.TinhTrang === filterStatus : true)
+                  );
+                })
+                .map((a) => (
+                  <tr key={a.MaBaoTri}>
+                    <td>
+                      <span className="code-badge">{a.MaTaiSan}</span>
+                    </td>
 
-                  <td>
-                    <span
-                      className={`status-badge ${getStatusClass(a.TinhTrang)}`}
-                    >
-                      <span className="status-dot"></span>
-                      {getStatusIcon(a.TinhTrang)} {a.TinhTrang}
-                    </span>
-                  </td>
+                    <td>
+                      <div className="asset-name">
+                        <i className="fas fa-box"></i>
+                        {a.taisan?.TenTaiSan || "Không có tên"}
+                      </div>
+                    </td>
 
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="btn-icon view"
-                        onClick={() => handleViewDetails(a)}
-                        title="Xem lịch sử"
+                    <td>
+                      <span
+                        className={`status-badge ${getStatusClass(a.TinhTrang)}`}
                       >
-                        <i className="fas fa-history"></i>
-                        Lịch sử
-                      </button>
+                        <span className="status-dot"></span>
+                        {getStatusIcon(a.TinhTrang)} {a.TinhTrang}
+                      </span>
+                    </td>
 
-                      <button
-                        className="btn-icon edit"
-                        onClick={() => {
-                          setSelectedAsset(a);
-                          setUpdateStatus(a.TinhTrang);
-                          setUpdateNote(a.NoiDung || "");
-                          setShowUpdateModal(true);
-                        }}
-                        title="Cập nhật trạng thái"
-                      >
-                        <i className="fas fa-sync-alt"></i>
-                        Cập nhật
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="btn-icon view"
+                          onClick={() => handleViewDetails(a)}
+                          title="Xem lịch sử"
+                        >
+                          <i className="fas fa-history"></i>
+                          Lịch sử
+                        </button>
+
+                        <button
+                          className="btn-icon edit"
+                          onClick={() => handleEditClick(a)}
+                          title="Cập nhật trạng thái"
+                        >
+                          <i className="fas fa-sync-alt"></i>
+                          Cập nhật
+                        </button>
+                      </div>
+                    </td>
+
+                    <td>{a.assignee?.name || "-"}</td>
+                    <td>{a.creator?.name || "-"}</td>
+                  </tr>
+                ))
             ) : (
               <tr>
                 <td colSpan={4} className="no-data">
@@ -383,7 +383,7 @@ const MaintenanceManagement = () => {
         <button
           className="page-btn"
           disabled={page === 1}
-          onClick={() => fetchAssets(page - 1)}
+          onClick={() => setPage(page - 1)}
         >
           <i className="fas fa-chevron-left"></i>
           Trước
@@ -396,20 +396,11 @@ const MaintenanceManagement = () => {
         <button
           className="page-btn"
           disabled={page === lastPage}
-          onClick={() => fetchAssets(page + 1)}
+          onClick={() => setPage(page + 1)}
         >
           Sau
           <i className="fas fa-chevron-right"></i>
         </button>
-      </div>
-      <div className="table-footer">
-        <span>
-          Tổng số: <strong>{filteredAssets.length}</strong> yêu cầu
-        </span>
-        <span className="footer-note">
-          <i className="fas fa-info-circle"></i>
-          {stats.maintenance} đang bảo trì, {stats.completed} hoàn thành
-        </span>
       </div>
       {showDetailModal && selectedAsset && (
         <div
@@ -468,32 +459,41 @@ const MaintenanceManagement = () => {
                   <p>Chưa có lịch sử bảo trì</p>
                 </div>
               ) : (
-                <div className="history-list">
-                  {maintenanceHistory.map((h, index) => (
-                    <React.Fragment key={index}>
-                      <div className="history-item">
-                        <div className="history-time">
-                          <i className="far fa-calendar-alt"></i>
-                          {new Date(h.NgayBaoTri).toLocaleString("vi-VN")}
+                <div className="history-scroll">
+                  <div className="history-list">
+                    {maintenanceHistory.map((h, index) => (
+                      <React.Fragment key={index}>
+                        <div className="history-item">
+                          <div className="history-time">
+                            <i className="far fa-calendar-alt"></i>
+                            {new Date(h.NgayBaoTri).toLocaleString("vi-VN")}
+                          </div>
+                          <div className="history-content">
+                            <span
+                              className={`status-badge small ${getStatusClass(h.TinhTrang)}`}
+                            >
+                              {getStatusIcon(h.TinhTrang)} {h.TinhTrang}
+                            </span>
+                            <span className="history-note">
+                              <div>🧑 Người Gửi: {h.creator?.name || "—"}</div>{" "}
+                              <br />
+                              <div>
+                                👨‍🔧 Người Nhận: {h.assignee?.name || "—"}
+                              </div>
+                              <div>
+                                {" "}
+                                Nội Dung: {h.NoiDung || "Không có ghi chú"}
+                              </div>
+                            </span>
+                          </div>
                         </div>
-                        <div className="history-content">
-                          <span
-                            className={`status-badge small ${getStatusClass(h.TinhTrang)}`}
-                          >
-                            {getStatusIcon(h.TinhTrang)} {h.TinhTrang}
-                          </span>
-                          <span className="history-note">
-                            <i className="fas fa-pen"></i>
-                            {h.NoiDung || "Không có ghi chú"}
-                          </span>
-                        </div>
-                      </div>
 
-                      {index < maintenanceHistory.length - 1 && (
-                        <div className="history-divider"></div>
-                      )}
-                    </React.Fragment>
-                  ))}
+                        {index < maintenanceHistory.length - 1 && (
+                          <div className="history-divider"></div>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -634,55 +634,55 @@ const MaintenanceManagement = () => {
           </div>
         </div>
       )}
-      ;
-    {/*Export modal*/}
-    {showExportModal && (
-      <div className="modal-overlay"
-      onClick={()=> setShowExportModal(false)}>
-        <div className="modal" onClick={(e) => e.stopPropagation()}>
-       <div className="modal-header">
-         <h2>Xuất PDF</h2>
-        <button onClick={()=> setShowExportModal(false)}>X</button>
-       </div>
-        <div className="modal-body">
-          <div className="form-group">
-            <label>Trạng Thái</label>
-            <select 
-            value={exprotFilter.TinhTrang}
-            onChange={(e) => 
-              setExprotFilter({
-                ...exprotFilter,
-                TinhTrang: e.target.value,
-              })
-            }>
-                <option value="">Tất cả</option>
-                <option value="Đang bảo trì">Đang bảo trì</option>
-                <option value="Hoàn thành">Hoàn Thành</option>
-            </select>
+      {/*Export modal*/}
+      {showExportModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowExportModal(false)}
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Xuất PDF</h2>
+              <button onClick={() => setShowExportModal(false)}>X</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Trạng Thái</label>
+                <select
+                  value={exprotFilter.TinhTrang}
+                  onChange={(e) =>
+                    setExprotFilter({
+                      ...exprotFilter,
+                      TinhTrang: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  <option value="Đang bảo trì">Đang bảo trì</option>
+                  <option value="Hoàn thành">Hoàn Thành</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button onClick={() => setShowExportModal(false)}>Hủy</button>
+              <button
+                className="btn-save"
+                onClick={() => {
+                  exportPDF(
+                    "export/baotri",
+                    exprotFilter,
+                    "danhsach_baotri.pdf",
+                  );
+                  setShowExportModal(false);
+                }}
+              >
+                Xuẩt PDF
+              </button>
+            </div>
           </div>
         </div>
-
-        <div className="modal-footer">
-          <button onClick={()=>setShowExportModal(false)}>
-              Hủy
-          </button>
-          <button
-          className="btn-save"
-          onClick={()=> {
-            exportPDF(
-              "export/baotri",
-              exprotFilter,
-              "danhsach_baotri.pdf"
-            );
-            setShowDetailModal(false);
-          }}
-          >
-            Xuẩt PDF
-          </button>
-        </div>
-        </div>
-      </div>
-    )}
+      )}
     </div>
   );
 };

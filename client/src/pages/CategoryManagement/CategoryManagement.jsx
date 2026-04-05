@@ -12,6 +12,7 @@ import {
 } from "../../utils/helper";
 
 const CategoryManagement = () => {
+  document.title = "Quản Lý Danh Mục";
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [darkMode, setDarkMode] = useState(false);
@@ -29,7 +30,7 @@ const CategoryManagement = () => {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
-    document.body.classList.toggle('dark-mode-category');
+    document.body.classList.toggle("dark-mode-category");
   };
 
   // =========================
@@ -54,19 +55,11 @@ const CategoryManagement = () => {
   // EXPORT (placeholder)
   // =========================
   const handleExportExcel = () => {
-    exportExcel(
-      "exportExcel/danhmuc",
-      {},
-      "danhmuc.xlsx"
-    );
+    exportExcel("exportExcel/danhmuc", {}, "danhmuc.xlsx");
   };
 
   const handleExportPDF = () => {
-    exportPDF(
-      "export/danhmuc",
-      {},
-      "danhsach_danhmuc.pdf"
-    );
+    exportPDF("export/danhmuc", {}, "danhsach_danhmuc.pdf");
   };
 
   // =========================
@@ -87,7 +80,7 @@ const CategoryManagement = () => {
     } else {
       const res = await updateCategories(
         currentCategory.MaDanhMuc,
-        currentCategory
+        currentCategory,
       );
 
       if (res.success) {
@@ -178,16 +171,16 @@ const CategoryManagement = () => {
   };
 
   return (
-    <div className={`category-management-white ${darkMode ? 'dark' : ''}`}>
+    <div className={`category-management-white ${darkMode ? "dark" : ""}`}>
       {/* Top Bar với Theme Toggle */}
       <div className="top-bar-category">
         <div className="header-title">
           <h1>Quản Lý Danh Mục</h1>
         </div>
-        
+
         <div className="top-bar-actions">
           <button className="theme-toggle" onClick={toggleDarkMode}>
-            {darkMode ? '☀️' : '🌙'}
+            {darkMode ? "☀️" : "🌙"}
           </button>
           <div className="language-select">
             <select>
@@ -243,25 +236,16 @@ const CategoryManagement = () => {
 
         <div className="right-actions">
           <div className="export-group">
-            <button
-              className="btn-export excel"
-              onClick={handleExportExcel}
-            >
+            <button className="btn-export excel" onClick={handleExportExcel}>
               📊 Excel
             </button>
 
-            <button
-              className="btn-export pdf"
-              onClick={handleExportPDF}
-            >
+            <button className="btn-export pdf" onClick={handleExportPDF}>
               📄 PDF
             </button>
           </div>
 
-          <button
-            className="btn-add-white"
-            onClick={handleAdd}
-          >
+          <button className="btn-add-white" onClick={handleAdd}>
             ➕ Thêm danh mục
           </button>
         </div>
@@ -320,9 +304,7 @@ const CategoryManagement = () => {
       {showModal && (
         <div className="modal-overlay-white">
           <div className="modal-white">
-            <h2>
-              {modalType === "add" ? "Thêm danh mục" : "Sửa danh mục"}
-            </h2>
+            <h2>{modalType === "add" ? "Thêm danh mục" : "Sửa danh mục"}</h2>
 
             <form onSubmit={handleSubmit}>
               <input
@@ -345,10 +327,7 @@ const CategoryManagement = () => {
                 {modalType === "add" ? "Thêm" : "Cập nhật"}
               </button>
 
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-              >
+              <button type="button" onClick={() => setShowModal(false)}>
                 Hủy
               </button>
             </form>
@@ -365,13 +344,9 @@ const CategoryManagement = () => {
             <strong>{categoryToDelete?.TenDanhMuc}</strong>
 
             <div>
-              <button onClick={() => setShowDeleteConfirm(false)}>
-                Hủy
-              </button>
+              <button onClick={() => setShowDeleteConfirm(false)}>Hủy</button>
 
-              <button onClick={confirmDelete}>
-                Xóa
-              </button>
+              <button onClick={confirmDelete}>Xóa</button>
             </div>
           </div>
         </div>

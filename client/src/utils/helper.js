@@ -210,11 +210,20 @@ export const getAssetRoom = async (id, page = 1) => {
 //bao tri
 
 //lay danh sach bao tri
-export const getMaintenanceAssets = async (page = 1) => {
+export const getMaintenanceAssets = async (
+  page = 1,
+  search = "",
+  status = ""
+) => {
   try {
     const res = await axios.get(apiUrl("baotri"), {
-      params: { page },
+      params: {
+        page,
+        search,
+        TinhTrang: status,
+      },
     });
+
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy danh sách bảo trì");
@@ -224,13 +233,8 @@ export const getMaintenanceAssets = async (page = 1) => {
 // lich su bao tri
 export const getMaintenanceHistory = async (MaTaiSan, page = 1) => {
   try {
-    //lay token
-    const token = sessionStorage.getItem("token");
     const res = await axios.get(apiUrl(`baotri/lichsu/${MaTaiSan}`), {
       params: { page },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
     return res.data;
   } catch (error) {
@@ -251,7 +255,8 @@ export const updateMaintenanceStatus = async (
     const res = await axios.put(apiUrl(`baotri/${id}`), {
       TinhTrang,
       NoiDung,
-      updated_at,
+      updated_at, 
+    },{
       headers: {
         Authorization: `Bearer ${token}`,
       },

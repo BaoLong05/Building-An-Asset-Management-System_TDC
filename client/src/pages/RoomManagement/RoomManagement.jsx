@@ -14,6 +14,7 @@ import {
 } from "../../utils/helper";
 
 const RoomManagement = () => {
+    document.title = "Vị Trí Sử Dụng"
   const [rooms, setRooms] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [darkMode, setDarkMode] = useState(false);
