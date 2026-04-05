@@ -18,6 +18,7 @@ class BaoTri extends Model
         'NoiDung',
         'NgayBaoTri',
         'TinhTrang',
+        'is_read',
         'created_by',
         'assigned_to',
         'deleted_by',

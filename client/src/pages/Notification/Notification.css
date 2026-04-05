@@ -1,0 +1,286 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* Reset & base */
+.notification-page {
+  font-family: "Inter", sans-serif;
+  background: #f4f6fb;
+  min-height: 100vh;
+  padding: 28px;
+  transition: all 0.3s ease;
+}
+
+.notification-page.dark {
+  background: #16213e;
+  color: #fff;
+}
+
+/* Header */
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.notification-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .notification-header h1 {
+  background: linear-gradient(135deg, #a8b8ff 0%, #c4a8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.header-actions button {
+  background: white;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header-actions button:first-child {
+  background: #f1f5f9;
+  font-size: 24px;
+  padding: 8px 12px;
+}
+
+.header-actions button:last-child {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 14px;
+}
+
+.dark .header-actions button:first-child {
+  background: #1f2a4a;
+  color: #ffd966;
+}
+
+.dark .header-actions button:last-child {
+  background: linear-gradient(135deg, #5a6ed1, #6a3f8a);
+}
+
+.header-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Stats */
+.notification-stats {
+  background: white;
+  border-radius: 16px;
+  padding: 12px 20px;
+  margin-bottom: 24px;
+  border: 1px solid #eef1f6;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.dark .notification-stats {
+  background: #1f2a4a;
+  border-color: #2d3748;
+}
+
+.notification-stats span {
+  font-size: 14px;
+  color: #475569;
+}
+
+.dark .notification-stats span {
+  color: #cbd5e1;
+}
+
+.notification-stats strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.dark .notification-stats strong {
+  color: white;
+}
+
+/* Loading */
+.notification-page > p:first-of-type {
+  text-align: center;
+  padding: 60px;
+  color: #64748b;
+}
+
+.dark .notification-page > p:first-of-type {
+  color: #94a3b8;
+}
+
+/* Danh sách thông báo */
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.notification-item {
+  background: white;
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+  border: 1px solid #eef1f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.dark .notification-item {
+  background: #1f2a4a;
+  border-color: #2d3748;
+}
+
+.notification-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+}
+
+.dark .notification-item:hover {
+  border-color: #4a5568;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.notification-item.unread {
+  border-left: 4px solid #667eea;
+  background: #f8fafc;
+}
+
+.dark .notification-item.unread {
+  border-left-color: #a8b8ff;
+  background: #16213e;
+}
+
+/* Icon (div đầu tiên) */
+.notification-item > div:first-child {
+  font-size: 28px;
+  min-width: 48px;
+  text-align: center;
+}
+
+/* Nội dung (div thứ hai) */
+.notification-item > div:nth-child(2) {
+  flex: 1;
+}
+
+.notification-item > div:nth-child(2) > div:first-child {
+  font-weight: 700;
+  font-size: 16px;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.dark .notification-item > div:nth-child(2) > div:first-child {
+  color: #f1f5f9;
+}
+
+.notification-item > div:nth-child(2) > div:nth-child(2) {
+  font-size: 14px;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.dark .notification-item > div:nth-child(2) > div:nth-child(2) {
+  color: #cbd5e1;
+}
+
+.notification-item > div:nth-child(2) > div:last-child {
+  font-size: 12px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dark .notification-item > div:nth-child(2) > div:last-child {
+  color: #64748b;
+}
+
+/* Button đánh dấu đã đọc */
+.notification-item > button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #e0e7ff;
+  color: #4338ca;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-item > button:hover {
+  background: #c7d2fe;
+  transform: scale(1.05);
+}
+
+.dark .notification-item > button {
+  background: #2d3748;
+  color: #a8b8ff;
+}
+
+.dark .notification-item > button:hover {
+  background: #4a5568;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notification-page {
+    padding: 20px;
+  }
+  .notification-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .notification-item {
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+  .notification-item > button {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .notification-page {
+    padding: 16px;
+  }
+  .notification-item > div:nth-child(2) > div:first-child {
+    font-size: 15px;
+  }
+  .notification-item > div:nth-child(2) > div:nth-child(2) {
+    font-size: 13px;
+  }
+}

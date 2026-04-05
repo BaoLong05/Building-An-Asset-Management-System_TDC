@@ -21,7 +21,7 @@ return new class extends Migration
             $table->dateTime('NgayBaoTri')->nullable();
 
             $table->enum('TinhTrang', ['Đang bảo trì', 'Hoàn thành'])->default('Đang bảo trì');
-            // Đang Xử Lý | Hoàn Thành
+            $table->boolean('is_read')->default(false);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('assigned_to')->nullable();
 

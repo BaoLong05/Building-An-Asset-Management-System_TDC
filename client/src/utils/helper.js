@@ -213,7 +213,7 @@ export const getAssetRoom = async (id, page = 1) => {
 export const getMaintenanceAssets = async (
   page = 1,
   search = "",
-  status = ""
+  status = "",
 ) => {
   try {
     const res = await axios.get(apiUrl("baotri"), {
@@ -252,15 +252,19 @@ export const updateMaintenanceStatus = async (
   try {
     //lay token
     const token = sessionStorage.getItem("token");
-    const res = await axios.put(apiUrl(`baotri/${id}`), {
-      TinhTrang,
-      NoiDung,
-      updated_at, 
-    },{
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const res = await axios.put(
+      apiUrl(`baotri/${id}`),
+      {
+        TinhTrang,
+        NoiDung,
+        updated_at,
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi cập nhật trạng thái");
@@ -418,12 +422,75 @@ export const getMe = async (token) => {
 //6. danh sach user
 export const getUsers = async () => {
   try {
-    const token = sessionStorage.getItem("token")
-    const res = await axios.get(apiUrl("user"),{
+    const token = sessionStorage.getItem("token");
+    const res = await axios.get(apiUrl("user"), {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
+      },
     });
+    return res.data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// lay ra thong bao ca nhan
+export const getMyTask = async () => {
+  try {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      return {
+        success: false,
+        message: "Không có token",
+      };
+    }
+
+    const res = await axios.get(apiUrl("my-tasks"), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    return handleError(error, "Lỗi khi lấy thông báo");
+  }
+};
+
+//danh dau da doc 1 cai
+export const Readed = async (id) => {
+  try {
+    const token = sessionStorage.getItem("token");
+    const res = await axios.put(
+      apiUrl(`baotri/${id}/read`),
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return res.data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+//danh dau da doc toan bo
+export const readed_All = async () => {
+  try {
+    const token = sessionStorage.getItem("token");
+    const res = await axios.put(
+      apiUrl("baotri/read-all"),
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
     return res.data;
   } catch (error) {
     return handleError(error);

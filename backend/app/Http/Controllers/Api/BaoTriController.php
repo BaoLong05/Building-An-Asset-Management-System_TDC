@@ -146,7 +146,6 @@ class BaoTriController extends Controller
     }
 
     //lich su
-    // lịch sử
     public function baotri_history($MaTaiSan)
     {
         $history = BaoTri::with([
@@ -162,6 +161,67 @@ class BaoTriController extends Controller
             'success' => true,
             'message' => 'Lấy lịch sử bảo trì thành công!',
             'data' => $history
+        ]);
+    }
+
+    //thong bao ca nhan bao tri
+    public function myTask(Request $request)
+    {
+        $userId = $request->user()->id;
+        $task = BaoTri::with('taisan:MaTaiSan,TenTaiSan')
+            ->where('assigned_to', $userId)
+            ->where('TinhTrang', 'Đang bảo trì')
+            ->where('is_read', false)
+            ->orderBy('NgayBaoTri', 'desc')
+            ->get();
+        if (!$task) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể lấy danh sách thông báo!'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'thông báo của bạn!',
+            'data' => $task
+        ]);
+    }
+    //danh dau da doc 1 cai
+    public function Readed($id)
+    {
+        $baotri = BaoTri::find($id);
+        if (!$baotri) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy!'
+            ]);
+        }
+        if ($baotri->assigned_to != Auth::user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền!'
+            ], 403);
+        }
+        $baotri->update([
+            'is_read' => true
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã đánh dấu đã đọc'
+        ]);
+    }
+
+    //danh dau da doc toan bo
+    public function Readed_All()
+    {
+        BaoTri::where('assigned_to', Auth::user()->id)
+            ->where('TinhTrang', 'Đang bảo trì')
+            ->update(['is_read' => true]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã đánh dấu tất cả'
         ]);
     }
 }
