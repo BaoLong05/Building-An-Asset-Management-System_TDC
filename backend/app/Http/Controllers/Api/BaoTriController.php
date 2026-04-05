@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BaoTri;
 use App\Models\TaiSan;
+use Illuminate\Support\Facades\Auth;
 
 class BaoTriController extends Controller
 {
@@ -14,7 +15,12 @@ class BaoTriController extends Controller
     // =========================
     public function baotri_index(Request $request)
     {
-        $query = BaoTri::with('taisan')->whereNull('deleted_at');
+        $query = BaoTri::with(
+            'taisan',
+            'creator:id,name',
+            'assignee:id,name'
+        )
+            ->whereNull('deleted_at');
 
         if ($request->search) {
             $search = $request->search;
@@ -42,7 +48,8 @@ class BaoTriController extends Controller
     {
         $request->validate([
             'MaTaiSan' => 'required|exists:taisan,MaTaiSan',
-            'NoiDung' => 'nullable|string'
+            'NoiDung' => 'nullable|string',
+            'assigned_to' => 'required|exists:users,id',
         ]);
 
         $exists = BaoTri::where('MaTaiSan', $request->MaTaiSan)
@@ -61,7 +68,8 @@ class BaoTriController extends Controller
             'NgayBaoTri' => now(),
             'NoiDung' => $request->NoiDung,
             'TinhTrang' => 'Đang bảo trì',
-            'created_by' => 1,
+            'created_by' => Auth::id(),
+            'assigned_to' => $request->assigned_to
         ]);
 
         $baotri->taisan->update([
@@ -110,7 +118,7 @@ class BaoTriController extends Controller
         $baotri->update([
             'TinhTrang' => $request->TinhTrang,
             'NoiDung' => $request->NoiDung,
-            'updated_by' => 1,
+            'updated_by' => Auth::id(),
         ]);
 
         // cap nhat trang thai tai san
@@ -131,7 +139,7 @@ class BaoTriController extends Controller
         ]);
     }
 
-   //lich su
+    //lich su
     public function baotri_history($MaTaiSan)
     {
         $history = BaoTri::where('MaTaiSan', $MaTaiSan)
@@ -144,6 +152,4 @@ class BaoTriController extends Controller
             'data' => $history
         ]);
     }
-
-   
 }

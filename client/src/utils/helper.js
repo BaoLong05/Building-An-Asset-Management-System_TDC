@@ -13,7 +13,7 @@ const handleError = (error, defaultMessage) => {
       return {
         success: false,
         errors: res.errors,
-        message: "Dữ liệu không hợp lệ!",
+        message: res.message || "có lỗi xảy ra",
       };
     }
 
@@ -48,6 +48,8 @@ export const getAssets = async (page = 1) => {
 //them tai san
 export const addAsset = async (data) => {
   try {
+    //lay token
+    const token = sessionStorage.getItem("token");
     const formData = new FormData();
 
     Object.keys(data).forEach((key) => {
@@ -58,6 +60,7 @@ export const addAsset = async (data) => {
 
     const res = await axios.post(apiUrl("taisan"), formData, {
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
     });
@@ -71,6 +74,8 @@ export const addAsset = async (data) => {
 //cap nhat tai san
 export const updateAsset = async (id, data) => {
   try {
+    //lay token
+    const token = sessionStorage.getItem("token");
     const formData = new FormData();
     Object.keys(data).forEach((key) => {
       if (data[key] !== null && data[key] !== "") {
@@ -80,19 +85,26 @@ export const updateAsset = async (id, data) => {
     formData.append("_method", "PUT");
     const res = await axios.post(apiUrl(`taisan/${id}`), formData, {
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
     });
     return res.data;
   } catch (error) {
-    return handleError(error, "Lỗi khi sửa tài sản");
+    return handleError(error, "Lỗi khi thêm tài sản");
   }
 };
 
 //xoa tai san
 export const deleteAsset = async (id) => {
   try {
-    const res = await axios.delete(apiUrl(`taisan/${id}`));
+    //lay token
+    const token = sessionStorage.getItem("token");
+    const res = await axios.delete(apiUrl(`taisan/${id}`), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi xóa tài sản");
@@ -212,8 +224,13 @@ export const getMaintenanceAssets = async (page = 1) => {
 // lich su bao tri
 export const getMaintenanceHistory = async (MaTaiSan, page = 1) => {
   try {
+    //lay token
+    const token = sessionStorage.getItem("token");
     const res = await axios.get(apiUrl(`baotri/lichsu/${MaTaiSan}`), {
       params: { page },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     return res.data;
   } catch (error) {
@@ -229,10 +246,15 @@ export const updateMaintenanceStatus = async (
   updated_at,
 ) => {
   try {
+    //lay token
+    const token = sessionStorage.getItem("token");
     const res = await axios.put(apiUrl(`baotri/${id}`), {
       TinhTrang,
       NoiDung,
       updated_at,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     return res.data;
   } catch (error) {
@@ -243,7 +265,13 @@ export const updateMaintenanceStatus = async (
 // them record bao tri
 export const addMaintenanceNote = async (data) => {
   try {
-    const res = await axios.post(apiUrl("baotri"), data);
+    //lay token
+    const token = sessionStorage.getItem("token");
+    const res = await axios.post(apiUrl("baotri"), data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi thêm ghi chú");
@@ -379,5 +407,20 @@ export const getMe = async (token) => {
     return res.data;
   } catch (error) {
     return handleError(error, "Lấy thông tin cá nhân thất bại!");
+  }
+};
+
+//6. danh sach user
+export const getUsers = async () => {
+  try {
+    const token = sessionStorage.getItem("token")
+    const res = await axios.get(apiUrl("user"),{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    return res.data;
+  } catch (error) {
+    return handleError(error);
   }
 };

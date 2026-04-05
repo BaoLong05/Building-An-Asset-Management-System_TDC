@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./AssetManagement.css";
@@ -11,9 +12,11 @@ import {
   getRoom,
   exportExcel,
   exportPDF,
+  getUsers,
 } from "../../utils/helper";
 
 const AssetManagement = () => {
+  document.title = "Quản Lý Tài Sản";
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -45,6 +48,9 @@ const AssetManagement = () => {
   const [showExportModalExcel, setShowExportModalExcel] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
+  const [users, setUsers] = useState([]);
+  const [selectedReceiver, setSelectedReceiver] = useState("");
+
   const [exportFilters, setExportFilters] = useState({
     keyword: "",
     MaDanhMuc: "",
@@ -62,24 +68,15 @@ const AssetManagement = () => {
     GhiChu: "",
   });
 
-  // const handleFileChange = (e) => {
-  //    const file = e.target.files[0];
-  //    console.log(file);
-
-  //    setFormData((prev) => ({
-  //      ...prev,
-  //      HinhAnh: file,
-  //     }));
-  // };
+  useEffect(() => {
+    fetchCategories();
+    fetchRooms();
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
-  fetchCategories();
-  fetchRooms();
-}, []);
-
-useEffect(() => {
-  fetchAssets(currentPage);
-}, [currentPage]);
+    fetchAssets(currentPage);
+  }, [currentPage]);
 
   useEffect(() => {
     if (darkMode) {
@@ -91,6 +88,17 @@ useEffect(() => {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await getUsers();
+      if (response.success) {
+        setUsers(response.data);
+      }
+    } catch (err) {
+      console.error("Không thể tải danh sách người dùng:", err);
+    }
   };
 
   const fetchAssets = async (page = 1) => {
@@ -113,8 +121,8 @@ useEffect(() => {
       }
     } catch (err) {
       toast.error(
-      err.response.data.message || "Không thể tải danh sách tài sản"
-    );
+        err.response.data.message || "Không thể tải danh sách tài sản",
+      );
     } finally {
       setLoading(false);
     }
@@ -154,22 +162,20 @@ useEffect(() => {
   };
 
   const handleChange = (e) => {
-  const { name, value, files } = e.target;
+    const { name, value, files } = e.target;
 
-  if (name === "HinhAnh") {
-    setFormData((prev) => ({
-      ...prev,
-      HinhAnh: files[0], // ✅ lấy file đúng
-    }));
-  } else {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-
-  console.log(files);
-};
+    if (name === "HinhAnh") {
+      setFormData((prev) => ({
+        ...prev,
+        HinhAnh: files[0],
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
 
   const handleAdd = () => {
     setEditAsset(null);
@@ -205,6 +211,9 @@ useEffect(() => {
   };
 
   const handleSave = async () => {
+    if (loading) return;
+
+    setLoading(true);
     try {
       const payload = {
         ...formData,
@@ -235,7 +244,6 @@ useEffect(() => {
 
       if (err.response?.data?.errors) {
         const errors = err.response.data.errors;
-
         Object.values(errors).forEach((arr) => {
           arr.forEach((msg) => toast.error(msg));
         });
@@ -248,7 +256,17 @@ useEffect(() => {
   };
 
   const handleDelete = async (asset) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa tài sản này?")) {
+    const result = await Swal.fire({
+      title: "Bạn có muốn xóa không?",
+      text: "không khôi phục được sau khi xóa!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      confirmButtonColor: "#e74c3c",
+      cancelButtonColor: "#6c757d",
+    });
+    if (result.isConfirmed) {
       try {
         await deleteAsset(asset.MaTaiSan);
         toast.success("Xóa thành công");
@@ -269,23 +287,36 @@ useEffect(() => {
     setMaintenanceAsset(asset);
     setMaintenanceStatus(asset.TinhTrang);
     setMaintenanceNote("");
+    setSelectedReceiver("");
     setShowMaintenanceForm(true);
   };
 
   const saveMaintenance = async () => {
     try {
       await updateAsset(maintenanceAsset.MaTaiSan, {
-        ...maintenanceAsset,
+        TenTaiSan: maintenanceAsset.TenTaiSan,
+        MaDanhMuc: maintenanceAsset.MaDanhMuc,
+        MaPhong: maintenanceAsset.MaPhong,
+        SoLuong: maintenanceAsset.SoLuong,
+        NgayNhap: maintenanceAsset.NgayNhap,
+
         TinhTrang: maintenanceStatus,
         GhiChu: maintenanceNote || maintenanceAsset.GhiChu,
+        assigned_to: selectedReceiver,
+        updated_at: maintenanceAsset.updated_at,
       });
 
       toast.success("Cập nhật bảo trì thành công");
       setShowMaintenanceForm(false);
       fetchAssets();
     } catch (err) {
-      console.error(err);
-      toast.error("Lỗi cập nhật bảo trì");
+      console.log(err.response?.data);
+
+      if (err.response?.data?.message) {
+        toast.error(err.response.data.message);
+      } else {
+        toast.error("Lỗi cập nhật bảo trì");
+      }
     }
   };
 
@@ -294,9 +325,6 @@ useEffect(() => {
     fetchAssets(page);
   };
 
-  // =========================
-  // EXPORT (placeholder) - Giống CategoryManagement
-  // =========================
   const handleExportExcel = () => {
     exportExcel(
       "exportExcel/taisan",
@@ -309,17 +337,17 @@ useEffect(() => {
     );
   };
 
-const handleExportPDF = () => {
-  exportPDF(
-    "export/taisan",
-    {
-      MaDanhMuc: selectedCategory,
-      MaPhong: selectedRoom,
-      TinhTrang: selectedStatus,
-    },
-    "danhsach_taisan.pdf"
-  );
-};
+  const handleExportPDF = () => {
+    exportPDF(
+      "export/taisan",
+      {
+        MaDanhMuc: selectedCategory,
+        MaPhong: selectedRoom,
+        TinhTrang: selectedStatus,
+      },
+      "danhsach_taisan.pdf",
+    );
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -363,6 +391,31 @@ const handleExportPDF = () => {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
+  //kiem tra trang thai
+  //1. modal sua
+  const handleEditClick = (assets) => {
+    if (assets.TinhTrang === "Đang bảo trì") {
+      toast.warning("Tài sản đang bảo trì, không thể chỉnh sửa");
+      return;
+    }
+    handleEdit(assets);
+  };
+  //2. modal xoa
+  const handleDeleteClick = (assets) => {
+    if (assets.TinhTrang === "Đang bảo trì") {
+      toast.warning("Tài sản đang bảo trì, không thể xóa");
+      return;
+    }
+    handleDelete(assets);
+  };
+  //3. modal bao tri
+  const handleMaintainceClick = (assets) => {
+    if (assets.TinhTrang !== "Tốt") {
+      toast.warning("Chỉ tài sản 'Tốt' mới được tạo bảo trì");
+      return;
+    }
+    handleMaintenance(assets);
+  };
   return (
     <div className={`asset-management ${darkMode ? "dark" : ""}`}>
       <ToastContainer
@@ -371,7 +424,6 @@ const handleExportPDF = () => {
         theme={darkMode ? "dark" : "light"}
       />
 
-      {/* Top Bar với Theme Toggle */}
       <div className="top-bar-asset">
         <div className="header-title">
           <h1>Quản Lý Tài Sản</h1>
@@ -394,53 +446,12 @@ const handleExportPDF = () => {
         </div>
       </div>
 
-      {/* Header */}
       <div className="header-section">
         <button className="btn-add" onClick={handleAdd}>
           <span>➕</span> Thêm tài sản
         </button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="stats-section">
-        <div className="stat-card">
-          <div className="stat-icon blue">📊</div>
-          <div className="stat-content">
-            <span className="stat-label">Tổng tài sản</span>
-            <span className="stat-value">{stats.total}</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon green">✅</div>
-          <div className="stat-content">
-            <span className="stat-label">Đang hoạt động</span>
-            <span className="stat-value">{stats.good}</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon orange">🔧</div>
-          <div className="stat-content">
-            <span className="stat-label">Đang bảo trì</span>
-            <span className="stat-value">{stats.maintenance}</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon red">❌</div>
-          <div className="stat-content">
-            <span className="stat-label">Hỏng</span>
-            <span className="stat-value">{stats.broken}</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon purple">💰</div>
-          <div className="stat-content">
-            <span className="stat-label">Tổng giá trị</span>
-            <span className="stat-value">{formatPrice(stats.totalValue)}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Bar (Search, Filter, Export) */}
       <div className="action-bar">
         <div className="search-filter-section">
           <div className="search-box">
@@ -568,11 +579,17 @@ const handleExportPDF = () => {
               filteredAssets.map((asset) => (
                 <tr key={asset.MaTaiSan}>
                   <td className="code">{asset.MaTaiSan}</td>
-                  <td>{asset.HinhAnh ? (
-                    <img src={asset.HinhAnh} width="60" />
-                  ):(
-                    "Không có ảnh"
-                  )}</td>
+                  <td>
+                    {asset.HinhAnh ? (
+                      <img
+                        src={asset.HinhAnh}
+                        width="60"
+                        alt={asset.TenTaiSan}
+                      />
+                    ) : (
+                      "Không có ảnh"
+                    )}
+                  </td>
                   <td>{asset.TenTaiSan}</td>
                   <td>{asset.TenDanhMuc}</td>
                   <td>{asset.TenPhong}</td>
@@ -593,14 +610,21 @@ const handleExportPDF = () => {
                       >
                         👁️
                       </button>
-                      <button onClick={() => handleEdit(asset)} title="Sửa">
+                      <button
+                        onClick={() => handleEditClick(asset)}
+                        title="Sửa"
+                      >
                         ✏️
                       </button>
-                      <button onClick={() => handleDelete(asset)} title="Xóa">
+
+                      <button
+                        onClick={() => handleDeleteClick(asset)}
+                        title="Xóa"
+                      >
                         🗑️
                       </button>
                       <button
-                        onClick={() => handleMaintenance(asset)}
+                        onClick={() => handleMaintainceClick(asset)}
                         title="Bảo trì"
                       >
                         🔧
@@ -614,7 +638,6 @@ const handleExportPDF = () => {
         </table>
       </div>
 
-      {/* Pagination */}
       {!loading && filteredAssets.length > 0 && (
         <div className="pagination">
           <button
@@ -649,7 +672,6 @@ const handleExportPDF = () => {
         </div>
       )}
 
-      {/* Form Modal */}
       {showForm && (
         <div className="modal-overlay" onClick={() => setShowForm(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -763,7 +785,6 @@ const handleExportPDF = () => {
                     onChange={handleChange}
                   >
                     <option value="Tốt">Tốt</option>
-                    <option value="Đang bảo trì">Đang bảo trì</option>
                     <option value="Hỏng">Hỏng</option>
                   </select>
                 </div>
@@ -793,7 +814,6 @@ const handleExportPDF = () => {
         </div>
       )}
 
-      {/* Detail Modal */}
       {showDetail && selectedAsset && (
         <div className="modal-overlay" onClick={() => setShowDetail(false)}>
           <div
@@ -883,7 +903,6 @@ const handleExportPDF = () => {
         </div>
       )}
 
-      {/* Maintenance Modal */}
       {showMaintenanceForm && (
         <div
           className="modal-overlay"
@@ -917,6 +936,29 @@ const handleExportPDF = () => {
                   </span>
                 </p>
               </div>
+              <div className="form-group">
+                <label>
+                  <span className="required-icon">👤</span> Người nhận bảo trì:
+                </label>
+                <div className="receiver-select-wrapper">
+                  <select
+                    className="receiver-select"
+                    value={selectedReceiver}
+                    onChange={(e) => setSelectedReceiver(e.target.value)}
+                  >
+                    <option value="">-- Chọn người nhận --</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="receiver-icon">🔧</div>
+                </div>
+                <small className="form-hint">
+                  Chọn người phụ trách bảo trì tài sản này
+                </small>
+              </div>
 
               <div className="form-group">
                 <label>Cập nhật trạng thái:</label>
@@ -926,7 +968,6 @@ const handleExportPDF = () => {
                 >
                   <option value="Tốt">Tốt</option>
                   <option value="Đang bảo trì">Đang bảo trì</option>
-                  <option value="Hỏng">Hỏng</option>
                 </select>
               </div>
 
@@ -955,7 +996,7 @@ const handleExportPDF = () => {
           </div>
         </div>
       )}
-      {/* {export modal excel} */}
+
       {showExportModalExcel && (
         <div
           className="modal-overlay"
@@ -1050,7 +1091,6 @@ const handleExportPDF = () => {
         </div>
       )}
 
-      {/* EXPORT MODAL */}
       {showExportModal && (
         <div
           className="modal-overlay"

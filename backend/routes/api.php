@@ -16,12 +16,7 @@ use App\Http\Controllers\API\PasswordController;
 //quan ly tai san
 //1. lay danh sach tai san
 Route::get('/taisan', [TaiSanController::class, 'index']);
-//2. them tai san
-Route::post('/taisan', [TaiSanController::class, 'AssetManagement_store']);
-//3. cap nhat tai san
-Route::put('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Update']);
-//4. xoa tai san
-Route::delete('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Delete']);
+
 
 //quan ly danh muc
 //1. lay danh sach va tim kiem danh muc
@@ -49,14 +44,9 @@ Route::get('/phong/{id}/taisan', [PhongController::class, 'phong_asset']);
 //quan ly bao tri
 //1.lay danh sach bao tri va tim kiem
 Route::get('/baotri', [BaoTriController::class, 'baotri_index']);
-//2. them bao tri
-Route::post('/baotri', [BaoTriController::class, 'baotri_store']);
-//3. cap nhat bao tri
-Route::put('/baotri/{id}', [BaoTriController::class, 'baotri_update']);
-//4. xoa bao tri
-Route::delete('/baotri/{id}', [BaoTriController::class, 'baotri_delete']);
 //5. bao tri history
 Route::get('/baotri/lichsu/{id}', [BaoTriController::class, 'baotri_history']);
+
 
 
 
@@ -91,10 +81,26 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [PasswordController::class, 'sendResetLink']);
 Route::post('/reset-password', [PasswordController::class, 'resetPassword']);
 
-Route::middleware(['auth:sanctum', 'activity', 'token.expiry'])->group(function(){
+Route::middleware(['auth:sanctum'])->group(function () {
+    //tai khoan dang login
+    Route::get('/me', [AuthController::class, 'me']);
+    //danh sach user
+    Route::get('/user', [AuthController::class, 'getUser']);
+    //TAI SAN
+    //2. them tai san
+    Route::post('/taisan', [TaiSanController::class, 'AssetManagement_store']);
+    //3. cap nhat tai san
+    Route::put('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Update']);
+    //4. xoa tai san
+    Route::delete('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Delete']);
+    //BAO TRI
+    //2. them bao tri
+    Route::post('/baotri', [BaoTriController::class, 'baotri_store']);
+    //3. cap nhat bao tri
+    Route::put('/baotri/{id}', [BaoTriController::class, 'baotri_update']);
+    //4. xoa bao tri
+    Route::delete('/baotri/{id}', [BaoTriController::class, 'baotri_delete']);
+
+
     Route::post('/logout', [AuthController::class, 'logout']);
-
 });
-
-//3. lay ra user
-Route::middleware(['auth:sanctum'])->get('/me', [AuthController::class, 'getUser']);
