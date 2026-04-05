@@ -101,6 +101,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //4. xoa bao tri
     Route::delete('/baotri/{id}', [BaoTriController::class, 'baotri_delete']);
 
+    //thong bao bao tri ca nhan
+    Route::get('/my-tasks', [BaoTriController::class, 'myTask']);
+    //danh dau doc 1 cai
+    Route::put('/baotri/{id}/read', [BaoTriController::class, 'Readed']);
+    //danh dau doc toan bo
+    Route::put('/baotri/read-all', [BaoTriController::class, 'Readed_All']);
+
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

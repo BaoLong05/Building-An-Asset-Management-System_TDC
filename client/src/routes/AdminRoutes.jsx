@@ -6,6 +6,7 @@ import CategoryManagement from "../pages/CategoryManagement/CategoryManagement";
 import RoomManagement from "../pages/RoomManagement/RoomManagement"; 
 import MaintenanceManagement from "../pages/MaintenanceManagement/MaintenanceManagement";
 import Profile from "../pages/Profile/Profile";
+import Notification from "../pages/Notification/Notification";
 
 const AdminRoutes = {
   path: "/admin",
@@ -34,6 +35,10 @@ const AdminRoutes = {
     {
       path: "profile",
       element: <Profile/>
+    },
+    {
+      path: "notification",
+      element: <Notification/>
     }
   ],
 };
