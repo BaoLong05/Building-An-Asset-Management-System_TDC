@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./AssetManagement.css";
@@ -11,10 +12,11 @@ import {
   getRoom,
   exportExcel,
   exportPDF,
-  getUsers, 
+  getUsers,
 } from "../../utils/helper";
 
 const AssetManagement = () => {
+  document.title = "Quản Lý Tài Sản";
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -46,8 +48,8 @@ const AssetManagement = () => {
   const [showExportModalExcel, setShowExportModalExcel] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
-  const [users, setUsers] = useState([]); 
-  const [selectedReceiver, setSelectedReceiver] = useState(""); 
+  const [users, setUsers] = useState([]);
+  const [selectedReceiver, setSelectedReceiver] = useState("");
 
   const [exportFilters, setExportFilters] = useState({
     keyword: "",
@@ -254,7 +256,17 @@ const AssetManagement = () => {
   };
 
   const handleDelete = async (asset) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa tài sản này?")) {
+    const result = await Swal.fire({
+      title: "Bạn có muốn xóa không?",
+      text: "không khôi phục được sau khi xóa!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      confirmButtonColor: "#e74c3c",
+      cancelButtonColor: "#6c757d",
+    });
+    if (result.isConfirmed) {
       try {
         await deleteAsset(asset.MaTaiSan);
         toast.success("Xóa thành công");
@@ -379,6 +391,31 @@ const AssetManagement = () => {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
+  //kiem tra trang thai
+  //1. modal sua
+  const handleEditClick = (assets) => {
+    if (assets.TinhTrang === "Đang bảo trì") {
+      toast.warning("Tài sản đang bảo trì, không thể chỉnh sửa");
+      return;
+    }
+    handleEdit(assets);
+  };
+  //2. modal xoa
+  const handleDeleteClick = (assets) => {
+    if (assets.TinhTrang === "Đang bảo trì") {
+      toast.warning("Tài sản đang bảo trì, không thể xóa");
+      return;
+    }
+    handleDelete(assets);
+  };
+  //3. modal bao tri
+  const handleMaintainceClick = (assets) => {
+    if (assets.TinhTrang !== "Tốt") {
+      toast.warning("Chỉ tài sản 'Tốt' mới được tạo bảo trì");
+      return;
+    }
+    handleMaintenance(assets);
+  };
   return (
     <div className={`asset-management ${darkMode ? "dark" : ""}`}>
       <ToastContainer
@@ -413,44 +450,6 @@ const AssetManagement = () => {
         <button className="btn-add" onClick={handleAdd}>
           <span>➕</span> Thêm tài sản
         </button>
-      </div>
-
-      <div className="stats-section">
-        <div className="stat-card">
-          <div className="stat-icon blue">📊</div>
-          <div className="stat-content">
-            <span className="stat-label">Tổng tài sản</span>
-            <span className="stat-value">{stats.total}</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon green">✅</div>
-          <div className="stat-content">
-            <span className="stat-label">Đang hoạt động</span>
-            <span className="stat-value">{stats.good}</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon orange">🔧</div>
-          <div className="stat-content">
-            <span className="stat-label">Đang bảo trì</span>
-            <span className="stat-value">{stats.maintenance}</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon red">❌</div>
-          <div className="stat-content">
-            <span className="stat-label">Hỏng</span>
-            <span className="stat-value">{stats.broken}</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon purple">💰</div>
-          <div className="stat-content">
-            <span className="stat-label">Tổng giá trị</span>
-            <span className="stat-value">{formatPrice(stats.totalValue)}</span>
-          </div>
-        </div>
       </div>
 
       <div className="action-bar">
@@ -611,14 +610,21 @@ const AssetManagement = () => {
                       >
                         👁️
                       </button>
-                      <button onClick={() => handleEdit(asset)} title="Sửa">
+                      <button
+                        onClick={() => handleEditClick(asset)}
+                        title="Sửa"
+                      >
                         ✏️
                       </button>
-                      <button onClick={() => handleDelete(asset)} title="Xóa">
+
+                      <button
+                        onClick={() => handleDeleteClick(asset)}
+                        title="Xóa"
+                      >
                         🗑️
                       </button>
                       <button
-                        onClick={() => handleMaintenance(asset)}
+                        onClick={() => handleMaintainceClick(asset)}
                         title="Bảo trì"
                       >
                         🔧
@@ -930,8 +936,6 @@ const AssetManagement = () => {
                   </span>
                 </p>
               </div>
-
-              {/* ===== COMBOBOX NGƯỜI NHẬN BẢO TRÌ (THÊM MỚI) ===== */}
               <div className="form-group">
                 <label>
                   <span className="required-icon">👤</span> Người nhận bảo trì:
