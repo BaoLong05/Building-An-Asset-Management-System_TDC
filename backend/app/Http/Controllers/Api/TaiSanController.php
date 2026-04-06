@@ -15,6 +15,9 @@ class TaiSanController extends Controller
 {
     public function index(Request $request)
     {
+        $request->validate([
+            'search' => 'nullable|string|max:255'
+        ]);
         $query = TaiSan::with('phong', 'danhmuc')->whereNull('deleted_at');
 
         // Tìm kiếm

@@ -243,6 +243,7 @@ const RoomManagement = () => {
             type="text"
             className="search-input"
             placeholder="🔍 Tìm kiếm vị trí..."
+            maxLength={255}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
