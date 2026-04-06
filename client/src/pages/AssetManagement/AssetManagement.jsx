@@ -459,6 +459,7 @@ const AssetManagement = () => {
             <input
               type="text"
               placeholder="Tìm kiếm theo mã, tên, danh mục..."
+              maxLength={255}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);

@@ -720,7 +720,7 @@ ACTION BUTTONS
   transition: all 0.2s;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 1px;
   white-space: nowrap;
 }
 
@@ -744,7 +744,9 @@ ACTION BUTTONS
 .btn-icon.edit {
   background: #dbeafe;
   color: #2563eb;
-  border: 1px solid #93c5fd;
+  border: 2px solid #93c5fd;
+   white-space: normal;
+  min-width: fit-content;
 }
 
 .dark .btn-icon.edit {
@@ -1077,7 +1079,7 @@ DETAIL MODAL
 }
 
 .history-scroll {
-  max-height: 400px; /* chỉnh tùy bạn, 400-500px đẹp */
+  max-height: 300px; /* chỉnh tùy bạn, 400-500px đẹp */
   overflow-y: auto;
   padding-right: 6px; /* tránh che scrollbar */
 }

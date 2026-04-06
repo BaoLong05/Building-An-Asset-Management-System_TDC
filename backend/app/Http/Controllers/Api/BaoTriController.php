@@ -15,6 +15,9 @@ class BaoTriController extends Controller
     // =========================
     public function baotri_index(Request $request)
     {
+        $request->validate([
+            'search'=> 'nullable|string|max:255'
+        ]);
         $query = BaoTri::with(
             'taisan',
             'creator:id,name',

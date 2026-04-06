@@ -13,6 +13,9 @@ class PhongController extends Controller
     //lay danh sach, phan trang va tim kiem
     public function phong_index(Request $request)
     {
+        $request->validate([
+            'search' => 'nullable|string|max:255'
+        ]);
         $query = Phong::query();
 
         //soft delelte

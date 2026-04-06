@@ -10,6 +10,9 @@ class DanhMucController extends Controller
 {
     public function danhmuc_index(Request $request)
     {
+        $request->validate([
+            'search' => 'nullable|string|max:255'
+        ]);
         $query = DanhMuc::query();
         //soft delete
         $query->whereNull('deleted_at');

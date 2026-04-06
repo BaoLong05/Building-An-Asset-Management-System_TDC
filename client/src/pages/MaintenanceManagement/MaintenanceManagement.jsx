@@ -256,6 +256,7 @@ const fetchAssets = async (page = 1, search = "", status = "") => {
             className="search-input"
             placeholder="🔍 Tìm kiếm tài sản..."
             value={searchTerm}
+            maxLength={255}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
