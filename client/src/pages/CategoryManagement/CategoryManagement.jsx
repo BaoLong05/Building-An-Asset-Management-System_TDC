@@ -16,6 +16,8 @@ const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
 
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("add");
@@ -36,20 +38,28 @@ const CategoryManagement = () => {
   // =========================
   // FETCH API
   // =========================
-  const fetchCategories = async () => {
-    const res = await getCategories();
+  const fetchCategories = async (page = 1, search = "") => {
+    const res = await getCategories(page, search);
 
     if (res && res.success) {
-      setCategories(res.data);
-      toast.success(res.message);
+      setCategories(res.data.data);
+      setPage(res.data.current_page);
+      setLastPage(res.data.last_page);
     } else {
       toast.error(res.message);
     }
   };
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    const delayDebounce = setTimeout(() => {
+      fetchCategories(1, searchTerm); 
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm]);
+  useEffect(() => {
+    fetchCategories(page, searchTerm);
+  }, [page]);
 
   // =========================
   // EXPORT (placeholder)
@@ -149,18 +159,6 @@ const CategoryManagement = () => {
   };
 
   // =========================
-  // SEARCH
-  // =========================
-  const filteredCategories = categories.filter((category) => {
-    const search = searchTerm.toLowerCase();
-    return (
-      category.TenDanhMuc?.toLowerCase().includes(search) ||
-      String(category.MaDanhMuc).includes(search) ||
-      (category.MoTa || "").toLowerCase().includes(search)
-    );
-  });
-
-  // =========================
   // STATS
   // =========================
   const stats = {
@@ -231,7 +229,10 @@ const CategoryManagement = () => {
             placeholder="🔍 Tìm kiếm danh mục..."
             maxLength={255}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
           />
         </div>
 
@@ -265,8 +266,8 @@ const CategoryManagement = () => {
           </thead>
 
           <tbody>
-            {filteredCategories.length > 0 ? (
-              filteredCategories.map((category) => (
+            {categories.length > 0 ? (
+              categories.map((category) => (
                 <tr key={category.MaDanhMuc}>
                   <td>{category.MaDanhMuc}</td>
                   <td>{category.TenDanhMuc}</td>
@@ -295,10 +296,31 @@ const CategoryManagement = () => {
             )}
           </tbody>
         </table>
+        <div className="pagination">
+          <button
+            className="page-btn"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            ← Trước
+          </button>
+
+          <span className="page-info">
+            Trang {page} / {lastPage}
+          </span>
+
+          <button
+            className="page-btn"
+            disabled={page === lastPage}
+            onClick={() => setPage(page + 1)}
+          >
+            Sau →
+          </button>
+        </div>
       </div>
 
       <div className="table-footer">
-        Tổng số danh mục: <strong>{filteredCategories.length}</strong>
+        Tổng số danh mục: <strong>{categories.length}</strong>
       </div>
 
       {/* MODAL ADD EDIT */}

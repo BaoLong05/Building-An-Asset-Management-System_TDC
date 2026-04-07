@@ -23,10 +23,13 @@ class PhongController extends Controller
         //tim kiem
         if ($request->search) {
             $search = $request->search;
+
             $query->where(function ($q) use ($search) {
                 $q->where('TenPhong', 'LIKE', "%$search%")
-                    ->orWhere('ViTri', 'LIKE', "%$search%")
-                    ->orWhere('MaPhong', 'LIKE', "%$search%");
+                    ->orWhere('ViTri', 'LIKE', "%$search%");
+                if (is_numeric($search)) {
+                    $q->orWhere('MaPhong', (int)$search);
+                }
             });
         }
 
