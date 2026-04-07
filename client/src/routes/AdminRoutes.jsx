@@ -1,5 +1,5 @@
 import React from "react";
-import AdminDashboard from "../pages/admin/dashboard";
+import AdminDashboard from "../pages/admin/Dashboard";
 import AssetManagement from "../pages/AssetManagement/AssetManagement";
 import AdminLayout from "./AdminLayout/AdminLayout";
 import CategoryManagement from "../pages/CategoryManagement/CategoryManagement";

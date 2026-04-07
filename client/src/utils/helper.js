@@ -496,3 +496,18 @@ export const readed_All = async () => {
     return handleError(error);
   }
 };
+
+//THONG KE
+export const getDashboard = async () => {
+  try {
+    const token = sessionStorage.getItem("token");
+    const res = await axios.get(apiUrl("dashboard"), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return handleError(error || "Tải dữ liệu không thành công!");
+  }
+};
