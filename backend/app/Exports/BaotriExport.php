@@ -84,7 +84,7 @@ class BaotriExport implements
         $hightCollum = $sheet->getHighestColumn();
 
         //in dam - ne - can giua
-        $sheet->getStyle('A1:I1')->applyFromArray([
+        $sheet->getStyle('A1:G1')->applyFromArray([
             'front' => [
                 'bold' => true,
                 'size' => 12,
