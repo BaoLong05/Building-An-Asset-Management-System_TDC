@@ -3,8 +3,10 @@ import AdminLayout from "./AdminLayout/AdminLayout";
 import Login from "../pages/Login/Login";
 import ForgotPassword from "../pages/ForgotPassword/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword/ResetPassword";
+import PublicRoute from "./PublicRoute";
 const LoginRoute = {
   path: "/",
+  element: <PublicRoute/>,
   children: [
     {
       index: true,
