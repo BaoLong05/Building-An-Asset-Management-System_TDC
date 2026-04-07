@@ -1,0 +1,14 @@
+import { Navigate, Outlet } from "react-router-dom";
+const PublicRoute = () => {
+  const token = sessionStorage.getItem("token");
+  if (token) {
+    return (
+      <Navigate
+        to={"/admin/dashboard"}
+        replace
+      />
+    );
+  }
+  return <Outlet />;
+};
+export default PublicRoute;
