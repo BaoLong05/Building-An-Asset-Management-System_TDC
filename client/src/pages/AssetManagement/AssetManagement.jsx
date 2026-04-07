@@ -890,15 +890,6 @@ const AssetManagement = () => {
               >
                 Đóng
               </button>
-              <button
-                className="btn-edit"
-                onClick={() => {
-                  setShowDetail(false);
-                  handleEdit(selectedAsset);
-                }}
-              >
-                Chỉnh sửa
-              </button>
             </div>
           </div>
         </div>
