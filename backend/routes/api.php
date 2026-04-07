@@ -10,6 +10,7 @@ use App\Http\Controllers\Export\ExcelController;
 use App\Http\Controllers\Export\PdfController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PasswordController;
+use App\Http\Controllers\Api\DashboardController;
 
 
 
@@ -95,7 +96,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/taisan/{id}', [TaiSanController::class, 'AssetManagement_Delete']);
     //BAO TRI
 
-       //danh dau doc 1 cai
+    //danh dau doc 1 cai
     Route::put('/baotri/{id}/read', [BaoTriController::class, 'Readed']);
     //danh dau doc toan bo
     Route::put('/baotri/read-all', [BaoTriController::class, 'Readed_All']);
@@ -111,4 +112,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/dashboard', [DashboardController::class, 'Dashboard_index']);
 });
