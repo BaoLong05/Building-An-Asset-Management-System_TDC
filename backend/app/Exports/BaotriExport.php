@@ -32,7 +32,11 @@ class BaotriExport implements
             $query->where('TinhTrang', $this->filters['TinhTrang']);
         }
 
-        $data = $query->with(['taisan:MaTaiSan,TenTaiSan'])->get();
+        $data = $query->with([
+            'taisan:MaTaiSan,TenTaiSan',
+            'assignee:id,name',
+            'creator:id,name'
+        ])->get();
 
         if ($data->isEmpty()) {
             return collect([
@@ -55,7 +59,9 @@ class BaotriExport implements
             $row->taisan->TenTaiSan ?? $row->taisan,
             $row->NoiDung,
             $row->NgayBaoTri,
-            $row->TinhTrang
+            $row->TinhTrang,
+            optional($row->creator)->name,
+            optional($row->assignee)->name,
         ];
     }
 
@@ -66,7 +72,9 @@ class BaotriExport implements
             'Tên Tài Sản',
             'Nội Dung',
             'Ngày Bảo Trì',
-            'Trạng Thái Bảo Trì'
+            'Trạng Thái Bảo Trì',
+            'Người Nhận',
+            'Người Gửi'
         ];
     }
 
@@ -76,7 +84,7 @@ class BaotriExport implements
         $hightCollum = $sheet->getHighestColumn();
 
         //in dam - ne - can giua
-        $sheet->getStyle('A1:E1')->applyFromArray([
+        $sheet->getStyle('A1:I1')->applyFromArray([
             'front' => [
                 'bold' => true,
                 'size' => 12,

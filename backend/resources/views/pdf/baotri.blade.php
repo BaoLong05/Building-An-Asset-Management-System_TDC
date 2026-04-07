@@ -88,16 +88,20 @@
                 <th>Nội Dung</th>
                 <th>Ngày Bảo Trì</th>
                 <th>Trạng Thái</th>
+                <th>Người Nhận</th>
+                <th>Người Gửi</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($baotri as $item)
                 <tr>
                     <td>{{ $item->MaBaoTri }}</td>
-                    <td>{{ $item->taisan->TenTaiSan ?? '' }}</td>
+                    <td>{{ $item->taisan->TenTaiSan ?? 'Không tìm thây tên tài sản' }}</td>
                     <td>{{ $item->NoiDung }}</td>
                     <td>{{ $item->NgayBaoTri }}</td>
                     <td>{{ $item->TinhTrang }}</td>
+                    <td>{{ $item->assignee->name ?? 'Không tìm thây tên người nhận' }}</td>
+                    <td>{{ $item->creator->name ?? 'Không tìm thây tên người gửi' }}</td>
                 </tr>
             @endforeach
         </tbody>
