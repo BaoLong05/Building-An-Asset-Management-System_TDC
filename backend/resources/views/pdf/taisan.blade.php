@@ -28,15 +28,18 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed; /* QUAN TRỌNG */
+            table-layout: fixed;
+            /* QUAN TRỌNG */
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid #000;
             padding: 5px;
             font-size: 10px;
             text-align: center;
-            word-break: break-word; /* chống tràn chữ */
+            word-break: break-word;
+            /* chống tràn chữ */
         }
 
         th {
@@ -44,23 +47,66 @@
         }
 
         /* FIX WIDTH CỘT */
-        th:nth-child(1), td:nth-child(1) { width: 5%; }
-        th:nth-child(2), td:nth-child(2) { width: 15%; text-align: left; }
-        th:nth-child(3), td:nth-child(3) { width: 10%; }
-        th:nth-child(4), td:nth-child(4) { width: 10%; }
-        th:nth-child(5), td:nth-child(5) { width: 6%; }
-        th:nth-child(6), td:nth-child(6) { width: 10%; }
-        th:nth-child(7), td:nth-child(7) { width: 10%; }
-        th:nth-child(8), td:nth-child(8) { width: 12%; }
-        th:nth-child(9), td:nth-child(9) { width: 7%; }
-        th:nth-child(10), td:nth-child(10) { width: 7%; }
-        th:nth-child(11), td:nth-child(11) { width: 8%; }
+        th:nth-child(1),
+        td:nth-child(1) {
+            width: 5%;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 15%;
+            text-align: left;
+        }
+
+        th:nth-child(3),
+        td:nth-child(3) {
+            width: 10%;
+        }
+
+        th:nth-child(4),
+        td:nth-child(4) {
+            width: 10%;
+        }
+
+        th:nth-child(5),
+        td:nth-child(5) {
+            width: 6%;
+        }
+
+        th:nth-child(6),
+        td:nth-child(6) {
+            width: 10%;
+        }
+
+        th:nth-child(7),
+        td:nth-child(7) {
+            width: 10%;
+        }
+
+        th:nth-child(8),
+        td:nth-child(8) {
+            width: 12%;
+        }
+
+        th:nth-child(9),
+        td:nth-child(9) {
+            width: 7%;
+        }
+
+        th:nth-child(10),
+        td:nth-child(10) {
+            width: 7%;
+        }
+
+        th:nth-child(11),
+        td:nth-child(11) {
+            width: 8%;
+        }
 
         /* chống vỡ trang */
         tr {
             page-break-inside: avoid;
         }
-
     </style>
 </head>
 
@@ -107,36 +153,34 @@
         </thead>
 
         <tbody>
-    @if ($taisan->isEmpty())
-        <tr>
-            <td colspan="11" style="text-align: center; padding: 10px;">
-                Không có dữ liệu
-            </td>
-        </tr>
-    @else
-        @foreach ($taisan as $item)
-            <tr>
-                <td>{{ $item->MaTaiSan }}</td>
-                <td style="text-align:left">{{ $item->TenTaiSan }}</td>
-                <td>{{ $item->danhmuc->TenDanhMuc ?? '' }}</td>
-                <td>{{ $item->phong->TenPhong ?? '' }}</td>
-                <td>{{ $item->SoLuong }}</td>
-                <td>
-                    {{ $item->NgayNhap 
-                        ? \Carbon\Carbon::parse($item->NgayNhap)->format('d/m/Y') 
-                        : '' 
-                    }}
-                </td>
-                <td>{{ $item->TinhTrang }}</td>
-                <td>{{ $item->GhiChu }}</td>
-                <td>{{ $item->created_by }}</td>
-                <td>{{ $item->updated_by }}</td>
-                <td>{{ $item->deleted_by }}</td>
-            </tr>
-        @endforeach
-    @endif
-</tbody>
+            @if ($taisan->isEmpty())
+                <tr>
+                    <td colspan="11" style="text-align: center; padding: 10px;">
+                        Không có dữ liệu
+                    </td>
+                </tr>
+            @else
+                @foreach ($taisan as $item)
+                    <tr>
+                        <td>{{ $item->MaTaiSan }}</td>
+                        <td style="text-align:left">{{ $item->TenTaiSan }}</td>
+                        <td>{{ $item->danhmuc->TenDanhMuc ?? '' }}</td>
+                        <td>{{ $item->phong->TenPhong ?? '' }}</td>
+                        <td>{{ $item->SoLuong }}</td>
+                        <td>
+                            {{ $item->NgayNhap ? \Carbon\Carbon::parse($item->NgayNhap)->format('d/m/Y') : '' }}
+                        </td>
+                        <td>{{ $item->TinhTrang }}</td>
+                        <td>{{ $item->GhiChu }}</td>
+                        <td>{{ $item->createdBy->name ?? 'Không tìm thấy tên' }}</td>
+                        <td>{{ $item->updatedBy->name ?? 'Không tìm thấy tên' }}</td>
+                        <td>{{ $item->deletedBy->name ?? 'Không tìm thấy tên' }}</td>
+                    </tr>
+                @endforeach
+            @endif
+        </tbody>
     </table>
 
 </body>
+
 </html>

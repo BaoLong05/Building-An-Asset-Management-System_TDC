@@ -38,7 +38,10 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
 
         $data = $query->with([
             'danhmuc:MaDanhMuc,TenDanhMuc',
-            'phong:MaPhong,TenPhong'
+            'phong:MaPhong,TenPhong',
+            'createdBy:id,name',
+            'updatedBy:id,name',
+            'deletedBy:id,name'
         ])->get();
 
         //khong co du lieu
@@ -70,6 +73,9 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
             $row->NgayNhap,
             $row->TinhTrang,
             $row->GhiChu,
+            optional($row->createdBy)->name,
+            optional($row->updatedBy)->name,
+            optional($row->deletedBy)->name,
         ];
     }
 
@@ -83,7 +89,10 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
             'Số Lượng',
             'Ngày Nhập',
             'Tình Trạng',
-            'Ghi Chú'
+            'Ghi Chú',
+            'Người tạo',
+            'Người sửa',
+            'Người xóa'
         ];
     }
     public function styles(Worksheet $sheet)
@@ -92,7 +101,7 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
         $highestColumn = $sheet->getHighestColumn();
 
         // in dam - nen -can giua
-        $sheet->getStyle('A1:H1')->applyFromArray([
+        $sheet->getStyle('A1:K1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 12,
