@@ -23,8 +23,13 @@ class TaiSanController extends Controller
         // Tìm kiếm
         if ($request->search) {
             $search = $request->search;
+
             $query->where(function ($q) use ($search) {
                 $q->where('TenTaiSan', 'LIKE', "%$search%")
+
+                    // ✅ FIX QUAN TRỌNG: search theo ID
+                    ->orWhere('MaTaiSan', $search)
+
                     ->orWhereHas('phong', function ($q2) use ($search) {
                         $q2->where('TenPhong', 'LIKE', "%$search%");
                     })

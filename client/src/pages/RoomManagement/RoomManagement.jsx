@@ -10,11 +10,10 @@ import {
   getAssetRoom,
   exportExcel,
   exportPDF,
-
 } from "../../utils/helper";
 
 const RoomManagement = () => {
-    document.title = "Vị Trí Sử Dụng"
+  document.title = "Vị Trí Sử Dụng";
   const [rooms, setRooms] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [darkMode, setDarkMode] = useState(false);
@@ -47,46 +46,36 @@ const RoomManagement = () => {
   // =========================
   // FETCH API
   // =========================
-  const fetchRooms = async (page = 1) => {
-    const res = await getRoom(page);
+  const fetchRooms = async (page = 1, search = "") => {
+    const res = await getRoom(page, search);
 
     if (res && res.success) {
       setRooms(res.data.data);
       setRoomPage(res.data.current_page);
-    setRoomLastPage(res.data.last_page);
-      toast.success(res.message);
+      setRoomLastPage(res.data.last_page);
     } else {
       toast.error(res.message);
     }
   };
 
   useEffect(() => {
-    fetchRooms(1);
-  }, []);
-
+    fetchRooms(roomPage, searchTerm);
+  }, [roomPage, searchTerm]);
 
   //doi trang
   const changeRoomPage = (page) => {
-  if (page < 1 || page > roomLastPage) return;
-  fetchRooms(page);
-};
+    if (page < 1 || page > roomLastPage) return;
+    fetchRooms(page);
+  };
   // =========================
   // EXPORT (placeholder)
   // =========================
   const handleExportExcel = () => {
-    exportExcel(
-      "exportExcel/phong",
-      {},
-      "phong.xlsx"
-    );
+    exportExcel("exportExcel/phong", {}, "phong.xlsx");
   };
 
   const handleExportPDF = () => {
-    exportPDF(
-      "export/phong",
-      {},
-      "danhsach_phong.pdf"
-    );
+    exportPDF("export/phong", {}, "danhsach_phong.pdf");
   };
 
   // =========================
@@ -199,17 +188,6 @@ const RoomManagement = () => {
     });
   };
 
-  // =========================
-  // SEARCH
-  // =========================
-  const filteredRooms = rooms.filter((room) => {
-    const search = searchTerm.toLowerCase();
-    return (
-      room.TenPhong?.toLowerCase().includes(search) ||
-      String(room.MaPhong).includes(search) ||
-      (room.ViTri || "").toLowerCase().includes(search)
-    );
-  });
 
   return (
     <div className={`room-management ${darkMode ? "dark" : ""}`}>
@@ -245,7 +223,10 @@ const RoomManagement = () => {
             placeholder="🔍 Tìm kiếm vị trí..."
             maxLength={255}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setRoomPage(1);
+            }}
           />
         </div>
 
@@ -279,8 +260,8 @@ const RoomManagement = () => {
           </thead>
 
           <tbody>
-            {filteredRooms.length > 0 ? (
-              filteredRooms.map((room) => (
+            {rooms.length > 0 ? (
+              rooms.map((room) => (
                 <tr key={room.MaPhong}>
                   <td>
                     <span className="code-badge">{room.MaPhong}</span>

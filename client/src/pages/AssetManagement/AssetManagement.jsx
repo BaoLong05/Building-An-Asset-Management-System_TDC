@@ -75,8 +75,8 @@ const AssetManagement = () => {
   }, []);
 
   useEffect(() => {
-    fetchAssets(currentPage);
-  }, [currentPage]);
+    fetchAssets(currentPage, searchTerm);
+  }, [currentPage, searchTerm, selectedStatus]);
 
   useEffect(() => {
     if (darkMode) {
@@ -101,10 +101,10 @@ const AssetManagement = () => {
     }
   };
 
-  const fetchAssets = async (page = 1) => {
+  const fetchAssets = async (page = 1, search = "") => {
     setLoading(true);
     try {
-      const response = await getAssets(page);
+      const response = await getAssets(page, search, selectedStatus);
 
       if (response.success) {
         const data = response.data.data.map((item) => ({
@@ -116,13 +116,9 @@ const AssetManagement = () => {
         setAssets(data);
         setTotalPages(response.data.last_page);
         setCurrentPage(response.data.current_page);
-
-        calculateStats(data);
       }
     } catch (err) {
-      toast.error(
-        err.response.data.message || "Không thể tải danh sách tài sản",
-      );
+      toast.error("Không thể tải danh sách tài sản");
     } finally {
       setLoading(false);
     }
@@ -372,24 +368,7 @@ const AssetManagement = () => {
         return "";
     }
   };
-
-  const filteredAssets = assets.filter((asset) => {
-    const matchesSearch =
-      (asset.TenTaiSan || "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (asset.TenDanhMuc || "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (asset.TenPhong || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (asset.MaTaiSan + "").toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesCategory =
-      !selectedCategory || asset.MaDanhMuc == selectedCategory;
-    const matchesStatus = !selectedStatus || asset.TinhTrang === selectedStatus;
-
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
+  const filteredAssets = assets;
 
   //kiem tra trang thai
   //1. modal sua

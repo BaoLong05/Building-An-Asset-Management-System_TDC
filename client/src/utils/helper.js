@@ -33,12 +33,11 @@ const handleError = (error, defaultMessage) => {
 
 //tai san
 // lay danh sach tai san
-export const getAssets = async (page = 1) => {
+export const getAssets = async (page = 1, search = "", status = "") => {
   try {
     const res = await axios.get(apiUrl("taisan"), {
-      params: { page },
+      params: { page, search, TinhTrang: status },
     });
-    toast.success(res.data.message);
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy tài sản");
@@ -113,9 +112,15 @@ export const deleteAsset = async (id) => {
 
 //danh muc
 //lay danh sach danh muc
-export const getCategories = async () => {
+export const getCategories = async (page = 1, search = "", status = "") => {
   try {
-    const res = await axios.get(apiUrl("danhmuc"));
+    const res = await axios.get(apiUrl("danhmuc"), {
+      params: {
+        page,
+        search,
+        TinhTrang: status,
+      },
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy danh mục");
@@ -153,10 +158,10 @@ export const deleteCategories = async (id) => {
 
 //phong
 //lay danh sach phong
-export const getRoom = async (page = 1) => {
+export const getRoom = async (page = 1, search = "", status = "") => {
   try {
     const res = await axios.get(apiUrl("phong"), {
-      params: { page },
+      params: { page, search, TinhTrang: status },
     });
     return res.data;
   } catch (error) {

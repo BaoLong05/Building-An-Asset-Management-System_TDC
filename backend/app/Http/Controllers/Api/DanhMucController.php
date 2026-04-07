@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DanhMuc;
+use Illuminate\Support\Facades\Auth;
 
 class DanhMucController extends Controller
 {
@@ -17,16 +18,18 @@ class DanhMucController extends Controller
         //soft delete
         $query->whereNull('deleted_at');
 
-        //tim kiemj
+        //tim kiem
         if ($request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('TenDanhMuc', 'LIKE', "%$search%")
-                    ->orWhere('MoTa', 'LIKE', "%$search%")
-                    ->orWhere('MaDanhMuc', 'LIKE', "%$search%");
+                if (is_numeric($search)) {
+                    $q->orWhere('MaDanhMuc', (int)$search);
+                }
+                $q->orWhere('TenDanhMuc', 'LIKE', "%$search%")
+                    ->orWhere('MoTa', 'LIKE', "%$search%");
             });
         }
-        $danhmuc = $query->orderBy('created_at', 'desc')->get();
+        $danhmuc = $query->orderByDesc('MaDanhMuc')->paginate(10);
 
         return response()->json([
             'success' => true,
@@ -44,7 +47,7 @@ class DanhMucController extends Controller
         $danhmuc = DanhMuc::create([
             'TenDanhMuc' => $request->TenDanhMuc,
             'MoTa' => $request->MoTa,
-            'created_by' => 1 // login thay bang "auth()->id();"
+            'created_by' => Auth::id(),
         ]);
 
         return response()->json([
@@ -83,7 +86,7 @@ class DanhMucController extends Controller
         $danhmuc->update([
             'TenDanhMuc' => $request->TenDanhMuc,
             'MoTa' => $request->MoTa,
-            'updated_by' => 1
+            'updated_by' => Auth::id(),
         ]);
 
         return response()->json([
@@ -102,7 +105,7 @@ class DanhMucController extends Controller
                 'message' => 'Danh mục không tồn tại.'
             ], 404);
         }
-        $danhmuc->deleted_by = 1; //auth()->id(); 
+        $danhmuc->deleted_by = Auth::id();
         $danhmuc->save();
 
         $danhmuc->delete();
