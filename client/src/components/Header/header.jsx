@@ -1,80 +1,89 @@
-import React, { useState } from 'react';
-import './Header.css';
+import React, { useState, useEffect } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import "./header.css";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(3); 
+  const navigate = useNavigate();
+
+  const token = sessionStorage.getItem("token");
+
+  useEffect(() => {
+    document.body.style.paddingTop = '80px';
+    return () => document.body.style.paddingTop = '0';
+  }, []);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
+  const handleNavigate = (path) => {
+    if (!token) {
+      navigate("/"); 
+    } else {
+      navigate(path);
+    }
+  };
+
   return (
-    <header className="college-header">
-      {/* Top Bar with Contact Info */}
-      <div className="top-bar">
-        <div className="container">
-          <div className="contact-info">
-            <div className="info-item">
-              <span className="icon">📍</span>
-              <span>53 Võ Văn Ngân, Phường Thủ Đức, TP.HCM</span>
-            </div>
-            <div className="info-item">
-              <span className="icon">📞</span>
-              <span>028.3897.0023 - 028.3897.2339</span>
-            </div>
-            <div className="info-item">
-              <span className="icon">📠</span>
-              <span>028.3896.2474</span>
-            </div>
+    <header className="app-header">
+      <div className="header-container">
+        {/* Logo */}
+        <div className="logo" onClick={() => handleNavigate("/")}>
+          <div className="logo-icon">
+            <img src="/logo/logo1.png" alt="TDC" />
           </div>
-          
-          <div className="social-links">
-            <a href="#" className="social-link" aria-label="Facebook">📘</a>
-            <a href="#" className="social-link" aria-label="YouTube">▶️</a>
-            <a href="#" className="social-link" aria-label="Email">📧</a>
+          <div className="logo-text">
+            <span className="logo-title">TDC</span>
+            <span className="logo-sub">Quản lý tài sản</span>
           </div>
         </div>
-      </div>
 
-      {/* Main Header with Logo and Navigation */}
-      <div className="main-header">
-        <div className="container">
-          <div className="logo-section">
-            <div className="logo-icon">
-              <span className="school-icon">🏛️</span>
-            </div>
-            <div className="school-name">
-              <h1>TRƯỜNG CAO ĐẲNG CÔNG NGHỆ THỦ ĐỨC</h1>
-              <p className="slogan">Thực học - Thực nghiệp</p>
-            </div>
+        {/* Nav */}
+        <nav className={`nav-menu ${mobileMenuOpen ? "open" : ""}`}>
+          <ul className="nav-list">
+            <li onClick={() => handleNavigate("/admin/dashboard")}>
+              <span className="nav-link">Trang chủ</span>
+            </li>
+            <li onClick={() => handleNavigate("/admin/asset-management")}>
+              <span className="nav-link">Tài sản</span>
+            </li>
+            <li onClick={() => handleNavigate("/admin/category-management")}>
+              <span className="nav-link">Danh mục</span>
+            </li>
+            <li onClick={() => handleNavigate("/admin/room-management")}>
+              <span className="nav-link">Vị trí</span>
+            </li>
+            <li onClick={() => handleNavigate("/admin/maintenance-management")}>
+              <span className="nav-link">Bảo trì</span>
+            </li>
+          </ul>
+        </nav>
+
+        {/* Right - Profile + Notification */}
+        <div className="right-group">
+          {/* Nút Thông báo */}
+          <Link to="/admin/notification" className="notification-btn" title="Thông báo" onClick={() => handleNavigate("/admin/notification")}>
+            <svg viewBox="0 0 24 24" className="notification-icon">
+              <path d="M18 8a6 6 0 0 0-12 0c0 5.77-3.77 10-9 12h2.62c.7 0 1.38-.1 2-.3.62.2 1.3.3 2 .3s1.38-.1 2-.3c.62.2 1.3.3 2 .3s1.38-.1 2-.3c.62.2 1.3.3 2 .3s1.38-.1 2-.3c.62.2 1.3.3 2 .3s1.38-.1 2-.3V20h2c-5.23-2-9-6.23-9-12z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <circle cx="12" cy="12" r="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+            </svg>   
+          </Link>
+          <div
+            className="profile-avatar"
+            onClick={() => handleNavigate("/admin/profile")}
+            title="Hồ sơ"
+          >
+            <svg viewBox="0 0 24 24" className="avatar-svg">
+              <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
+            </svg>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
-            {mobileMenuOpen ? '✕' : '☰'}
+          <button className="mobile-toggle" onClick={toggleMobileMenu}>
+            ☰
           </button>
-
-          {/* Navigation Menu */}
-          <nav className={`main-nav ${mobileMenuOpen ? 'active' : ''}`}>
-            <ul className="nav-list">
-              <li className="nav-item"><a href="#" className="nav-link active">Trang chủ</a></li>
-              <li className="nav-item"><a href="#" className="nav-link">Giới thiệu</a></li>
-              <li className="nav-item"><a href="#" className="nav-link">Tuyển sinh</a></li>
-              <li className="nav-item"><a href="#" className="nav-link">Đào tạo</a></li>
-              <li className="nav-item"><a href="#" className="nav-link">Khoa - Phòng</a></li>
-              <li className="nav-item"><a href="#" className="nav-link">Nghiên cứu</a></li>
-              <li className="nav-item"><a href="#" className="nav-link">Liên hệ</a></li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-
-      {/* Breadcrumb (optional) */}
-      <div className="breadcrumb">
-        <div className="container">
-          <span className="breadcrumb-item">Trang chủ</span>
-          <span className="breadcrumb-separator">/</span>
-          <span className="breadcrumb-item active">Quản lý tài sản</span>
         </div>
       </div>
     </header>
