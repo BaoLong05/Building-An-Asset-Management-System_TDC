@@ -15,7 +15,7 @@ body {
   margin: 0 auto;
   padding: 24px 32px;
   background: #f0f2f8;
-  min-height: 100vh;
+  /* Đã xóa dòng min-height: 100vh; để tránh xung đột với layout chính */
 }
 
 /* Header */

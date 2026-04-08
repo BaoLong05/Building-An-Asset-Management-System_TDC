@@ -30,6 +30,7 @@ import { getDashboard } from "../../utils/helper";
 import { toast } from "react-toastify";
 
 const Dashboard = () => {
+  document.title = "Trang Chủ";
   const [data, setData] = useState(null);
 
   useEffect(() => {
