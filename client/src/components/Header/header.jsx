@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "./header.css";
 
 const Header = () => {
@@ -21,6 +22,7 @@ const Header = () => {
   const handleNavigate = (path) => {
     if (!token) {
       navigate("/"); 
+      toast.success("Vui lòng đăng nhập để xem các tác vụ!");
     } else {
       navigate(path);
     }

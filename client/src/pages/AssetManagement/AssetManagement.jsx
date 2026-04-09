@@ -128,7 +128,7 @@ const AssetManagement = () => {
     try {
       const response = await getCategories();
       if (response.success) {
-        setCategories(response.data);
+        setCategories(response.data.data);
       }
     } catch (err) {
       console.error(err);
@@ -248,6 +248,8 @@ const AssetManagement = () => {
       } else {
         toast.error("Lỗi server");
       }
+    } finally {
+      setLoading(false);
     }
   };
 

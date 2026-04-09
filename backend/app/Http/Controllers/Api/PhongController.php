@@ -78,8 +78,8 @@ class PhongController extends Controller
 
         $request->validate([
             'TenPhong' => 'required|string|max:255|unique:phong,TenPhong,' . $id . ',MaPhong',
-            'ViTri' => 'required|string|max:500',
-            'updated_at' => 'required'
+            'ViTri' => 'nullable|string|max:500',
+            'updated_at' => 'required|date'
         ], [
             // TenPhong
             'TenPhong.required' => 'Tên phòng không được để trống',

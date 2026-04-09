@@ -119,11 +119,16 @@ const CategoryManagement = () => {
   // =========================
   // EDIT
   // =========================
-  const handleEdit = (category) => {
-    setModalType("edit");
-    setCurrentCategory(category);
-    setShowModal(true);
-  };
+const handleEdit = (category) => {
+  setModalType("edit");
+  setCurrentCategory({
+    MaDanhMuc: category.MaDanhMuc,
+    TenDanhMuc: category.TenDanhMuc || "",
+    MoTa: category.MoTa || "",
+    updated_at: category.updated_at, // 🔥 QUAN TRỌNG
+  });
+  setShowModal(true);
+};
 
   // =========================
   // DELETE
@@ -150,13 +155,14 @@ const CategoryManagement = () => {
   // =========================
   // INPUT
   // =========================
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCurrentCategory({
-      ...currentCategory,
-      [name]: value,
-    });
-  };
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+
+  setCurrentCategory((prev) => ({
+    ...prev, 
+    [name]: value,
+  }));
+};
 
   // =========================
   // STATS
@@ -190,33 +196,6 @@ const CategoryManagement = () => {
             <span className="avatar">👤</span>
             <span className="user-name">Admin</span>
           </div>
-        </div>
-      </div>
-
-      {/* STATS */}
-      <div className="stats-container">
-        <div className="stat-card">
-          <span className="stat-label">Tổng danh mục</span>
-          <span className="stat-value">{stats.total}</span>
-          <span className="stat-trend">+2.5% ↑</span>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-label">Đang hoạt động</span>
-          <span className="stat-value">{stats.active}</span>
-          <span className="stat-trend">+1.2% ↑</span>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-label">Có tài sản</span>
-          <span className="stat-value">{stats.maintenance}</span>
-          <span className="stat-trend negative">0%</span>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-label">Trống</span>
-          <span className="stat-value">{stats.broken}</span>
-          <span className="stat-trend negative">0%</span>
         </div>
       </div>
 

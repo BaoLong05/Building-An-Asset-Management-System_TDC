@@ -63,7 +63,7 @@ class TaiSanController extends Controller
     {
 
         $validated = $request->validate([
-            'HinhAnh' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'HinhAnh' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'TenTaiSan' => 'required|string|max:255',
             'MaDanhMuc' => 'required|exists:danhmuc,MaDanhMuc',
             'MaPhong' => 'required|exists:phong,MaPhong',
@@ -73,7 +73,7 @@ class TaiSanController extends Controller
         ], [
             'HinhAnh.image' => 'File phải là hình ảnh!',
             'HinhAnh.mimes' => 'Ảnh phải có định dạng jpg, jpeg, png, gif hoặc webp!',
-            'HinhAnh.max' => 'Ảnh không được vượt quá 2MB!',
+            'HinhAnh.max' => 'Ảnh không được vượt quá 5MB!',
 
             'TenTaiSan.required' => 'Tên tài sản không được để trống!',
             'TenTaiSan.max' => 'Tên tài sản không quá 255 ký tự!',
@@ -116,38 +116,39 @@ class TaiSanController extends Controller
         ]);
 
         $taisan->load('phong', 'danhmuc');
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Thêm tài sản thành công!',
-            'data' => [
-                'MaTaiSan' => $taisan->MaTaiSan,
-                'HinhAnh' => $taisan->HinhAnh,
-                'HinhAnh_url' => $taisan->HinhAnh ? asset($taisan->HinhAnh) : null,
-                'TenTaiSan' => $taisan->TenTaiSan,
-                'MaDanhMuc' => $taisan->MaDanhMuc,
-                'MaPhong' => $taisan->MaPhong,
-                'SoLuong' => $taisan->SoLuong,
-                'NgayNhap' => $taisan->NgayNhap,
-                'TinhTrang' => $taisan->TinhTrang,
-                'GhiChu' => $taisan->GhiChu,
-                'phong' => $taisan->phong,
-                'danhmuc' => $taisan->danhmuc,
-            ]
-        ], 201);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Dữ liệu không hợp lệ!',
-            'errors' => $e->errors(),
-        ], 422);
+        try {
+            return response()->json([
+                'success' => true,
+                'message' => 'Thêm tài sản thành công!',
+                'data' => [
+                    'MaTaiSan' => $taisan->MaTaiSan,
+                    'HinhAnh' => $taisan->HinhAnh,
+                    'HinhAnh_url' => $taisan->HinhAnh ? asset($taisan->HinhAnh) : null,
+                    'TenTaiSan' => $taisan->TenTaiSan,
+                    'MaDanhMuc' => $taisan->MaDanhMuc,
+                    'MaPhong' => $taisan->MaPhong,
+                    'SoLuong' => $taisan->SoLuong,
+                    'NgayNhap' => $taisan->NgayNhap,
+                    'TinhTrang' => $taisan->TinhTrang,
+                    'GhiChu' => $taisan->GhiChu,
+                    'phong' => $taisan->phong,
+                    'danhmuc' => $taisan->danhmuc,
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi server',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     //cap nhat tai san
     public function AssetManagement_Update(Request $request, $id)
     {
         $request->validate([
-            'HinhAnh' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'HinhAnh' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'TenTaiSan' => 'required|string|max:255',
             'SoLuong' => 'required|integer|min:1',
             'TinhTrang' => 'required|in:Tốt,Đang bảo trì,Hỏng',
@@ -155,7 +156,7 @@ class TaiSanController extends Controller
         ], [
             'HinhAnh.image' => 'File phải là hình ảnh!',
             'HinhAnh.mimes' => 'Ảnh phải có định dạng jpg, jpeg, png, gif hoặc webp!',
-            'HinhAnh.max' => 'Ảnh không được vượt quá 2MB!',
+            'HinhAnh.max' => 'Ảnh không được vượt quá 5MB!',
 
             'TenTaiSan.required' => 'Tên tài sản không được để trống',
             'TenTaiSan.max' => 'Tên tài sản không quá 255 ký tự',
