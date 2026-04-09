@@ -159,7 +159,7 @@ export const updateCategories = async (id, data) => {
     const res = await axios.put(apiUrl(`danhmuc/${id}`), data, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "multipart/json",
       },
     });
     return res.data;
@@ -371,18 +371,14 @@ export const exportExcel = async (
 ) => {
   try {
     const token = sessionStorage.getItem("token");
-    const res = await axios.get(
-      apiUrl(endpoint),
-      {
-        params,
-        responseType: "blob",
+
+    const res = await axios.get(apiUrl(endpoint), {
+      params,
+      responseType: "blob",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    });
 
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement("a");
@@ -392,7 +388,6 @@ export const exportExcel = async (
 
     document.body.appendChild(link);
     link.click();
-
     document.body.removeChild(link);
 
     toast.success("Xuất Excel thành công!");
@@ -411,18 +406,14 @@ export const exportPDF = async (
 ) => {
   try {
     const token = sessionStorage.getItem("token");
-    const res = await axios.get(
-      apiUrl(endpoint),
-      {
-        params,
-        responseType: "blob",
+
+    const res = await axios.get(apiUrl(endpoint), {
+      params,
+      responseType: "blob",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    });
 
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement("a");
@@ -432,8 +423,8 @@ export const exportPDF = async (
 
     document.body.appendChild(link);
     link.click();
-
     document.body.removeChild(link);
+
     toast.success("Xuất PDF thành công");
   } catch (error) {
     const err = handleError(error, "Lỗi khi export PDF");

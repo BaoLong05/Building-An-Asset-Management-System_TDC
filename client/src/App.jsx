@@ -30,7 +30,7 @@ function App() {
 
         if (!show) {
           toast.info(`Bạn có ${res.data.length} nhiệm vụ cần được bảo trì!`);
-          sessionStorage.setItem("notification_shown", "true"); // ✅ FIX
+          sessionStorage.setItem("notification_shown", "true"); 
         }
       }
     } catch (error) {

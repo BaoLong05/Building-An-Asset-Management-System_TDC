@@ -61,9 +61,15 @@ class DanhMucController extends Controller
     public function update_danhmuc(Request $request, $id)
     {
         $request->validate([
-            'TenDanhMuc' => 'required|string|max:255',
-            'MoTa' => 'nullable|string|max:500',
-            'updated_at' => 'required'
+            'TenDanhMuc' => 'sometimes|string|max:255',
+            'MoTa' => 'sometimes|string|max:500',
+            'updated_at' => 'nullable'
+        ],[
+            "TenDanhMuc.string" => "Tên danh mục phải là chuỗi",
+            "TenDanhMuc.max" => "Tên danh mục tối đa 255 ký tự",
+
+            "MoTa.string" => "Mô tả phải là chuỗi",
+            "MoTa.max" => "Mô tả tối đa 500 ký tự"
         ]);
 
         $danhmuc = DanhMuc::find($id);
