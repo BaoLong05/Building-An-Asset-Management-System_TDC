@@ -35,8 +35,12 @@ const handleError = (error, defaultMessage) => {
 // lay danh sach tai san
 export const getAssets = async (page = 1, search = "", status = "") => {
   try {
+    const token = sessionStorage.getItem("token");
     const res = await axios.get(apiUrl("taisan"), {
       params: { page, search, TinhTrang: status },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     return res.data;
   } catch (error) {
@@ -114,13 +118,19 @@ export const deleteAsset = async (id) => {
 //lay danh sach danh muc
 export const getCategories = async (page = 1, search = "", status = "") => {
   try {
+    const token = sessionStorage.getItem("token");
+
     const res = await axios.get(apiUrl("danhmuc"), {
       params: {
         page,
         search,
         TinhTrang: status,
       },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
+
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy danh mục");
@@ -130,7 +140,13 @@ export const getCategories = async (page = 1, search = "", status = "") => {
 //them danh muc
 export const addCategories = async (data) => {
   try {
-    const res = await axios.post(apiUrl("danhmuc"), data);
+    const token = sessionStorage.getItem("token");
+    const res = await axios.post(apiUrl("danhmuc"), data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi thêm danh mục");
@@ -139,7 +155,13 @@ export const addCategories = async (data) => {
 // cap nhat danh muc
 export const updateCategories = async (id, data) => {
   try {
-    const res = await axios.put(apiUrl(`danhmuc/${id}`), data);
+    const token = sessionStorage.getItem("token");
+    const res = await axios.put(apiUrl(`danhmuc/${id}`), data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi sửa danh mục");
@@ -149,7 +171,12 @@ export const updateCategories = async (id, data) => {
 //xoa danh muc
 export const deleteCategories = async (id) => {
   try {
-    const res = await axios.delete(apiUrl(`danhmuc/${id}`));
+    const token = sessionStorage.getItem("token");
+    const res = await axios.delete(apiUrl(`danhmuc/${id}`), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi xóa danh mục");
@@ -160,9 +187,15 @@ export const deleteCategories = async (id) => {
 //lay danh sach phong
 export const getRoom = async (page = 1, search = "", status = "") => {
   try {
+    const token = sessionStorage.getItem("token");
+
     const res = await axios.get(apiUrl("phong"), {
       params: { page, search, TinhTrang: status },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
+
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy phòng");
@@ -172,7 +205,13 @@ export const getRoom = async (page = 1, search = "", status = "") => {
 // them phong
 export const addRoom = async (data) => {
   try {
-    const res = await axios.post(apiUrl("phong"), data);
+    const token = sessionStorage.getItem("token");
+    const res = await axios.post(apiUrl("phong"), data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi thêm phòng");
@@ -182,7 +221,14 @@ export const addRoom = async (data) => {
 //cap nhat phong
 export const updateRoom = async (id, data) => {
   try {
-    const res = await axios.put(apiUrl(`phong/${id}`), data);
+    const token = sessionStorage.getItem("token");
+
+    const res = await axios.put(apiUrl(`phong/${id}`), data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi sửa phòng");
@@ -192,7 +238,12 @@ export const updateRoom = async (id, data) => {
 //xoa phong
 export const deleteRoom = async (id) => {
   try {
-    const res = await axios.delete(apiUrl(`phong/${id}`));
+    const token = sessionStorage.getItem("token");
+    const res = await axios.delete(apiUrl(`phong/${id}`), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi xóa phòng");
@@ -203,9 +254,15 @@ export const deleteRoom = async (id) => {
 //lay danh sach tai san
 export const getAssetRoom = async (id, page = 1) => {
   try {
+    const token = sessionStorage.getItem("token");
+
     const res = await axios.get(apiUrl(`phong/${id}/taisan`), {
       params: { page },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
+
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy tài sản theo phòng");
@@ -221,11 +278,16 @@ export const getMaintenanceAssets = async (
   status = "",
 ) => {
   try {
+    const token = sessionStorage.getItem("token");
+
     const res = await axios.get(apiUrl("baotri"), {
       params: {
         page,
         search,
         TinhTrang: status,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -238,9 +300,18 @@ export const getMaintenanceAssets = async (
 // lich su bao tri
 export const getMaintenanceHistory = async (MaTaiSan, page = 1) => {
   try {
-    const res = await axios.get(apiUrl(`baotri/lichsu/${MaTaiSan}`), {
-      params: { page },
-    });
+    const token = sessionStorage.getItem("token");
+    const res = await axios.get(
+      apiUrl(`baotri/lichsu/${MaTaiSan}`),
+      {
+        params: { page },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy lịch sử bảo trì");
@@ -267,6 +338,7 @@ export const updateMaintenanceStatus = async (
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       },
     );
@@ -298,10 +370,19 @@ export const exportExcel = async (
   filename = "file.xlsx",
 ) => {
   try {
-    const res = await axios.get(apiUrl(endpoint), {
-      params,
-      responseType: "blob",
-    });
+    const token = sessionStorage.getItem("token");
+    const res = await axios.get(
+      apiUrl(endpoint),
+      {
+        params,
+        responseType: "blob",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement("a");
@@ -329,10 +410,19 @@ export const exportPDF = async (
   filename = "file.pdf",
 ) => {
   try {
-    const res = await axios.get(apiUrl(endpoint), {
-      params,
-      responseType: "blob",
-    });
+    const token = sessionStorage.getItem("token");
+    const res = await axios.get(
+      apiUrl(endpoint),
+      {
+        params,
+        responseType: "blob",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement("a");
@@ -372,9 +462,20 @@ export const getLogin = async (data) => {
 //2. Logout
 export const logout = async () => {
   try {
-    const res = await axios.post(apiUrl("logout"));
+    const token = sessionStorage.getItem("token");
+
+    const res = await axios.post(
+      apiUrl("logout"),
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
     sessionStorage.removeItem("token");
-    res.data;
+    return res.data;
   } catch (error) {
     return handleError(error, "Đăng xuất thất bại!");
   }
