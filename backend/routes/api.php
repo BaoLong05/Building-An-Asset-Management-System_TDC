@@ -11,6 +11,7 @@ use App\Http\Controllers\Export\PdfController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PasswordController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ChatBotAiController;
 
 
 
@@ -110,4 +111,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/dashboard', [DashboardController::class, 'Dashboard_index']);
+
+    //chatbot ai
 });
+Route::post('/chat', [ChatBotAiController::class, 'chat']);

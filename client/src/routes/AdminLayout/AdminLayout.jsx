@@ -3,6 +3,7 @@ import SidebarLayout from "../../components/SidebarLayout/SidebarLayout";
 import "./AdminLayout.css";
 import Header from "../../components/Header/header";
 import Footer from "../../components/Footer/footer";
+import ChatBotAI from "../../pages/ChatBotAI/ChatBotAI";
 
 function AdminLayout() {
   return (
@@ -14,6 +15,7 @@ function AdminLayout() {
       <div className="admin-body">
         <SidebarLayout />
         <div className="admin-content">
+          <ChatBotAI/>
           <Outlet />
         </div>
       </div>
