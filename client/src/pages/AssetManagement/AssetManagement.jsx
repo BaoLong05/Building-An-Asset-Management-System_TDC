@@ -530,7 +530,7 @@ const AssetManagement = () => {
               <th>Hình Ảnh</th>
               <th>Tên tài sản</th>
               <th>Danh mục</th>
-              <th>Phòng</th>
+              <th>VỊ TRÍ</th>
               <th>Số lượng</th>
               <th>Ngày nhập</th>
               <th>Trạng thái</th>
@@ -711,14 +711,14 @@ const AssetManagement = () => {
 
                 <div className="form-group">
                   <label>
-                    Phòng <span className="required">*</span>
+                    Vị trí <span className="required">*</span>
                   </label>
                   <select
                     name="MaPhong"
                     value={formData.MaPhong}
                     onChange={handleChange}
                   >
-                    <option value="">Chọn phòng</option>
+                    <option value="">Chọn vị trí</option>
                     {rooms.map((room) => (
                       <option key={room.MaPhong} value={room.MaPhong}>
                         {room.TenPhong}
@@ -833,7 +833,7 @@ const AssetManagement = () => {
                   </span>
                 </div>
                 <div className="detail-row">
-                  <span className="detail-label">Phòng:</span>
+                  <span className="detail-label">Vị trí:</span>
                   <span className="detail-value">{selectedAsset.TenPhong}</span>
                 </div>
                 <div className="detail-row">
@@ -1003,7 +1003,7 @@ const AssetManagement = () => {
               </div>
 
               <div className="form-group">
-                <label>Phòng</label>
+                <label>Vị trí</label>
                 <select
                   value={exportFilters.MaPhong}
                   onChange={(e) =>
@@ -1097,7 +1097,7 @@ const AssetManagement = () => {
               </div>
 
               <div className="form-group">
-                <label>Phòng</label>
+                <label>Vị trí</label>
                 <select
                   value={exportFilters.MaPhong}
                   onChange={(e) =>

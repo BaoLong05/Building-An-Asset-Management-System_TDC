@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { useNotification } from "../../context/NotificationContext"; // 👈 thêm
 
 const menuItems = [
-  { id: "dashboard", name: "Dashboard", icon: "📊", path: "/admin/dashboard" },
+  { id: "dashboard", name: "Trang Chủ", icon: "📊", path: "/admin/dashboard" },
   { id: "assets", name: "Quản Lý Tài Sản", icon: "🔧", path: "/admin/asset-management" },
   { id: "categories", name: "Quản Lý Danh Mục", icon: "📋", path: "/admin/category-management" },
   { id: "room", name: "Vị trí sử dụng", icon: "🏫", path: "/admin/room-management" },

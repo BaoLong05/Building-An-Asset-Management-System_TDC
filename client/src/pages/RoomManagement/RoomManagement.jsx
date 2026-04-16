@@ -252,9 +252,9 @@ const RoomManagement = () => {
         <table className="room-table">
           <thead>
             <tr>
-              <th>MÃ PHÒNG</th>
-              <th>TÊN PHÒNG</th>
-              <th>VỊ TRÍ</th>
+              <th>MÃ Vị Trí</th>
+              <th>TÊN Vị Trí</th>
+              <th>MÔ TẢ</th>
               <th>HÀNH ĐỘNG</th>
             </tr>
           </thead>
