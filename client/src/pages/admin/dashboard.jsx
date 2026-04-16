@@ -74,7 +74,7 @@ const Dashboard = () => {
     <div className="dashboard">
       <div className="dashboard-header">
         <h2>
-          <FaChartLine className="header-icon" /> Dashboard Quản Lý Tài Sản
+          <FaChartLine className="header-icon" /> Trang Chủ Quản Lý Tài Sản
         </h2>
         <p className="subtitle">Tổng quan tình hình tài sản và bảo trì</p>
       </div>

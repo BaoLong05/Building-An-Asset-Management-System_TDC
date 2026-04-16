@@ -1,11 +1,13 @@
+/* ChatBotAI.css - Phiên bản với hiệu ứng nhảy cho chữ "Đang trả lời..." */
 
+/* Nút logo nổi */
 .chatbot-float-button {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 85px;
-  height: 85px;
-    background: linear-gradient(135deg, #667eea, #00c6ff, #781852);
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #667eea, #00c6ff, #781852);
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -22,10 +24,10 @@
 }
 
 .chatbot-icon {
-  width: 80px;
+  width: 65px;
+  height: 65px;
   border-radius: 56px;
-  height: 80px;
-  color: white;
+  object-fit: cover;
 }
 
 /* Modal chat */
@@ -64,7 +66,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .chatbot-header h3 {
@@ -73,7 +75,7 @@
   font-weight: 600;
 }
 
-.chatbot-close-btn {
+.chatbot-header button {
   background: none;
   border: none;
   color: white;
@@ -85,7 +87,7 @@
   transition: opacity 0.2s;
 }
 
-.chatbot-close-btn:hover {
+.chatbot-header button:hover {
   opacity: 1;
 }
 
@@ -141,93 +143,130 @@
   border: 1px solid #ffcdd2;
 }
 
-.message-time {
-  font-size: 0.7rem;
-  color: #999;
-  margin-top: 4px;
-  margin-left: 8px;
-  margin-right: 8px;
+/* ===== HIỆU ỨNG ĐANG TRẢ LỜI (3 CHẤM + CHỮ NHẢY) ===== */
+.typing-bubble {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px !important;
 }
 
-/* Typing indicator */
 .typing-indicator {
-  display: flex;
-  gap: 4px;
-  padding: 8px 12px;
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
 }
 
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  background: #999;
+  background: #888;
   border-radius: 50%;
-  animation: typing 1.4s infinite ease-in-out;
+  display: inline-block;
+  animation: wave 1.2s infinite ease-in-out;
 }
 
 .typing-indicator span:nth-child(1) { animation-delay: 0s; }
 .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
 .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 
-@keyframes typing {
+@keyframes wave {
   0%, 60%, 100% {
     transform: translateY(0);
     opacity: 0.4;
   }
   30% {
-    transform: translateY(-6px);
+    transform: translateY(-8px);
     opacity: 1;
   }
 }
 
-/* Input area */
+/* Chữ "Đang trả lời..." nhảy lên nhảy xuống nhẹ nhàng */
+.typing-text {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-style: italic;
+  display: inline-block;
+  animation: bounceText 0.8s infinite ease-in-out;
+}
+
+@keyframes bounceText {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* ===== KHU VỰC NHẬP LIỆU (Ô INPUT + NÚT GỬI) ===== */
 .chatbot-input-area {
   display: flex;
-  padding: 12px;
-  border-top: 1px solid #e0e0e0;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
   background: white;
-  gap: 8px;
-  align-items: flex-end;
+  border-top: 1px solid #e9ecef;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.02);
 }
 
-.chatbot-input {
+/* Ô nhập liệu dạng input */
+.chatbot-input-area input {
   flex: 1;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  padding: 8px 12px;
+  padding: 10px 14px;
+  border: 1px solid #dee2e6;
+  border-radius: 24px;
   font-size: 0.9rem;
-  resize: none;
   font-family: inherit;
-  max-height: 80px;
-  transition: border 0.2s;
-}
-
-.chatbot-input:focus {
+  background: #ffffff;
+  transition: all 0.2s ease;
   outline: none;
+  line-height: 1.4;
+}
+
+.chatbot-input-area input:focus {
   border-color: #0078ff;
+  box-shadow: 0 0 0 3px rgba(0, 120, 255, 0.1);
 }
 
-.chatbot-send-btn {
-  background: #0078ff;
-  color: white;
+.chatbot-input-area input::placeholder {
+  color: #adb5bd;
+  font-size: 0.85rem;
+}
+
+/* Nút gửi */
+.chatbot-input-area button {
+  background: linear-gradient(135deg, #0078ff, #00a6ff);
   border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
-  cursor: pointer;
+  border-radius: 40px;
+  padding: 8px 20px;
+  color: white;
   font-weight: 600;
-  transition: background 0.2s;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.chatbot-send-btn:hover:not(:disabled) {
-  background: #0066dd;
+.chatbot-input-area button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0066dd, #0090e0);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 120, 255, 0.3);
 }
 
-.chatbot-send-btn:disabled {
-  background: #ccc;
+.chatbot-input-area button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.chatbot-input-area button:disabled {
+  background: #c0c4c8;
   cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
 }
 
-/* Responsive cho màn hình nhỏ */
+/* Responsive cho mobile */
 @media (max-width: 480px) {
   .chatbot-modal {
     width: calc(100% - 40px);
@@ -235,5 +274,19 @@
     left: 20px;
     bottom: 80px;
     height: 60vh;
+  }
+
+  .chatbot-input-area {
+    padding: 10px 12px;
+  }
+
+  .chatbot-input-area input {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .chatbot-input-area button {
+    padding: 6px 16px;
+    font-size: 0.8rem;
   }
 }

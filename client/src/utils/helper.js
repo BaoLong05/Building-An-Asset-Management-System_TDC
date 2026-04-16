@@ -608,3 +608,20 @@ export const getDashboard = async () => {
     return handleError(error || "Tải dữ liệu không thành công!");
   }
 };
+
+// CHATBOT AI
+//api chatbot
+export const postChatBot = async (data) => {
+  try {
+    const token = sessionStorage.getItem("token");
+    const res = await axios.post(apiUrl("chat"), data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return handleError(error || "Vui lòng thử lại sau");
+  }
+};

@@ -113,5 +113,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'Dashboard_index']);
 
     //chatbot ai
+    Route::post('/chat', [ChatBotAiController::class, 'chat']);
 });
-Route::post('/chat', [ChatBotAiController::class, 'chat']);
