@@ -273,7 +273,7 @@ const Login = () => {
         </form>
 
         <div className="login-footer">
-          <p className="copyright">© 2024 Trường Cao đẳng Công nghệ Thủ Đức</p>
+          <p className="copyright">© Trường Cao đẳng Công nghệ Thủ Đức</p>
         </div>
       </div>
     </div>
