@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-export const API_BASE_URL = "http://192.168.33.10:8000/api";
+export const API_BASE_URL = import.meta.env.VITE_API_URL || "https://building-an-asset-management-systemtdc-production.up.railway.app/api";
 
 export const apiUrl = (endpoint) => `${API_BASE_URL}/${endpoint}`;
 
