@@ -8,8 +8,8 @@ use App\Http\Controllers\Api\PhongController;
 use App\Http\Controllers\Api\BaoTriController;
 use App\Http\Controllers\Export\ExcelController;
 use App\Http\Controllers\Export\PdfController;
-use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\PasswordController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ChatBotAiController;
 
