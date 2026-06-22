@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BaoTri;
+use App\Models\BaoTriHistory;
 use App\Models\TaiSan;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,13 +30,24 @@ class BaoTriController extends Controller
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
-                $q->where('MaTaiSan', 'LIKE', "%$search%")
+                if (is_numeric($search)) {
+                    $q->where('MaBaoTri', (int) $search)
+                        ->orWhere('MaTaiSan', (int) $search);
+                } else {
+                    $q->where('MaTaiSan', 'LIKE', "%$search%");
+                }
+
+                $q
                     ->orWhere('NoiDung', 'LIKE', "%$search%")
                     ->orWhere('TinhTrang', 'LIKE', "%$search%")
                     ->orWhereHas('taisan', function ($sub) use ($search) {
                         $sub->where('TenTaiSan', 'LIKE', "%$search%");
                     });
             });
+        }
+
+        if ($request->TinhTrang) {
+            $query->where('TinhTrang', $request->TinhTrang);
         }
 
         $baotri = $query->orderBy('NgayBaoTri', 'desc')->paginate(10);
@@ -73,6 +85,17 @@ class BaoTriController extends Controller
             'TinhTrang' => 'Đang bảo trì',
             'created_by' => Auth::id(),
             'assigned_to' => $request->assigned_to
+        ]);
+
+        BaoTriHistory::create([
+            'MaBaoTri' => $baotri->MaBaoTri,
+            'MaTaiSan' => $baotri->MaTaiSan,
+            'NgayBaoTri' => $baotri->NgayBaoTri,
+            'NoiDung' => $baotri->NoiDung,
+            'TinhTrang' => $baotri->TinhTrang,
+            'created_by' => $baotri->created_by,
+            'assigned_to' => $baotri->assigned_to,
+            'updated_by' => Auth::id(),
         ]);
 
         $baotri->taisan->update([
@@ -130,6 +153,19 @@ class BaoTriController extends Controller
             'updated_by' => Auth::id(),
         ]);
 
+        $baotri->refresh();
+
+        BaoTriHistory::create([
+            'MaBaoTri' => $baotri->MaBaoTri,
+            'MaTaiSan' => $baotri->MaTaiSan,
+            'NgayBaoTri' => now(),
+            'NoiDung' => $baotri->NoiDung,
+            'TinhTrang' => $baotri->TinhTrang,
+            'created_by' => $baotri->created_by,
+            'assigned_to' => $baotri->assigned_to,
+            'updated_by' => Auth::id(),
+        ]);
+
         // cap nhat trang thai tai san
         if ($baotri->taisan) {
             $baotri->taisan->update([
@@ -151,14 +187,35 @@ class BaoTriController extends Controller
     //lich su
     public function baotri_history($MaTaiSan)
     {
-        $history = BaoTri::with([
+        $history = BaoTriHistory::with([
+            'creator:id,name',
+            'assignee:id,name',
+            'updater:id,name',
+            'taisan:MaTaiSan,TenTaiSan'
+        ])
+            ->where('MaTaiSan', $MaTaiSan)
+            ->orderBy('NgayBaoTri', 'desc')
+            ->get();
+
+        $historyBaoTriIds = $history->pluck('MaBaoTri')->filter()->unique();
+
+        $oldHistory = BaoTri::with([
             'creator:id,name',
             'assignee:id,name',
             'taisan:MaTaiSan,TenTaiSan'
         ])
             ->where('MaTaiSan', $MaTaiSan)
-            ->orderBy('updated_at', 'desc')
+            ->when($historyBaoTriIds->isNotEmpty(), function ($query) use ($historyBaoTriIds) {
+                $query->whereNotIn('MaBaoTri', $historyBaoTriIds);
+            })
             ->get();
+
+        $history = $history
+            ->concat($oldHistory)
+            ->sortByDesc(function ($item) {
+                return $item->NgayBaoTri ?? $item->updated_at;
+            })
+            ->values();
 
         return response()->json([
             'success' => true,

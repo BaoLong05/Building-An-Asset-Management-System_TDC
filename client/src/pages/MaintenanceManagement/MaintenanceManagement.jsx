@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./MaintenanceManagement.css";
@@ -11,12 +11,16 @@ import {
   exportPDF,
   getMe,
 } from "../../utils/helper";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { NOTIFICATION_REFRESH_EVENT } from "../../context/notificationEvents";
 
 const MaintenanceManagement = () => {
   document.title = "Quản Lý Bảo Trì";
   const [currentUser, setCurrentUsers] = useState(null);
   const [assets, setAssets] = useState([]);
+  const maintenanceRequestIdRef = useRef(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const [filterStatus, setFilterStatus] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [showModalExcel, setShowModalExcel] = useState(false);
@@ -53,28 +57,33 @@ const MaintenanceManagement = () => {
   // =========================
   // FETCH DATA
   // =========================
-const fetchAssets = async (page = 1, search = "", status = "") => {
-  const res = await getMaintenanceAssets(page, search, status);
+  const fetchAssets = async (page = 1, search = "", status = "") => {
+    const requestId = ++maintenanceRequestIdRef.current;
+    const res = await getMaintenanceAssets(page, search, status);
 
-  if (res.success) {
-    setAssets(res.data.data);
-    setPage(res.data.current_page);
-    setLastPage(res.data.last_page);
-  } else {
-    toast.error(res.message);
-  }
-};
+    if (requestId !== maintenanceRequestIdRef.current) return;
+
+    if (res.success) {
+      setAssets(res.data.data);
+      setPage(res.data.current_page);
+      setLastPage(res.data.last_page);
+    } else {
+      toast.error(res.message);
+    }
+  };
 
   useEffect(() => {
-  fetchAssets(page, searchTerm, filterStatus);
+    fetchAssets(page, debouncedSearchTerm, filterStatus);
+  }, [page, debouncedSearchTerm, filterStatus]);
 
-  const token = sessionStorage.getItem("token");
-  if (token) {
-    getMe(token).then((res) => {
-      if (res.data) setCurrentUsers(res.data);
-    });
-  }
-}, [page, searchTerm, filterStatus]);
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      getMe(token).then((res) => {
+        if (res.data) setCurrentUsers(res.data);
+      });
+    }
+  }, []);
 
   // =========================
   // EXPORT
@@ -127,17 +136,33 @@ const fetchAssets = async (page = 1, search = "", status = "") => {
 
     if (res.success) {
       toast.success("Cập nhật thành công!");
+      window.dispatchEvent(new Event(NOTIFICATION_REFRESH_EVENT));
+      const updatedMaintenance = res.data || {};
 
       setAssets((prev) =>
         prev.map((item) =>
           item.MaBaoTri === selectedAsset.MaBaoTri
             ? {
                 ...item,
-                TinhTrang: updateStatus,
-                NoiDung: updateNote,
+                ...updatedMaintenance,
+                taisan: item.taisan,
+                creator: item.creator,
+                assignee: item.assignee,
               }
             : item,
         ),
+      );
+
+      setSelectedAsset((prev) =>
+        prev
+          ? {
+              ...prev,
+              ...updatedMaintenance,
+              taisan: prev.taisan,
+              creator: prev.creator,
+              assignee: prev.assignee,
+            }
+          : prev,
       );
 
       setShowUpdateModal(false);
@@ -257,7 +282,10 @@ const fetchAssets = async (page = 1, search = "", status = "") => {
             placeholder="🔍 Tìm kiếm tài sản..."
             value={searchTerm}
             maxLength={255}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
           />
         </div>
 
@@ -266,7 +294,10 @@ const fetchAssets = async (page = 1, search = "", status = "") => {
             <select
               className="filter-select"
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={(e) => {
+                setFilterStatus(e.target.value);
+                setPage(1);
+              }}
             >
               <option value="">📋 Tất cả trạng thái</option>
               <option value="Đang bảo trì">🔧 Đang bảo trì</option>
@@ -309,19 +340,7 @@ const fetchAssets = async (page = 1, search = "", status = "") => {
 
           <tbody>
             {assets.length > 0 ? (
-              groupedAssets
-                .filter((a) => {
-                  const search = searchTerm.toLowerCase();
-
-                  return (
-                    ((a.taisan?.TenTaiSan || "")
-                      .toLowerCase()
-                      .includes(search) ||
-                      String(a.MaTaiSan).includes(search)) &&
-                    (filterStatus ? a.TinhTrang === filterStatus : true)
-                  );
-                })
-                .map((a) => (
+              groupedAssets.map((a) => (
                   <tr key={a.MaBaoTri}>
                     <td>
                       <span className="code-badge">{a.MaTaiSan}</span>
@@ -463,7 +482,9 @@ const fetchAssets = async (page = 1, search = "", status = "") => {
                 <div className="history-scroll">
                   <div className="history-list">
                     {maintenanceHistory.map((h, index) => (
-                      <React.Fragment key={index}>
+                      <React.Fragment
+                        key={h.MaLichSuBaoTri || h.MaBaoTri || index}
+                      >
                         <div className="history-item">
                           <div className="history-time">
                             <i className="far fa-calendar-alt"></i>

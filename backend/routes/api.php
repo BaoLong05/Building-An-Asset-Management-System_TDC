@@ -71,7 +71,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //2. them bao tri
     Route::post('/baotri', [BaoTriController::class, 'baotri_store']);
     //3. cap nhat bao tri
-    Route::put('/baotri/{id}', [BaoTriController::class, 'baotri_update']);
+    Route::patch('/baotri/{id}', [BaoTriController::class, 'baotri_update']);
     //4. xoa bao tri
     Route::delete('/baotri/{id}', [BaoTriController::class, 'baotri_delete']);
 

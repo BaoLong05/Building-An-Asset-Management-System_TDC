@@ -33,11 +33,24 @@ const handleError = (error, defaultMessage) => {
 
 //tai san
 // lay danh sach tai san
-export const getAssets = async (page = 1, search = "", status = "") => {
+export const getAssets = async (
+  page = 1,
+  search = "",
+  status = "",
+  category = "",
+  room = "",
+) => {
   try {
     const token = sessionStorage.getItem("token");
+    const normalizedSearch = String(search).trim();
     const res = await axios.get(apiUrl("taisan"), {
-      params: { page, search, TinhTrang: status },
+      params: {
+        page,
+        search: normalizedSearch,
+        TinhTrang: status,
+        MaDanhMuc: category,
+        MaPhong: room,
+      },
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -188,9 +201,10 @@ export const deleteCategories = async (id) => {
 export const getRoom = async (page = 1, search = "", status = "") => {
   try {
     const token = sessionStorage.getItem("token");
+    const normalizedSearch = String(search).trim();
 
     const res = await axios.get(apiUrl("phong"), {
-      params: { page, search, TinhTrang: status },
+      params: { page, search: normalizedSearch, TinhTrang: status },
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -301,17 +315,12 @@ export const getMaintenanceAssets = async (
 export const getMaintenanceHistory = async (MaTaiSan, page = 1) => {
   try {
     const token = sessionStorage.getItem("token");
-    const res = await axios.get(
-      apiUrl(`baotri/lichsu/${MaTaiSan}`),
-      {
-        params: { page },
+    const res = await axios.get(apiUrl(`baotri/lichsu/${MaTaiSan}`), {
+      params: { page },
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    });
     return res.data;
   } catch (error) {
     return handleError(error, "Lỗi khi lấy lịch sử bảo trì");
@@ -328,7 +337,7 @@ export const updateMaintenanceStatus = async (
   try {
     //lay token
     const token = sessionStorage.getItem("token");
-    const res = await axios.put(
+    const res = await axios.patch(
       apiUrl(`baotri/${id}`),
       {
         TinhTrang,
@@ -338,7 +347,7 @@ export const updateMaintenanceStatus = async (
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
       },
     );

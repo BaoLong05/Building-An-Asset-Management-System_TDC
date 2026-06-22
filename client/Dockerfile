@@ -1,26 +1,22 @@
-# Dùng Node 22 vì Vite 7 yêu cầu >=20.19
-FROM node:22-alpine
+FROM node:22-bookworm
 
-# thư mục làm việc
 WORKDIR /app
 
-# copy package trước để cache
-COPY package*.json ./
+# Chỉ copy package.json, KHÔNG copy package-lock.json
+COPY package.json ./
 
-# cài dependencies
-RUN npm install
+# Cài deps + fix rollup native binary cho Linux trong 1 layer
+RUN npm install --include=dev && \
+    npm install --save-optional @rollup/rollup-linux-x64-gnu
 
-# copy toàn bộ source
 COPY . .
 
-# build project
+RUN chmod -R 755 node_modules
+
 RUN npm run build
 
-# cài serve để chạy build
 RUN npm install -g serve
 
-# port vite serve
 EXPOSE 5173
 
-# chạy frontend
 CMD ["serve", "-s", "dist", "-l", "5173"]

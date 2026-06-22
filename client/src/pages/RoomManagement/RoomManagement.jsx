@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./RoomManagement.css";
@@ -11,11 +11,14 @@ import {
   exportExcel,
   exportPDF,
 } from "../../utils/helper";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 const RoomManagement = () => {
   document.title = "Vị Trí Sử Dụng";
   const [rooms, setRooms] = useState([]);
+  const roomRequestIdRef = useRef(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const [darkMode, setDarkMode] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
@@ -47,7 +50,10 @@ const RoomManagement = () => {
   // FETCH API
   // =========================
   const fetchRooms = async (page = 1, search = "") => {
+    const requestId = ++roomRequestIdRef.current;
     const res = await getRoom(page, search);
+
+    if (requestId !== roomRequestIdRef.current) return;
 
     if (res && res.success) {
       setRooms(res.data.data);
@@ -59,13 +65,13 @@ const RoomManagement = () => {
   };
 
   useEffect(() => {
-    fetchRooms(roomPage, searchTerm);
-  }, [roomPage, searchTerm]);
+    fetchRooms(roomPage, debouncedSearchTerm);
+  }, [roomPage, debouncedSearchTerm]);
 
   //doi trang
   const changeRoomPage = (page) => {
     if (page < 1 || page > roomLastPage) return;
-    fetchRooms(page);
+    setRoomPage(page);
   };
   // =========================
   // EXPORT (placeholder)

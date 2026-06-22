@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./header.css";
+import { useNotification } from "../../context/NotificationContext";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(3); 
+  const { notifications } = useNotification();
   const navigate = useNavigate();
 
   const token = sessionStorage.getItem("token");
+  const unreadCount = notifications?.filter((n) => !n.is_read)?.length || 0;
 
   useEffect(() => {
     document.body.style.paddingTop = '80px';
@@ -70,7 +72,10 @@ const Header = () => {
             <svg viewBox="0 0 24 24" className="notification-icon">
               <path d="M18 8a6 6 0 0 0-12 0c0 5.77-3.77 10-9 12h2.62c.7 0 1.38-.1 2-.3.62.2 1.3.3 2 .3s1.38-.1 2-.3c.62.2 1.3.3 2 .3s1.38-.1 2-.3c.62.2 1.3.3 2 .3s1.38-.1 2-.3c.62.2 1.3.3 2 .3s1.38-.1 2-.3V20h2c-5.23-2-9-6.23-9-12z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
               <circle cx="12" cy="12" r="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-            </svg>   
+            </svg>
+            {unreadCount > 0 && (
+              <span className="notification-badge">{unreadCount}</span>
+            )}
           </Link>
           <div
             className="profile-avatar"

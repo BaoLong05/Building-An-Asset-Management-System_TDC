@@ -22,8 +22,8 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Trần Thị B',
-            'email' => 'user1@gmail.com',
+            'name' => 'Trần Bảo Long',
+            'email' => 'user@gmail.com',
             'password' => Hash::make('Long123@'),
              'phone' => '0890779767',
             'address' => 'tp Hồ Chí Minh',
