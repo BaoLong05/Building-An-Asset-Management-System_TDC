@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import "./Login.css";
 import { getLogin } from "../../utils/helper";
+import { NOTIFICATION_REFRESH_EVENT } from "../../context/notificationEvents";
 
 const Login = () => {
   document.title = "Đăng Nhập";
@@ -38,6 +39,7 @@ const Login = () => {
 
       sessionStorage.setItem("token", res.token);
       sessionStorage.setItem("user", JSON.stringify(res.user));
+      window.dispatchEvent(new Event(NOTIFICATION_REFRESH_EVENT));
       setTimeout(() => {
         navigate("/admin/dashboard");
       }, 1000);

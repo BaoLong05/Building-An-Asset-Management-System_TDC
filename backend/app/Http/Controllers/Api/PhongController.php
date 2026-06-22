@@ -20,16 +20,16 @@ class PhongController extends Controller
 
         //soft delelte
         $query->whereNull('deleted_at');
-        //tim kiem
-        if ($request->search) {
-            $search = $request->search;
+        $search = trim((string) $request->input('search', ''));
+        $isExactIdSearch = $search !== '' && ctype_digit($search);
 
+        // Nếu người dùng nhập số, tìm chính xác theo mã vị trí.
+        if ($isExactIdSearch) {
+            $query->where('MaPhong', (int) $search);
+        } elseif ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('TenPhong', 'LIKE', "%$search%")
                     ->orWhere('ViTri', 'LIKE', "%$search%");
-                if (is_numeric($search)) {
-                    $q->orWhere('MaPhong', (int)$search);
-                }
             });
         }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,10 +14,13 @@ import {
   exportPDF,
   getUsers,
 } from "../../utils/helper";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { NOTIFICATION_REFRESH_EVENT } from "../../context/notificationEvents";
 
 const AssetManagement = () => {
   document.title = "Quản Lý Tài Sản";
   const [assets, setAssets] = useState([]);
+  const assetRequestIdRef = useRef(0);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editAsset, setEditAsset] = useState(null);
@@ -25,6 +28,7 @@ const AssetManagement = () => {
   const [categories, setCategories] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -75,8 +79,14 @@ const AssetManagement = () => {
   }, []);
 
   useEffect(() => {
-    fetchAssets(currentPage, searchTerm);
-  }, [currentPage, searchTerm, selectedStatus]);
+    fetchAssets(currentPage, debouncedSearchTerm);
+  }, [
+    currentPage,
+    debouncedSearchTerm,
+    selectedStatus,
+    selectedCategory,
+    selectedRoom,
+  ]);
 
   useEffect(() => {
     if (darkMode) {
@@ -102,9 +112,18 @@ const AssetManagement = () => {
   };
 
   const fetchAssets = async (page = 1, search = "") => {
+    const requestId = ++assetRequestIdRef.current;
     setLoading(true);
     try {
-      const response = await getAssets(page, search, selectedStatus);
+      const response = await getAssets(
+        page,
+        search,
+        selectedStatus,
+        selectedCategory,
+        selectedRoom,
+      );
+
+      if (requestId !== assetRequestIdRef.current) return;
 
       if (response.success) {
         const data = response.data.data.map((item) => ({
@@ -118,9 +137,12 @@ const AssetManagement = () => {
         setCurrentPage(response.data.current_page);
       }
     } catch (err) {
+      if (requestId !== assetRequestIdRef.current) return;
       toast.error("Không thể tải danh sách tài sản");
     } finally {
-      setLoading(false);
+      if (requestId === assetRequestIdRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -305,6 +327,7 @@ const AssetManagement = () => {
       });
 
       toast.success("Cập nhật bảo trì thành công");
+      window.dispatchEvent(new Event(NOTIFICATION_REFRESH_EVENT));
       setShowMaintenanceForm(false);
       fetchAssets();
     } catch (err) {
@@ -320,7 +343,7 @@ const AssetManagement = () => {
 
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
-    fetchAssets(page);
+    setCurrentPage(page);
   };
 
   const handleExportExcel = () => {
@@ -444,6 +467,9 @@ const AssetManagement = () => {
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
+                setSelectedCategory("");
+                setSelectedRoom("");
+                setSelectedStatus("");
                 setCurrentPage(1);
               }}
             />
@@ -490,6 +516,7 @@ const AssetManagement = () => {
                 className="btn-clear"
                 onClick={() => {
                   setSelectedCategory("");
+                  setSelectedRoom("");
                   setSelectedStatus("");
                   setSearchTerm("");
                   setCurrentPage(1);

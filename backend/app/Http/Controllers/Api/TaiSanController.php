@@ -20,16 +20,15 @@ class TaiSanController extends Controller
         ]);
         $query = TaiSan::with('phong', 'danhmuc')->whereNull('deleted_at');
 
-        // Tìm kiếm
-        if ($request->search) {
-            $search = $request->search;
+        $search = trim((string) $request->input('search', ''));
+        $isExactIdSearch = $search !== '' && ctype_digit($search);
 
+        // Khi nhập một số, ưu tiên tìm chính xác theo mã tài sản.
+        if ($isExactIdSearch) {
+            $query->where('MaTaiSan', (int) $search);
+        } elseif ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('TenTaiSan', 'LIKE', "%$search%")
-
-                    // ✅ FIX QUAN TRỌNG: search theo ID
-                    ->orWhere('MaTaiSan', $search)
-
                     ->orWhereHas('phong', function ($q2) use ($search) {
                         $q2->where('TenPhong', 'LIKE', "%$search%");
                     })
@@ -40,9 +39,18 @@ class TaiSanController extends Controller
         }
 
         // Lọc theo tình trạng
-        if ($request->TinhTrang) {
+        if (!$isExactIdSearch && $request->TinhTrang) {
             $query->where('TinhTrang', $request->TinhTrang);
         }
+
+        if (!$isExactIdSearch && $request->MaDanhMuc) {
+            $query->where('MaDanhMuc', $request->MaDanhMuc);
+        }
+
+        if (!$isExactIdSearch && $request->MaPhong) {
+            $query->where('MaPhong', $request->MaPhong);
+        }
+
         $taisan = $query->orderBy('MaTaiSan', 'desc')->paginate(10);
 
         if (!$taisan) {

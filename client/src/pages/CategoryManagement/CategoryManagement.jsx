@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./CategoryManagement.css";
@@ -10,11 +10,14 @@ import {
   exportExcel,
   exportPDF,
 } from "../../utils/helper";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 const CategoryManagement = () => {
   document.title = "Quản Lý Danh Mục";
   const [categories, setCategories] = useState([]);
+  const categoryRequestIdRef = useRef(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const [darkMode, setDarkMode] = useState(false);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -39,7 +42,10 @@ const CategoryManagement = () => {
   // FETCH API
   // =========================
   const fetchCategories = async (page = 1, search = "") => {
+    const requestId = ++categoryRequestIdRef.current;
     const res = await getCategories(page, search);
+
+    if (requestId !== categoryRequestIdRef.current) return;
 
     if (res && res.success) {
       setCategories(res.data.data);
@@ -51,15 +57,8 @@ const CategoryManagement = () => {
   };
 
   useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      fetchCategories(1, searchTerm); 
-    }, 500);
-
-    return () => clearTimeout(delayDebounce);
-  }, [searchTerm]);
-  useEffect(() => {
-    fetchCategories(page, searchTerm);
-  }, [page]);
+    fetchCategories(page, debouncedSearchTerm);
+  }, [page, debouncedSearchTerm]);
 
   // =========================
   // EXPORT (placeholder)

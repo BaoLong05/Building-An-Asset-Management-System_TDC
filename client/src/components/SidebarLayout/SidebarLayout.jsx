@@ -3,6 +3,7 @@ import "./SidebarLayout.css";
 import { logout } from "../../utils/helper";
 import { toast } from "react-toastify";
 import { useNotification } from "../../context/NotificationContext"; // 👈 thêm
+import { NOTIFICATION_REFRESH_EVENT } from "../../context/notificationEvents";
 
 const menuItems = [
   { id: "dashboard", name: "Trang Chủ", icon: "📊", path: "/admin/dashboard" },
@@ -26,6 +27,7 @@ const SidebarLayout = () => {
     if (res) {
       toast.success("Đăng xuất thành công");
       sessionStorage.removeItem("token");
+      window.dispatchEvent(new Event(NOTIFICATION_REFRESH_EVENT));
       setTimeout(() => {
         navigate("/");
       }, 1000);
