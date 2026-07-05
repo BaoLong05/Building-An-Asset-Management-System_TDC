@@ -5,10 +5,8 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) pdo_mysql zip gd
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 WORKDIR /app
 COPY . .
-
 RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 EXPOSE 8080
