@@ -39,12 +39,14 @@ Format:
 {"action":"count","table":"taisan"}
 
 QUY TẮC:
-- tài sản → taisan
-- phòng → phong
-- vị trí → phong
-- location → phong
+- tài sản / thiết bị → taisan
+- phòng / vị trí / location → phong
 - danh mục → danhmuc
-- bảo trì → baotri
+- bảo trì → baotri (chỉ dùng khi hỏi về phiếu/công việc bảo trì)
+
+QUAN TRỌNG:
+- "tài sản đang bảo trì" / "tài sản bảo trì" → taisan (KHÔNG phải baotri)
+- "phiếu bảo trì" / "công việc bảo trì" → baotri
 
 - "có bao nhiêu" → count
 - "danh sách" → list
@@ -89,6 +91,17 @@ Không hiểu → {"action":"unknown","table":"none"}'
             }
         }
 
+        // Nếu hỏi về "tài sản bảo trì" nhưng GPT trả về baotri → sửa thành taisan + filter
+        $baotriFilter = null;
+        if ($table === 'baotri' && ($action === 'count' || $action === 'list')) {
+            $mentionsTaiSan = str_contains($messageLower, 'tài sản') || str_contains($messageLower, 'thiết bị');
+            $mentionsBaoTriStatus = str_contains($messageLower, 'đang bảo trì') || str_contains($messageLower, 'bảo trì');
+            if ($mentionsTaiSan && $mentionsBaoTriStatus) {
+                $table = 'taisan';
+                $baotriFilter = 'Đang bảo trì';
+            }
+        }
+
         $data = [];
 
         if ($action === 'unknown' || $table === 'none') {
@@ -105,20 +118,28 @@ Không hiểu → {"action":"unknown","table":"none"}'
             case 'taisan':
 
                 if ($action === 'count') {
-                    $data = [
-                        'total' => TaiSan::count(),
-                        'theo_tinh_trang' => [
-                            'tot' => TaiSan::where('TinhTrang', 'Tốt')->count(),
-                            'hong' => TaiSan::where('TinhTrang', 'Hỏng')->count(),
-                            'bao_tri' => TaiSan::where('TinhTrang', 'Đang bảo trì')->count(),
-                        ]
-                    ];
+                    if ($baotriFilter) {
+                        $data = [
+                            'total' => TaiSan::where('TinhTrang', $baotriFilter)->count(),
+                        ];
+                    } else {
+                        $data = [
+                            'total' => TaiSan::count(),
+                            'theo_tinh_trang' => [
+                                'tot' => TaiSan::where('TinhTrang', 'Tốt')->count(),
+                                'hong' => TaiSan::where('TinhTrang', 'Hỏng')->count(),
+                                'bao_tri' => TaiSan::where('TinhTrang', 'Đang bảo trì')->count(),
+                            ]
+                        ];
+                    }
                 }
 
                 if ($action === 'list') {
-                    $data = TaiSan::with(['phong', 'danhmuc'])
-                        ->limit(10)
-                        ->get();
+                    $query = TaiSan::with(['phong', 'danhmuc']);
+                    if ($baotriFilter) {
+                        $query->where('TinhTrang', $baotriFilter);
+                    }
+                    $data = $query->limit(10)->get();
                 }
 
                 break;

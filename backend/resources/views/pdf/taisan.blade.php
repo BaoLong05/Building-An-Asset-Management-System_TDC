@@ -54,13 +54,13 @@
 
         th:nth-child(2),
         td:nth-child(2) {
-            width: 15%;
-            text-align: left;
+            width: 10%;
         }
 
         th:nth-child(3),
         td:nth-child(3) {
-            width: 10%;
+            width: 15%;
+            text-align: left;
         }
 
         th:nth-child(4),
@@ -70,7 +70,7 @@
 
         th:nth-child(5),
         td:nth-child(5) {
-            width: 6%;
+            width: 10%;
         }
 
         th:nth-child(6),
@@ -139,10 +139,10 @@
         <thead>
             <tr>
                 <th>Mã</th>
+                <th>Mã riêng</th>
                 <th>Tên tài sản</th>
                 <th>Danh mục</th>
                 <th>Phòng</th>
-                <th>Số lượng</th>
                 <th>Ngày nhập</th>
                 <th>Trạng thái</th>
                 <th>Ghi chú</th>
@@ -163,10 +163,10 @@
                 @foreach ($taisan as $item)
                     <tr>
                         <td>{{ $item->MaTaiSan }}</td>
+                        <td>{{ $item->MaTaiSanRieng ?? '' }}</td>
                         <td style="text-align:left">{{ $item->TenTaiSan }}</td>
                         <td>{{ $item->danhmuc->TenDanhMuc ?? '' }}</td>
                         <td>{{ $item->phong->TenPhong ?? '' }}</td>
-                        <td>{{ $item->SoLuong }}</td>
                         <td>
                             {{ $item->NgayNhap ? \Carbon\Carbon::parse($item->NgayNhap)->format('d/m/Y') : '' }}
                         </td>

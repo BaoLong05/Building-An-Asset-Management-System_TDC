@@ -147,7 +147,14 @@ class PhongController extends Controller
     //tai san chi tiet trong 1 phong
     public function phong_asset($id)
     {
-        $asset = TaiSan::where('MaPhong', $id)
+        $asset = TaiSan::with([
+            'danhmuc:MaDanhMuc,TenDanhMuc',
+            'phong:MaPhong,TenPhong',
+            'createdBy:id,name',
+            'updatedBy:id,name',
+            'deletedBy:id,name'
+        ])
+            ->where('MaPhong', $id)
             ->whereNull('deleted_at')
             ->orderBy('created_at', 'desc')
             ->paginate(10);

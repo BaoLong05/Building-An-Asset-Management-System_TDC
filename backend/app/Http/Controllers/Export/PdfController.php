@@ -34,7 +34,13 @@ class PdfController extends Controller
         if ($request->TinhTrang) {
             $query->where('TinhTrang', $request->TinhTrang);
         }
-        $taisan = $query->get();
+        $taisan = $query->with([
+            'danhmuc:MaDanhMuc,TenDanhMuc',
+            'phong:MaPhong,TenPhong',
+            'createdBy:id,name',
+            'updatedBy:id,name',
+            'deletedBy:id,name'
+        ])->get();
 
         return $this->pdfService->generate(
             'pdf.taisan',

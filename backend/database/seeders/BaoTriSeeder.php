@@ -12,21 +12,19 @@ class BaoTriSeeder extends Seeder
     {
         $assets = TaiSan::where('TinhTrang', 'Tốt')
             ->inRandomOrder()
-            ->limit(15)
+            ->limit(3)
             ->get();
 
         foreach ($assets as $asset) {
-
             $exists = BaoTri::where('MaTaiSan', $asset->MaTaiSan)
                 ->where('TinhTrang', 'Đang bảo trì')
                 ->exists();
 
             if (!$exists) {
-
                 BaoTri::create([
                     'MaTaiSan' => $asset->MaTaiSan,
                     'NgayBaoTri' => now(),
-                    'NoiDung' => 'Bảo trì tài sản: ' . $asset->TenTaiSan,
+                    'NoiDung' => 'Bảo trì định kỳ tháng: ' . $asset->TenTaiSan,
                     'TinhTrang' => 'Đang bảo trì',
                     'created_by' => 1,
                     'assigned_to' => 2

@@ -3,24 +3,15 @@ import { toast } from "react-toastify";
 import "./Notification.css";
 import { Readed, readed_All } from "../../utils/helper";
 import { useNotification } from "../../context/NotificationContext";
+import { useTheme } from "../../context/ThemeContext";
 
 const Notification = () => {
   document.title = "Thông báo hệ thống";
+  const { darkMode } = useTheme();
 
   const [loading, setLoading] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
 
   const { notifications, setNotifications, fetchNotifications } = useNotification();
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("notificationDarkMode");
-    if (savedTheme === "true") setDarkMode(true);
-  }, []);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    localStorage.setItem("notificationDarkMode", !darkMode);
-  };
 
   useEffect(() => {
     const load = async () => {
@@ -86,10 +77,6 @@ const Notification = () => {
         <h1>🔔 Thông báo hệ thống</h1>
 
         <div className="header-actions">
-          <button onClick={toggleDarkMode}>
-            {darkMode ? "☀️" : "🌙"}
-          </button>
-
           <button onClick={markAllAsRead}>
             Đánh dấu tất cả
           </button>

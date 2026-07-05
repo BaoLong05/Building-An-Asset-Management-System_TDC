@@ -12,14 +12,15 @@ import {
   exportPDF,
 } from "../../utils/helper";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { useTheme } from "../../context/ThemeContext";
 
 const RoomManagement = () => {
   document.title = "Vị Trí Sử Dụng";
+  const { darkMode } = useTheme();
   const [rooms, setRooms] = useState([]);
   const roomRequestIdRef = useRef(0);
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebouncedValue(searchTerm);
-  const [darkMode, setDarkMode] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("add");
@@ -40,11 +41,6 @@ const RoomManagement = () => {
 
   const [roomPage, setRoomPage] = useState(1);
   const [roomLastPage, setRoomLastPage] = useState(1);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.body.classList.toggle("dark-mode-room");
-  };
 
   // =========================
   // FETCH API
@@ -204,19 +200,6 @@ const RoomManagement = () => {
         </div>
 
         <div className="top-bar-actions">
-          <button className="theme-toggle" onClick={toggleDarkMode}>
-            {darkMode ? "☀️" : "🌙"}
-          </button>
-          <div className="language-select">
-            <select>
-              <option value="vn">🇻🇳 Tiếng Việt</option>
-              <option value="us">🇺🇸 English</option>
-            </select>
-          </div>
-          <div className="user-profile">
-            <span className="avatar">👤</span>
-            <span className="user-name">Admin</span>
-          </div>
         </div>
       </div>
 
@@ -401,8 +384,13 @@ const RoomManagement = () => {
                   <tr>
                     <th>Mã tài sản</th>
                     <th>Tên tài sản</th>
-                    <th>Số lượng</th>
-                    <th>Trạng Thái</th>
+                    <th>Mã riêng</th>
+                    <th>Danh mục</th>
+                    <th>Ngày nhập</th>
+                    <th>Trạng thái</th>
+                    <th>Ghi chú</th>
+                    <th>Người tạo</th>
+                    <th>Người sửa</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -411,13 +399,18 @@ const RoomManagement = () => {
                       <tr key={asset.MaTaiSan}>
                         <td>{asset.MaTaiSan}</td>
                         <td>{asset.TenTaiSan}</td>
-                        <td>{asset.SoLuong}</td>
-                        <td>{asset.TrangThai}</td>
+                        <td>{asset.MaTaiSanRieng || "—"}</td>
+                        <td>{asset.danhmuc?.TenDanhMuc || "—"}</td>
+                        <td>{asset.NgayNhap || "—"}</td>
+                        <td>{asset.TinhTrang}</td>
+                        <td>{asset.GhiChu || "—"}</td>
+                        <td>{asset.created_by?.name || asset.createdBy?.name || "—"}</td>
+                        <td>{asset.updated_by?.name || asset.updatedBy?.name || "—"}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4}>Không Có Tài Sản</td>
+                      <td colSpan={9}>Không Có Tài Sản</td>
                     </tr>
                   )}
                 </tbody>

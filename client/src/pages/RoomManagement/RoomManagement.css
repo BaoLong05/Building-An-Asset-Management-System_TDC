@@ -695,7 +695,8 @@ FORM MODAL
 DETAIL MODAL - TABLE STYLE
 ================================ */
 .detail-modal {
-  max-width: 600px;
+  max-width: 1100px;
+  width: 95%;
   padding: 0;
   overflow: hidden;
 }
@@ -741,12 +742,34 @@ DETAIL MODAL - TABLE STYLE
   background: #1f2a4a;
 }
 
+.detail-table-container {
+  overflow-x: auto;
+}
+
 .detail-info-table {
   width: 100%;
+  min-width: 900px;
   border-collapse: collapse;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.detail-info-table th {
+  background: #f1f5f9;
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  text-align: center;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.dark .detail-info-table th {
+  background: #16213e;
+  color: #a0aec0;
+  border-bottom-color: #2d3748;
 }
 
 .detail-info-table tr {

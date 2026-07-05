@@ -16,9 +16,9 @@ class TaiSan extends Model
     protected $fillable = [
         'TenTaiSan',
         'HinhAnh',
+        'MaTaiSanRieng',
         'MaDanhMuc',
         'MaPhong',
-        'SoLuong',
         'NgayNhap',
         'TinhTrang',
         'GhiChu',

@@ -14,7 +14,6 @@ Vagrant.configure("2") do |config|
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "ubuntu/focal64"
   config.vm.box_version = "20240821.0.1"
-
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -33,11 +32,6 @@ Vagrant.configure("2") do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  config.vm.network "private_network", ip: "192.168.33.10"
-
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
   config.vm.network "private_network", ip: "192.168.33.10"
 
   # Share an additional folder to the guest VM. The first argument is
@@ -59,12 +53,10 @@ Vagrant.configure("2") do |config|
   # Example for VirtualBox:
   #
   config.vm.provider "virtualbox" do |vb|
-    # Display the VirtualBox GUI when booting the machine
-    vb.gui = true
-  
-    # Customize the amount of memory on the VM:
-    vb.memory = "4096"
-        vb.cpus = 2
+    vb.gui = false
+    vb.memory = "2048"
+    vb.cpus = 2
+    vb.customize ["modifyvm", :id, "--paravirtprovider", "hyperv"]
   end
 
   config.vm.network "forwarded_port", guest: 8000, host: 8000
@@ -77,26 +69,27 @@ Vagrant.configure("2") do |config|
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    apt-get update
+    export DEBIAN_FRONTEND=noninteractive
+
+    apt-get update -y
+
+    # Apache
     apt-get install -y apache2
-        
-        sudo apt-get install -y docker.io docker-compose
-    sudo usermod -aG docker vagrant
-    sudo apt install make
-        
-        sudo apt install -y git
 
-  #ifconfig
-  sudo apt install net-tools
+    # Docker
+    apt-get install -y docker.io docker-compose-v2
+    usermod -aG docker vagrant
 
-  # === Thêm PHP 8.2 ===
-    sudo apt install -y software-properties-common
-    sudo add-apt-repository -y ppa:ondrej/php
-    sudo apt update
-    sudo apt install -y php8.2 php8.2-cli php8.2-fpm php8.2-mbstring php8.2-bcmath php8.2-xml php8.2-curl php8.2-mysql php8.2-zip
-    sudo update-alternatives --set php /usr/bin/php8.2
-        
+    # Tools
+    apt-get install -y make git net-tools
+
+    # PHP 8.2
+    apt-get install -y software-properties-common
+    add-apt-repository -y ppa:ondrej/php
+    apt-get update -y
+    apt-get install -y php8.2 php8.2-cli php8.2-fpm php8.2-mbstring php8.2-bcmath php8.2-xml php8.2-curl php8.2-mysql php8.2-zip
+    update-alternatives --set php /usr/bin/php8.2
   SHELL
   
-  config.vm.boot_timeout = 600 
+  config.vm.boot_timeout = 1200 
 end

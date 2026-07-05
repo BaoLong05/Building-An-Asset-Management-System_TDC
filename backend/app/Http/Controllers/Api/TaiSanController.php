@@ -23,12 +23,15 @@ class TaiSanController extends Controller
         $search = trim((string) $request->input('search', ''));
         $isExactIdSearch = $search !== '' && ctype_digit($search);
 
-        // Khi nhập một số, ưu tiên tìm chính xác theo mã tài sản.
         if ($isExactIdSearch) {
-            $query->where('MaTaiSan', (int) $search);
+            $query->where(function ($q) use ($search) {
+                $q->where('MaTaiSan', (int) $search)
+                    ->orWhere('MaTaiSanRieng', 'LIKE', "%$search%");
+            });
         } elseif ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('TenTaiSan', 'LIKE', "%$search%")
+                    ->orWhere('MaTaiSanRieng', 'LIKE', "%$search%")
                     ->orWhereHas('phong', function ($q2) use ($search) {
                         $q2->where('TenPhong', 'LIKE', "%$search%");
                     })
@@ -51,6 +54,14 @@ class TaiSanController extends Controller
             $query->where('MaPhong', $request->MaPhong);
         }
 
+        // Lọc theo ngày nhập
+        if ($request->NgayNhap_Tu) {
+            $query->whereDate('NgayNhap', '>=', $request->NgayNhap_Tu);
+        }
+        if ($request->NgayNhap_Den) {
+            $query->whereDate('NgayNhap', '<=', $request->NgayNhap_Den);
+        }
+
         $taisan = $query->orderBy('MaTaiSan', 'desc')->paginate(10);
 
         if (!$taisan) {
@@ -69,13 +80,12 @@ class TaiSanController extends Controller
 
     public function AssetManagement_store(Request $request)
     {
-
         $validated = $request->validate([
             'HinhAnh' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'TenTaiSan' => 'required|string|max:255',
+            'MaTaiSanRieng' => 'required|string|max:100|unique:taisan,MaTaiSanRieng',
             'MaDanhMuc' => 'required|exists:danhmuc,MaDanhMuc',
             'MaPhong' => 'required|exists:phong,MaPhong',
-            'SoLuong' => 'required|integer|min:1',
             'NgayNhap' => 'required|date',
             'TinhTrang' => 'required|in:Tốt',
         ], [
@@ -86,16 +96,15 @@ class TaiSanController extends Controller
             'TenTaiSan.required' => 'Tên tài sản không được để trống!',
             'TenTaiSan.max' => 'Tên tài sản không quá 255 ký tự!',
 
+            'MaTaiSanRieng.required' => 'Mã tài sản riêng không được để trống!',
+            'MaTaiSanRieng.unique' => 'Mã tài sản riêng đã tồn tại!',
+            'MaTaiSanRieng.max' => 'Mã tài sản riêng không quá 100 ký tự!',
 
             'MaDanhMuc.required' => 'Vui lòng chọn danh mục!',
             'MaDanhMuc.exists' => 'Danh mục không hợp lệ!',
 
             'MaPhong.required' => 'Vui lòng chọn phòng!',
             'MaPhong.exists' => 'Phòng không hợp lệ!',
-
-            'SoLuong.required' => 'Số lượng không được để trống!',
-            'SoLuong.integer' => 'Số lượng phải là số!',
-            'SoLuong.min' => 'Số lượng phải lớn hơn 0!',
 
             'NgayNhap.required' => 'Vui lòng chọn ngày nhập!',
             'NgayNhap.date' => 'Ngày nhập không hợp lệ!',
@@ -114,9 +123,9 @@ class TaiSanController extends Controller
         $taisan = TaiSan::create([
             'HinhAnh' => $imageUrl,
             'TenTaiSan' => $validated['TenTaiSan'],
+            'MaTaiSanRieng' => $validated['MaTaiSanRieng'],
             'MaDanhMuc' => $validated['MaDanhMuc'],
             'MaPhong' => $validated['MaPhong'],
-            'SoLuong' => $validated['SoLuong'],
             'NgayNhap' => $validated['NgayNhap'],
             'TinhTrang' => $validated['TinhTrang'],
             'GhiChu' => $validated['GhiChu'] ?? null,
@@ -130,12 +139,12 @@ class TaiSanController extends Controller
                 'message' => 'Thêm tài sản thành công!',
                 'data' => [
                     'MaTaiSan' => $taisan->MaTaiSan,
+                    'MaTaiSanRieng' => $taisan->MaTaiSanRieng,
                     'HinhAnh' => $taisan->HinhAnh,
                     'HinhAnh_url' => $taisan->HinhAnh ? asset($taisan->HinhAnh) : null,
                     'TenTaiSan' => $taisan->TenTaiSan,
                     'MaDanhMuc' => $taisan->MaDanhMuc,
                     'MaPhong' => $taisan->MaPhong,
-                    'SoLuong' => $taisan->SoLuong,
                     'NgayNhap' => $taisan->NgayNhap,
                     'TinhTrang' => $taisan->TinhTrang,
                     'GhiChu' => $taisan->GhiChu,
@@ -158,7 +167,7 @@ class TaiSanController extends Controller
         $request->validate([
             'HinhAnh' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'TenTaiSan' => 'required|string|max:255',
-            'SoLuong' => 'required|integer|min:1',
+            'MaTaiSanRieng' => 'required|string|max:100|unique:taisan,MaTaiSanRieng,' . $id . ',MaTaiSan',
             'TinhTrang' => 'required|in:Tốt,Đang bảo trì,Hỏng',
             'GhiChu' => 'nullable|string',
         ], [
@@ -169,8 +178,9 @@ class TaiSanController extends Controller
             'TenTaiSan.required' => 'Tên tài sản không được để trống',
             'TenTaiSan.max' => 'Tên tài sản không quá 255 ký tự',
 
-            'SoLuong.required' => 'Số lượng không được để trống',
-            'SoLuong.min' => 'Số lượng phải lớn hơn 0',
+            'MaTaiSanRieng.required' => 'Mã tài sản riêng không được để trống!',
+            'MaTaiSanRieng.unique' => 'Mã tài sản riêng đã tồn tại!',
+            'MaTaiSanRieng.max' => 'Mã tài sản riêng không quá 100 ký tự!',
 
             'TinhTrang.required' => 'Vui lòng chọn trạng thái',
             'TinhTrang.in' => 'Trạng thái không hợp lệ',
@@ -206,9 +216,9 @@ class TaiSanController extends Controller
             $taisan->update([
                 'HinhAnh' => $imageUrl,
                 'TenTaiSan' => $request->TenTaiSan,
+                'MaTaiSanRieng' => $request->MaTaiSanRieng,
                 'MaDanhMuc' => $request->MaDanhMuc,
                 'MaPhong' => $request->MaPhong,
-                'SoLuong' => $request->SoLuong,
                 'NgayNhap' => $request->NgayNhap,
                 'TinhTrang' => $request->TinhTrang,
                 'GhiChu' => $request->GhiChu,
