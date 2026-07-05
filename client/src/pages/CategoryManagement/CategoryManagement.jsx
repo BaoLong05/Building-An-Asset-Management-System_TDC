@@ -11,14 +11,15 @@ import {
   exportPDF,
 } from "../../utils/helper";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { useTheme } from "../../context/ThemeContext";
 
 const CategoryManagement = () => {
   document.title = "Quản Lý Danh Mục";
+  const { darkMode } = useTheme();
   const [categories, setCategories] = useState([]);
   const categoryRequestIdRef = useRef(0);
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebouncedValue(searchTerm);
-  const [darkMode, setDarkMode] = useState(false);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
@@ -32,11 +33,6 @@ const CategoryManagement = () => {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.body.classList.toggle("dark-mode-category");
-  };
 
   // =========================
   // FETCH API
@@ -182,19 +178,6 @@ const handleInputChange = (e) => {
         </div>
 
         <div className="top-bar-actions">
-          <button className="theme-toggle" onClick={toggleDarkMode}>
-            {darkMode ? "☀️" : "🌙"}
-          </button>
-          <div className="language-select">
-            <select>
-              <option value="vn">🇻🇳 Tiếng Việt</option>
-              <option value="us">🇺🇸 English</option>
-            </select>
-          </div>
-          <div className="user-profile">
-            <span className="avatar">👤</span>
-            <span className="user-name">Admin</span>
-          </div>
         </div>
       </div>
 

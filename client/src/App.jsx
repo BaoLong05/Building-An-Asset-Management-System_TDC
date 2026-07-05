@@ -6,6 +6,7 @@ import { getMyTask } from "./utils/helper";
 import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { NotificationProvider } from "./context/NotificationContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   const routes = useRoutes([
@@ -39,10 +40,12 @@ function App() {
   };
 
   return (
-    <NotificationProvider>
-      {routes}
-      <ToastContainer position="top-right" autoClose={3000} />
-    </NotificationProvider>
+    <ThemeProvider>
+      <NotificationProvider>
+        {routes}
+        <ToastContainer position="top-right" autoClose={3000} />
+      </NotificationProvider>
+    </ThemeProvider>
   );
 }
 

@@ -39,18 +39,23 @@ export const getAssets = async (
   status = "",
   category = "",
   room = "",
+  dateFrom = "",
+  dateTo = "",
 ) => {
   try {
     const token = sessionStorage.getItem("token");
     const normalizedSearch = String(search).trim();
+    const params = {
+      page,
+      search: normalizedSearch,
+      TinhTrang: status,
+      MaDanhMuc: category,
+      MaPhong: room,
+    };
+    if (dateFrom) params.NgayNhap_Tu = dateFrom;
+    if (dateTo) params.NgayNhap_Den = dateTo;
     const res = await axios.get(apiUrl("taisan"), {
-      params: {
-        page,
-        search: normalizedSearch,
-        TinhTrang: status,
-        MaDanhMuc: category,
-        MaPhong: room,
-      },
+      params,
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -3,10 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./header.css";
 import { useNotification } from "../../context/NotificationContext";
+import { useTheme } from "../../context/ThemeContext";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { notifications } = useNotification();
+  const { darkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const token = sessionStorage.getItem("token");
@@ -65,26 +67,38 @@ const Header = () => {
           </ul>
         </nav>
 
-        {/* Right - Profile + Notification */}
+        {/* Right - Controls */}
         <div className="right-group">
-          {/* Nút Thông báo */}
-          <Link to="/admin/notification" className="notification-btn" title="Thông báo" onClick={() => handleNavigate("/admin/notification")}>
-            <svg viewBox="0 0 24 24" className="notification-icon">
-              <path d="M18 8a6 6 0 0 0-12 0c0 5.77-3.77 10-9 12h2.62c.7 0 1.38-.1 2-.3.62.2 1.3.3 2 .3s1.38-.1 2-.3c.62.2 1.3.3 2 .3s1.38-.1 2-.3c.62.2 1.3.3 2 .3s1.38-.1 2-.3c.62.2 1.3.3 2 .3s1.38-.1 2-.3V20h2c-5.23-2-9-6.23-9-12z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-              <circle cx="12" cy="12" r="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+          {/* Theme Toggle */}
+          <button className="header-btn" onClick={toggleDarkMode} title={darkMode ? "Sáng" : "Tối"}>
+            {darkMode ? (
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                <circle cx="12" cy="12" r="5"/>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            )}
+          </button>
+
+          {/* Notification */}
+          <Link to="/admin/notification" className="header-btn" title="Thông báo" onClick={() => handleNavigate("/admin/notification")}>
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
             </svg>
             {unreadCount > 0 && (
               <span className="notification-badge">{unreadCount}</span>
             )}
           </Link>
-          <div
-            className="profile-avatar"
-            onClick={() => handleNavigate("/admin/profile")}
-            title="Hồ sơ"
-          >
-            <svg viewBox="0 0 24 24" className="avatar-svg">
-              <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
+
+          {/* Profile */}
+          <div className="header-btn" onClick={() => handleNavigate("/admin/profile")} title="Hồ sơ">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+              <circle cx="12" cy="7" r="4"/>
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             </svg>
           </div>
 

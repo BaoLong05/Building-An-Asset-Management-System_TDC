@@ -14,6 +14,7 @@ import {
   exportPDF,
   getUsers,
 } from "../../utils/helper";
+import { useTheme } from "../../context/ThemeContext";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { NOTIFICATION_REFRESH_EVENT } from "../../context/notificationEvents";
 
@@ -47,8 +48,10 @@ const AssetManagement = () => {
   const [maintenanceAsset, setMaintenanceAsset] = useState(null);
   const [maintenanceStatus, setMaintenanceStatus] = useState("Tốt");
   const [maintenanceNote, setMaintenanceNote] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode } = useTheme();
   const [selectedRoom, setSelectedRoom] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [showExportModalExcel, setShowExportModalExcel] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
@@ -64,9 +67,9 @@ const AssetManagement = () => {
   const [formData, setFormData] = useState({
     HinhAnh: "",
     TenTaiSan: "",
+    MaTaiSanRieng: "",
     MaDanhMuc: "",
     MaPhong: "",
-    SoLuong: "",
     NgayNhap: "",
     TinhTrang: "Tốt",
     GhiChu: "",
@@ -86,19 +89,11 @@ const AssetManagement = () => {
     selectedStatus,
     selectedCategory,
     selectedRoom,
+    dateFrom,
+    dateTo,
   ]);
 
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add("dark-mode-asset");
-    } else {
-      document.body.classList.remove("dark-mode-asset");
-    }
-  }, [darkMode]);
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
 
   const fetchUsers = async () => {
     try {
@@ -121,6 +116,8 @@ const AssetManagement = () => {
         selectedStatus,
         selectedCategory,
         selectedRoom,
+        dateFrom,
+        dateTo,
       );
 
       if (requestId !== assetRequestIdRef.current) return;
@@ -201,9 +198,9 @@ const AssetManagement = () => {
     setFormData({
       HinhAnh: "",
       TenTaiSan: "",
+      MaTaiSanRieng: "",
       MaDanhMuc: "",
       MaPhong: "",
-      SoLuong: "",
       NgayNhap: "",
       TinhTrang: "Tốt",
       GhiChu: "",
@@ -217,9 +214,9 @@ const AssetManagement = () => {
     setFormData({
       HinhAnh: null,
       TenTaiSan: asset.TenTaiSan,
+      MaTaiSanRieng: asset.MaTaiSanRieng || "",
       MaDanhMuc: asset.MaDanhMuc,
       MaPhong: asset.MaPhong,
-      SoLuong: asset.SoLuong,
       NgayNhap: asset.NgayNhap,
       TinhTrang: asset.TinhTrang,
       GhiChu: asset.GhiChu || "",
@@ -238,7 +235,6 @@ const AssetManagement = () => {
         HinhAnh: formData.HinhAnh,
         MaDanhMuc: formData.MaDanhMuc ? Number(formData.MaDanhMuc) : null,
         MaPhong: formData.MaPhong ? Number(formData.MaPhong) : null,
-        SoLuong: formData.SoLuong,
         TinhTrang: formData.TinhTrang || "Tốt",
       };
 
@@ -315,11 +311,10 @@ const AssetManagement = () => {
     try {
       await updateAsset(maintenanceAsset.MaTaiSan, {
         TenTaiSan: maintenanceAsset.TenTaiSan,
+        MaTaiSanRieng: maintenanceAsset.MaTaiSanRieng,
         MaDanhMuc: maintenanceAsset.MaDanhMuc,
         MaPhong: maintenanceAsset.MaPhong,
-        SoLuong: maintenanceAsset.SoLuong,
         NgayNhap: maintenanceAsset.NgayNhap,
-
         TinhTrang: maintenanceStatus,
         GhiChu: maintenanceNote || maintenanceAsset.GhiChu,
         assigned_to: selectedReceiver,
@@ -434,19 +429,6 @@ const AssetManagement = () => {
         </div>
 
         <div className="top-bar-actions">
-          <button className="theme-toggle" onClick={toggleDarkMode}>
-            {darkMode ? "☀️" : "🌙"}
-          </button>
-          <div className="language-select">
-            <select>
-              <option value="vn">🇻🇳 Tiếng Việt</option>
-              <option value="us">🇺🇸 English</option>
-            </select>
-          </div>
-          <div className="user-profile">
-            <span className="avatar">👤</span>
-            <span className="user-name">Admin</span>
-          </div>
         </div>
       </div>
 
@@ -462,7 +444,7 @@ const AssetManagement = () => {
             <span className="search-icon">🔍</span>
             <input
               type="text"
-              placeholder="Tìm kiếm theo mã, tên, danh mục..."
+              placeholder="Tìm kiếm theo mã, tên, mã riêng, danh mục..."
               maxLength={255}
               value={searchTerm}
               onChange={(e) => {
@@ -470,6 +452,8 @@ const AssetManagement = () => {
                 setSelectedCategory("");
                 setSelectedRoom("");
                 setSelectedStatus("");
+                setDateFrom("");
+                setDateTo("");
                 setCurrentPage(1);
               }}
             />
@@ -500,6 +484,21 @@ const AssetManagement = () => {
               </select>
 
               <select
+                value={selectedRoom}
+                onChange={(e) => {
+                  setSelectedRoom(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Tất cả vị trí</option>
+                {rooms.map((r) => (
+                  <option key={r.MaPhong} value={r.MaPhong}>
+                    {r.TenPhong}
+                  </option>
+                ))}
+              </select>
+
+              <select
                 value={selectedStatus}
                 onChange={(e) => {
                   setSelectedStatus(e.target.value);
@@ -512,6 +511,28 @@ const AssetManagement = () => {
                 <option value="Hỏng">Hỏng</option>
               </select>
 
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => {
+                  setDateFrom(e.target.value);
+                  setCurrentPage(1);
+                }}
+                title="Ngày nhập từ"
+                placeholder="Từ ngày"
+              />
+
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => {
+                  setDateTo(e.target.value);
+                  setCurrentPage(1);
+                }}
+                title="Ngày nhập đến"
+                placeholder="Đến ngày"
+              />
+
               <button
                 className="btn-clear"
                 onClick={() => {
@@ -519,6 +540,8 @@ const AssetManagement = () => {
                   setSelectedRoom("");
                   setSelectedStatus("");
                   setSearchTerm("");
+                  setDateFrom("");
+                  setDateTo("");
                   setCurrentPage(1);
                 }}
               >
@@ -556,9 +579,9 @@ const AssetManagement = () => {
               <th>Mã</th>
               <th>Hình Ảnh</th>
               <th>Tên tài sản</th>
+              <th>Mã riêng</th>
               <th>Danh mục</th>
-              <th>VỊ TRÍ</th>
-              <th>Số lượng</th>
+              <th>Vị trí</th>
               <th>Ngày nhập</th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
@@ -600,9 +623,9 @@ const AssetManagement = () => {
                     )}
                   </td>
                   <td>{asset.TenTaiSan}</td>
+                  <td className="code">{asset.MaTaiSanRieng || "—"}</td>
                   <td>{asset.TenDanhMuc}</td>
                   <td>{asset.TenPhong}</td>
-                  <td>{asset.SoLuong}</td>
                   <td>{formatDate(asset.NgayNhap)}</td>
                   <td>
                     <span
@@ -755,20 +778,16 @@ const AssetManagement = () => {
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label>
-                    Số lượng <span className="required">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="SoLuong"
-                    value={formData.SoLuong}
-                    onChange={handleChange}
-                    placeholder="Nhập số lượng"
-                    min="1"
-                  />
-                </div>
+              <div className="form-group">
+                <label>
+                  Mã riêng <span className="required">*</span>
+                </label>
+                <input
+                  name="MaTaiSanRieng"
+                  value={formData.MaTaiSanRieng}
+                  onChange={handleChange}
+                  placeholder="Nhập mã riêng (ví dụ: TS-001)"
+                />
               </div>
 
               <div className="form-row">
@@ -848,6 +867,12 @@ const AssetManagement = () => {
                   </span>
                 </div>
                 <div className="detail-row">
+                  <span className="detail-label">Mã riêng:</span>
+                  <span className="detail-value code">
+                    {selectedAsset.MaTaiSanRieng || "—"}
+                  </span>
+                </div>
+                <div className="detail-row">
                   <span className="detail-label">Tên tài sản:</span>
                   <span className="detail-value">
                     {selectedAsset.TenTaiSan}
@@ -862,10 +887,6 @@ const AssetManagement = () => {
                 <div className="detail-row">
                   <span className="detail-label">Vị trí:</span>
                   <span className="detail-value">{selectedAsset.TenPhong}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Số lượng:</span>
-                  <span className="detail-value">{selectedAsset.SoLuong}</span>
                 </div>
 
                 <div className="detail-row">

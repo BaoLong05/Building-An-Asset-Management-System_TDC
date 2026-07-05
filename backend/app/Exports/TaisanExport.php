@@ -49,10 +49,10 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
             return collect([
                 (object)[
                     'MaTaiSan' => '',
+                    'MaTaiSanRieng' => '',
                     'TenTaiSan' => 'Không có tài sản',
                     'danhmuc' => null,
                     'phong' => null,
-                    'SoLuong' => '',
                     'NgayNhap' => '',
                     'TinhTrang' => '',
                     'GhiChu' => '',
@@ -66,10 +66,10 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
     {
         return [
             $row->MaTaiSan,
+            $row->MaTaiSanRieng,
             $row->TenTaiSan,
             optional($row->danhmuc)->TenDanhMuc,
             optional($row->phong)->TenPhong,
-            $row->SoLuong,
             $row->NgayNhap,
             $row->TinhTrang,
             $row->GhiChu,
@@ -83,10 +83,10 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
     {
         return [
             'Mã Tài Sản',
+            'Mã Riêng',
             'Tên Tài sản',
             'Tên Danh Mục',
             'Tên Phòng',
-            'Số Lượng',
             'Ngày Nhập',
             'Tình Trạng',
             'Ghi Chú',
@@ -125,11 +125,10 @@ class TaisanExport implements FromCollection, WithHeadings, WithMapping, WithSty
 
         //can giua
         $sheet->getStyle("A2:A{$highestRow}")->getAlignment()->setHorizontal('center');
-        $sheet->getStyle("E2:E{$highestRow}")->getAlignment()->setHorizontal('center');
-        $sheet->getStyle("F2:F{$highestRow}")->getAlignment()->setHorizontal('right');
+        $sheet->getStyle("B2:B{$highestRow}")->getAlignment()->setHorizontal('center');
 
         // format ngay
-        $sheet->getStyle("G2:G{$highestRow}")
+        $sheet->getStyle("F2:F{$highestRow}")
             ->getNumberFormat()
             ->setFormatCode('dd/mm/yyyy');
 

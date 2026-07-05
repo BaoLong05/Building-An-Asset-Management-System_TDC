@@ -9,20 +9,16 @@ class PhongSeeder extends Seeder
 {
     public function run(): void
     {
-        $data = [];
-
-        for ($floor = 0; $floor <= 2; $floor++) {
-
-            for ($room = 1; $room <= 3; $room++) {
-
-                $roomNumber = str_pad($room, 2, '0', STR_PAD_LEFT);
-
-                $baseCode = "B{$floor}{$roomNumber}";
-
-                $data[] = ['TenPhong' => $baseCode . 'A'];
-                $data[] = ['TenPhong' => $baseCode . 'B'];
-            }
-        }
+        $data = [
+            ['TenPhong' => 'A101', 'ViTri' => 'Tầng 1, Khu A'],
+            ['TenPhong' => 'B101', 'ViTri' => 'Tầng 1, Khu B'],
+            ['TenPhong' => 'B201A', 'ViTri' => 'Tầng 2, Khu B'],
+            ['TenPhong' => 'B201B', 'ViTri' => 'Tầng 2, Khu B'],
+            ['TenPhong' => 'B202A', 'ViTri' => 'Tầng 2, Khu B'],
+            ['TenPhong' => 'B202B', 'ViTri' => 'Tầng 2, Khu B'],
+            ['TenPhong' => 'B203A', 'ViTri' => 'Tầng 2, Khu B'],
+            ['TenPhong' => 'B203B', 'ViTri' => 'Tầng 2, Khu B'],
+        ];
 
         DB::table('phong')->insert($data);
     }

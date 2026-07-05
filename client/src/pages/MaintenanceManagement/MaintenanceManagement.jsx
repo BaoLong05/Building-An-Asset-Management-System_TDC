@@ -13,16 +13,17 @@ import {
 } from "../../utils/helper";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { NOTIFICATION_REFRESH_EVENT } from "../../context/notificationEvents";
+import { useTheme } from "../../context/ThemeContext";
 
 const MaintenanceManagement = () => {
   document.title = "Quản Lý Bảo Trì";
+  const { darkMode } = useTheme();
   const [currentUser, setCurrentUsers] = useState(null);
   const [assets, setAssets] = useState([]);
   const maintenanceRequestIdRef = useRef(0);
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const [filterStatus, setFilterStatus] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
   const [showModalExcel, setShowModalExcel] = useState(false);
 
   const [exportFilters, setExportFilters] = useState({
@@ -45,14 +46,6 @@ const MaintenanceManagement = () => {
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
-
-  // =========================
-  // TOGGLE DARK MODE
-  // =========================
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.body.classList.toggle("dark-mode-maintenance");
-  };
 
   // =========================
   // FETCH DATA
@@ -259,19 +252,6 @@ const MaintenanceManagement = () => {
         </div>
 
         <div className="top-bar-actions">
-          <button className="theme-toggle" onClick={toggleDarkMode}>
-            {darkMode ? "☀️" : "🌙"}
-          </button>
-          <div className="language-select">
-            <select>
-              <option value="vn">🇻🇳 Tiếng Việt</option>
-              <option value="us">🇺🇸 English</option>
-            </select>
-          </div>
-          <div className="user-profile">
-            <span className="avatar">👤</span>
-            <span className="user-name">Admin</span>
-          </div>
         </div>
       </div>
       <div className="action-bar">

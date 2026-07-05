@@ -124,8 +124,8 @@
   flex-shrink: 0;
 }
 
-/* Notification Button */
-.app-header .notification-btn {
+/* Header Button */
+.app-header .header-btn {
   position: relative;
   width: 44px;
   height: 44px;
@@ -138,20 +138,16 @@
   transition: all 0.2s ease;
   text-decoration: none;
   border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
 }
 
-.app-header .notification-btn:hover {
+.app-header .header-btn:hover {
   background: rgba(255, 255, 255, 0.22);
   transform: scale(1.05);
   border-color: rgba(255,255,255,0.3);
 }
 
-.app-header .notification-icon {
-  width: 22px;
-  height: 22px;
-  stroke: currentColor;
-  stroke-width: 2;
-}
+
 
 .app-header .notification-badge {
   position: absolute;
@@ -258,8 +254,7 @@
   }
 
   .app-header .logo-text,
-  .app-header .right-group .notification-btn,
-  .app-header .right-group .profile-avatar {
+  .app-header .right-group .header-btn {
     display: none;
   }
 }
